@@ -1,0 +1,121 @@
+C251 COMPILER V5.60.0,  AI8051U_ADC                                                        16/03/26  17:16:13  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_ADC
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_ADC.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_ADC.c LARGE UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(
+                    -..\Driver\Inc;..\LQ_LIB\Inc;..\User;..\CODE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_ADC.lst) TABS(2) OBJECT
+                    -(.\OBJ_Out\AI8051U_ADC.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          #include "AI8051U_ADC.h"
+    5          
+    6          //========================================================================
+    7          // 函数: u8 ADC_Inilize(ADC_InitTypeDef *ADCx)
+    8          // 描述: ADC初始化程序.
+    9          // 参数: ADCx: 结构参数,请参考adc.h里的定义.
+   10          // 返回: none.
+   11          // 版本: V1.0, 2012-10-22
+   12          //========================================================================
+   13          u8 ADC_Inilize(ADC_InitTypeDef *ADCx)
+   14          {
+   15   1        ADCCFG = (ADCCFG & ~ADC_SPEED_2X16T) | ADCx->ADC_Speed; // 设置ADC工作时钟频率
+   16   1        ADC_Justify(ADCx->ADC_AdjResult);           // AD转换结果对齐方式
+   17   1      
+   18   1        if (ADCx->ADC_SMPduty > 31)
+   19   1          return FAIL; // 错误
+   20   1        if (ADCx->ADC_CsSetup > 1)
+   21   1          return FAIL; // 错误
+   22   1        if (ADCx->ADC_CsHold > 3)
+   23   1          return FAIL; // 错误
+   24   1      
+   25   1        ADCTIM = (ADCx->ADC_CsSetup << 7) | (ADCx->ADC_CsHold << 5) | ADCx->ADC_SMPduty; // 设置 ADC 内部时序，A
+             -DC采样时间建议设最大值
+   26   1        return SUCCESS;
+   27   1      }
+   28          
+   29          //========================================================================
+   30          // 函数: void ADC_PowerControl(u8 pwr)
+   31          // 描述: ADC电源控制程序.
+   32          // 参数: pwr: 电源控制,ENABLE或DISABLE.
+   33          // 返回: none.
+   34          // 版本: V1.0, 2012-10-22
+   35          //========================================================================
+   36          void ADC_PowerControl(u8 pwr)
+   37          {
+   38   1        if (pwr == ENABLE)
+   39   1          ADC_POWER = 1;
+   40   1        else
+   41   1          ADC_POWER = 0;
+   42   1      }
+   43          
+   44          //========================================================================
+   45          // 函数: u16  Get_ADCResult(u8 channel)
+   46          // 描述: 查询法读一次ADC转换结果.
+   47          // 参数: channel: 选择要转换的ADC通道.
+   48          // 返回: ADC转换结果.
+   49          // 版本: V1.0, 2012-10-22
+   50          //========================================================================
+   51          u16 Get_ADCResult(u8 channel) // channel = 0~15
+   52          {
+   53   1        u16 adc;
+   54   1        u8 i;
+   55   1      
+   56   1        if (channel > ADC_CH15)
+C251 COMPILER V5.60.0,  AI8051U_ADC                                                        16/03/26  17:16:13  PAGE 2   
+
+   57   1          return 4096; // 错误,返回4096,调用的程序判断
+   58   1        ADC_RES = 0;
+   59   1        ADC_RESL = 0;
+   60   1      
+   61   1        ADC_CONTR = (ADC_CONTR & 0xf0) | channel; // 设置ADC转换通道
+   62   1        ADC_START = 1;                // 启动ADC转换
+   63   1        NOP(10);                  // 对ADC_CONTR操作后要4T之后才能访问
+   64   1      
+   65   1        for (i = 0; i < 250; i++) // 超时返回，正常i等于10以内就可以转换完成
+   66   1        {
+   67   2          if (ADC_FLAG)
+   68   2          {
+   69   3            ADC_FLAG = 0; // 清除ADC转换结束标志
+   70   3            if (RESFMT)   // 转换结果右对齐。
+   71   3            {
+   72   4              adc = ((u16)ADC_RES << 8) | ADC_RESL;
+   73   4            }
+   74   3            else // 转换结果左对齐。
+   75   3            {
+   76   4              adc = (u16)ADC_RES;
+   77   4              adc = (adc << 4) | ((ADC_RESL >> 4) & 0x0f);
+   78   4            }
+   79   3            return adc;
+   80   3          }
+   81   2        }
+   82   1        return 4096; // 错误,返回4096,调用的程序判断
+   83   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       202     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

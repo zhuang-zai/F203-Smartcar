@@ -1,0 +1,197 @@
+C251 COMPILER V5.60.0,  main                                                               18/03/26  16:20:32  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE main
+OBJECT MODULE PLACED IN .\OBJ_Out\main.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\User\main.c LARGE UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(..\Driver\Inc
+                    -;..\LQ_LIB\Inc;..\User;..\CODE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\main.lst) TABS(2) OBJECT(.\OBJ_Out\main.obj)
+                    - 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           ¡¾Æ½    Ì¨¡¿±±¾©ÁúÇñÖÇÄÜ¿Æ¼¼STC32Î»ºËÐÄ°å
+    3           ¡¾±à    Ð´¡¿ÁúÇñ¿Æ¼¼
+    4           ¡¾E-mail  ¡¿chiusir@163.com
+    5           ¡¾Èí¼þ°æ±¾¡¿V1.1 °æÈ¨ËùÓÐ£¬µ¥Î»Ê¹ÓÃÇëÏÈÁªÏµÊÚÈ¨
+    6           ¡¾×î½ü¸üÐÂ¡¿2025-02-25
+    7           ¡¾Ïà¹ØÐÅÏ¢²Î¿¼ÏÂÁÐµØÖ·¡¿
+    8           ¡¾Íø    Õ¾¡¿http://www.lqist.cn
+    9           ¡¾ÌÔ±¦µêÆÌ¡¿http://longqiu.taobao.com
+   10           --------------------------------------------------------------------------------
+   11           ¡¾  IDE  ¡¿ keil C251 V5.60
+   12           ¡¾Target ¡¿ STC32G/STC8051U/AI8051U 32Î»Ä£Ê½
+   13           ¡¾SYS CLK¡¿ 42 MHzÊ¹ÓÃÄÚ²¿¾§Õñ
+   14          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   15          
+   16          
+   17          //ÏÂÔØÊ±, Ñ¡ÔñÊ±ÖÓÆµÂÊ Óë"config.h"ÖÐºê¶¨Òå±£³ÖÒ»ÖÂ Ä¬ÈÏÊ¹ÓÃ42MÖ÷Æµ
+   18          //Êµ¼ÊÓ¦ÓÃÇé¿öÖÐ£¬¿ÉÄÜÓÐµÄÍâÉè³õÊ¼»¯º¯Êý¡¢ºê¶¨Òå²»»á±»ÓÃµ½£¬Îª½ÚÊ¡8051U¿Õ¼ä×ÊÔ´ÌáÉýÐ§ÂÊ£¬¿ÉÒÔºÏÀíÑ¡Ôñ½«×¢
+             -ÊÍµô
+   19          
+   20          #include "include.h"
+   21          
+   22          void System_Init(void);         //ÉÏµç³õÊ¼»¯ÅäÖÃ
+   23          
+   24          char txt[64];
+   25          
+   26          /***************************************************************************
+   27          * º¯     Êý: void main(void)
+   28          * Ãè     Êö: º¯ÊýÈë¿Ú
+   29          * ²Î     Êý: None.
+   30          * ·µ     »Ø: None.
+   31          * °æ     ±¾: V1.0, 2024-11-01
+   32          ****************************************************************************/
+   33          void main(void)
+   34          {
+   35   1        System_Init();
+   36   1        Global_IRQ_Enable();            //Ê¹ÄÜÈ«¾ÖÖÐ¶Ï    Global_IRQ_Disable();
+   37   1        GPIO_LED_Init();
+   38   1        OLED_Init();  // OLED³õÊ¼»¯
+   39   1        ADC_Init();  // µç¸Ð²É¼¯³õÊ¼»¯
+   40   1        Timer_EncInit(Timer3|Timer4);  // ±àÂëÆ÷³õÊ¼»¯
+   41   1        Motor_Init(Motor_FREQ);  // µç»ú³õÊ¼»¯
+   42   1        TIM_Init_ms(Timer1, 2);  // ¶¨Ê±Æ÷1ÖÐ¶Ï³õÊ¼»¯
+   43   1        TIM_Init_ms(Timer0, 3);  // ¶¨Ê±Æ÷1ÖÐ¶Ï³õÊ¼»¯
+   44   1        TIM_Init_ms(Timer11, 3);  // ¶¨Ê±Æ÷1ÖÐ¶Ï³õÊ¼»¯
+   45   1           LQ_SPI_LSM60DSR_Init();     //º¯ÊýÄÚÅÐ¶ÏÈí¼þ»¹ÊÇÓ²¼þSPI
+   46   1        while(1)
+   47   1        {
+   48   2       
+   49   2      //    sprintf(txt,"L  :%04d ",Get_ADCResult(4));  // ×óºáµç¸Ð
+   50   2      //      OLED_P6x8Str(0,0,txt);
+   51   2      //    sprintf(txt,"L2 :%04d ", Get_ADCResult(5));  // ×óÊúµç¸Ð
+   52   2      //      OLED_P6x8Str(0,1,txt);
+   53   2      //    sprintf(txt,"eleOut:%04d ", Get_ADCResult(2));  // ÖÐºáµç¸Ð
+   54   2      //      OLED_P6x8Str(0,2,       txt);
+   55   2      //    sprintf(txt,"R2 :%04d ",Get_ADCResult(1));  // ÓÒÊúµç¸Ð
+   56   2      //      OLED_P6x8Str(0,3,txt);
+C251 COMPILER V5.60.0,  main                                                               18/03/26  16:20:32  PAGE 2   
+
+   57   2      //    sprintf(txt,"R  :%04d ", Get_ADCResult(0));  // ÓÒºáµç¸Ð
+   58   2      //      OLED_P6x8Str(0,4,txt);
+   59   2      
+   60   2      //      
+   61   2      
+   62   2        sprintf(txt,"%03d %03d %04d %03d %03d",left_0,left_1,M,right_0,right_1);    // ÏÔÊ¾ËÄÂ·µç¸Ð¹éÒ»»¯Öµ
+   63   2        OLED_P6x8Str(0,0,(u8*)txt);
+   64   2          
+   65   2          sprintf(txt,"M2:%04d",M2);
+   66   2      //  sprintf(txt,"ERV:%.0f k%.3f  ",eleOut,M_K);                 // ÏÔÊ¾µç¸ÐÆ«²îÖµ
+   67   2        OLED_P6x8Str(0,1,(u8*)txt);
+   68   2      
+   69   2      
+   70   2        sprintf(txt,"KP:%.5f kd%.5f",Turn_ele[0],Turn_ele[1]);                      // ÏÔÊ¾ÍäµÀPD
+   71   2        OLED_P6x8Str(0,2,(u8*)txt);
+   72   2      //  sprintf(txt,"an:%.2f wv%.4f",Angle_gyro_z,Weight_V);                      //ÏÔÊ¾»ý·Ö½Ç¶ÈÖµ Óë ÊúÖ±È¨ÖØ  
+   73   2      //  OLED_P6x8Str(0,2,(u8*)txt);
+   74   2          sprintf(txt,"Aim :%.0f ", High_Speed);   // »ù´¡Ä¿±êËÙ¶È
+   75   2      //      sprintf(txt,"obt:%d",out_ben_turn);
+   76   2            OLED_P6x8Str(0,3,txt);
+   77   2      
+   78   2          sprintf(txt,"ben :%01d ", flag_ben);   // Benzene ring situation
+   79   2            OLED_P6x8Str(50,3,txt);
+   80   2      //          sprintf(txt,"Aim :%.1f L :%.1f R :%.1f", High_Speed,Left_High_Speed,Right_High_Speed);   // »ù´¡Ä¿
+             -±êËÙ¶È
+   81   2      //      OLED_P6x8Str(0,3,txt);
+   82   2      //          sprintf(txt,"Aim_L :%.f ", Left_High_Speed);   // ×óÂÖÄ¿±êËÙ¶È
+   83   2      //      OLED_P6x8Str(50,1,txt);
+   84   2          sprintf(txt,"Aim_R :%.f ", Right_High_Speed);  // ÓÒÂÖÄ¿±êËÙ¶È
+   85   2            OLED_P6x8Str(50,4,txt);
+   86   2            
+   87   2          sprintf(txt,"fg:%d ",key_flag);     // °´¼üµ÷²Î±êÖ¾Î» Á½Â·µç»úPWM
+   88   2          OLED_P6x8Str(0,4,(u8*)txt);
+   89   2            
+   90   2            sprintf(txt,"%02d%02d",charge_flag,star_flag);  // ×ó±àÂëÆ÷
+   91   2            OLED_P6x8Str(0,5,txt);
+   92   2            
+   93   2            sprintf(txt,"RP:%.01f",Right_MOTOR[0]);
+   94   2            OLED_P6x8Str(24,5, txt);  // ÏÔÊ¾
+   95   2            sprintf(txt,"RI:%.02f",Right_MOTOR[1]);
+   96   2            OLED_P6x8Str(66,5, txt);  // ÏÔÊ¾
+   97   2            
+   98   2            sprintf(txt,"LP:%.01f",Left_MOTOR[0]);
+   99   2            OLED_P6x8Str(0,6, txt);   // ÏÔÊ¾
+  100   2            sprintf(txt,"LI:%.02f",Left_MOTOR[1]);
+  101   2            OLED_P6x8Str(56,6, txt);  // ÏÔÊ¾
+  102   2      //    sprintf(txt, "ADV:%03d ", vu);  //ADC8-P00×öµçÔ´µçÑ¹ 11.0V->1700×óÓÒ£¬12.6V->1970×óÓÒ
+  103   2      //    OLED_P6x8Str(0,6, txt);   // ÏÔÊ¾
+  104   2            
+  105   2            
+  106   2          sprintf(txt,"PL%.f  PR%.f ",LEFT_MOTOR_Duty,RIGHT_MOTOR_Duty);   // ×óÂÖÕ¼¿Õ±È
+  107   2            OLED_P6x8Str(0,7,txt);
+  108   2      
+  109   2            
+  110   2          delay_ms(10);
+  111   2          
+  112   2        }
+  113   1      }
+  114          
+  115          
+  116          
+  117          
+  118          
+  119          
+  120          // ³õÊ¼»¯pllÊ±ÖÓ,×¢ÒâÊ¹ÓÃÊ±ÐèÒªÌí¼Ó¶ÔÓ¦µÄ¿â£¬ÏêÇé²Î¿¼Êý¾ÝÊÖ²á
+  121          void PLL_Init(void)
+C251 COMPILER V5.60.0,  main                                                               18/03/26  16:20:32  PAGE 3   
+
+  122          {
+  123   1          
+  124   1        USBCLK &= ~0xf0;
+  125   1        USBCLK |= 0xd0;     // ÔÊÐí×·Æµ
+  126   1        CLKSEL |= 0xc0;     // Ê±ÖÓÑ¡ÔñÉèÖÃ£¬²¢½«PLLÊ±ÖÓ×÷ÎªÍâÉè¸ßËÙÊ±ÖÓ
+  127   1        TFPU_CLKDIV = 0;
+  128   1        DMAIR = 0x3f;   // ½«PLLÊ±ÖÓ×÷ÎªTFPUÊ±ÖÓ£¬0x3e Ñ¡ÔñÏµÍ³Ê±ÖÓÎªTFPUÊ±ÖÓ
+  129   1      }
+  130          
+  131          /***************************************************************************
+  132          * º¯     Êý: void main(void)
+  133          * Ãè     Êö: º¯ÊýÈë¿Ú
+  134          * ²Î     Êý: None.
+  135          * ·µ     »Ø: None.
+  136          ****************************************************************************/
+  137          void System_Init()
+  138          {
+  139   1        WTST = 0;   //ÉèÖÃ³ÌÐòÖ¸ÁîÑÓÊ±²ÎÊý£¬¸³ÖµÎª0¿É½«CPUÖ´ÐÐÖ¸ÁîµÄËÙ¶ÈÉèÖÃÎª×î¿ì
+  140   1        EAXSFR();   //À©Õ¹SFR(XFR)ÍâÉè¼Ä´æÆ÷·ÃÎÊÊ¹ÄÜ
+  141   1        CKCON = 0;      //Ìá¸ß·ÃÎÊXRAMËÙ¶È
+  142   1          
+  143   1          PLL_Init();
+  144   1          P0_MODE_IN_HIZ(GPIO_Pin_All);       // ÉÏµçÏÈ½«ËùÓÐIOÅäÖÃÎª¸ß×èÌ¬£¬¿ÉÒÔ·ÀÖ¹ÒâÍâµ¼ÖÂ¹Ü½ÅÉÕ»µµÄÇé¿ö·¢Éú
+  145   1          P1_MODE_IN_HIZ(GPIO_Pin_All);
+  146   1          P2_MODE_IN_HIZ(GPIO_Pin_All);
+  147   1          P3_MODE_IN_HIZ(GPIO_Pin_All);
+  148   1          P4_MODE_IN_HIZ(GPIO_Pin_All);
+  149   1          P5_MODE_IN_HIZ(GPIO_Pin_All);
+  150   1          
+  151   1          PNRST=1;   //P47£¬¼´RSTCFG|=1<<4;¸´Î»¼Ä´æÆ÷ÅäÖÃ£¨STC32G/FÎªP54£©£¬·ÀÖ¹ISPÏÂÔØÎóÉèÎªI/OÏÂ´ÎÐèÒªÉÏµç¸´Î
+             -»²ÅÄÜÏÂÔØÊ¹µÃ¸´Î»°´¼üÊ§Ð§
+  152   1      
+  153   1      }
+  154          
+  155          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1077     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =        64     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =       148     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

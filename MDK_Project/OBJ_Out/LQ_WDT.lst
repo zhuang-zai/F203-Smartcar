@@ -1,0 +1,128 @@
+C251 COMPILER V5.60.0,  LQ_WDT                                                             18/03/26  16:19:20  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_WDT
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_WDT.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_WDT.c LARGE UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(..\Dr
+                    -iver\Inc;..\LQ_LIB\Inc;..\User;..\CODE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_WDT.lst) TABS(2) OBJECT(.\OBJ_Out
+                    -\LQ_WDT.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           ¡¾Æ½    Ì¨¡¿±±¾©ÁúÇñÖÇÄÜ¿Æ¼¼STC32Î»ºËÐÄ°å
+    3           ¡¾±à    Ð´¡¿ÁúÇñ¿Æ¼¼
+    4           ¡¾E-mail  ¡¿chiusir@163.com
+    5           ¡¾Èí¼þ°æ±¾¡¿V1.0 °æÈ¨ËùÓÐ£¬µ¥Î»Ê¹ÓÃÇëÏÈÁªÏµÊÚÈ¨
+    6           ¡¾Ïà¹ØÐÅÏ¢²Î¿¼ÏÂÁÐµØÖ·¡¿
+    7           ¡¾Íø    Õ¾¡¿http://www.lqist.cn
+    8           ¡¾ÌÔ±¦µêÆÌ¡¿http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           ¡¾  IDE  ¡¿ keil C251 V5.60
+   11           ¡¾Target ¡¿ STC32G/STC8051U/AI8051U 32Î»Ä£Ê½
+   12           ¡¾SYS CLK¡¿ 42 MHzÊ¹ÓÃÄÚ²¿¾§Õñ
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          #include "include.h"
+   16          
+   17          /**************************************************************************************
+   18           * º¯Êý: WDT_Init
+   19           * ÃèÊö: ÓÃ»§³õÊ¼»¯³ÌÐò.
+   20           * ²ÎÊý: WDT_SCALE_s 0µ½7
+   21           * ·µ»Ø: None.
+   22           * °æ±¾: V1.0, 2024-10-28
+   23           * Ê±¼ä¼ÆËã£º WDT_Timeout=(12*32768*SCALE)/SYSclk
+   24           *      ÆäÖÐSCALE£¬¸ø³ö8¸ö¿ÉÑ¡Öµ£¬Îª 2^(1+WDT_SCALE_s)
+   25           *      ÈôWDT_SCALE_256£¬ÔòWDT_Timeout=12*32768*256/35000000=2.876094171428571  Ô¼2.88s
+   26          
+   27           *========================================================================
+   28           * WDT_PS£º¿´ÃÅ¹·¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÏµÊýÒ»ÏÂ¶ÔÓ¦0µ½7
+   29           *      ·ÖÆµÏµÊý²ÎÊý    ·ÖÆµÏµÊý   45158400MHzÏÂÊ±¼ä       ÆäËûÆµÂÊÏÂµÄÊ±¼ä×Ô¸ù¾Ý¹«Ê½¼ÆËã
+   30           *      WDT_SCALE_2,       0         Ô¼0.017 s
+   31           *      WDT_SCALE_4,       1         Ô¼0.035 s
+   32           *      WDT_SCALE_8,       2         Ô¼0.070 s
+   33           *      WDT_SCALE_16,      3         Ô¼0.139 s
+   34           *      WDT_SCALE_32,      4         Ô¼0.279 s
+   35           *      WDT_SCALE_64,      5         Ô¼0.557 s
+   36           *      WDT_SCALE_128,     6         Ô¼1.115 s
+   37           *      WDT_SCALE_256      7         Ô¼2.229 s
+   38           ***************************************************************************************/
+   39          void WDT_Init(WDT_PS_SCALE WDT_SCALE_s)
+   40          {
+   41   1        WDT_InitTypeDef WDT_InitStructure;          //¿´ÃÅ¹· ½á¹¹¶¨Òå
+   42   1      
+   43   1        WDT_InitStructure.WDT_Enable     = ENABLE;      //ÖÐ¶ÏÊ¹ÄÜ   ENABLE»òDISABLE
+   44   1        WDT_InitStructure.WDT_IDLE_Mode  = WDT_IDLE_STOP; //IDLEÄ£Ê½ÊÇ·ñÍ£Ö¹¼ÆÊý    WDT_IDLE_STOP,WDT_IDLE_RUN
+   45   1        WDT_InitStructure.WDT_PS         = WDT_SCALE_s;     //¿´ÃÅ¹·¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÏµÊý 0~7
+   46   1        WDT_Inilize(&WDT_InitStructure);          //³õÊ¼»¯
+   47   1      
+   48   1        RSTFLAG |= 0x04;   //¸´Î»¼Ä´æÆ÷RSTFLAG£¬ÉèÖÃ¿´ÃÅ¹·¸´Î»ÐèÒª¼ì²âP3.2µÄ×´Ì¬£¬·ñÔò¿´ÃÅ¹·¸´Î»ºó¿ÉÄÜ½øÈëUSBÏÂÔ
+             -ØÄ£Ê½
+   49   1      }
+   50          
+   51          
+   52          /***************************************************************************************
+   53           * º¯Êý: Test_Sample_WDT(void)
+   54           * ÃèÊö: ¼òµ¥¿´ÃÅ¹·²âÊÔ
+   55           * ²ÎÊý: None.
+   56           * ·µ»Ø: None.
+C251 COMPILER V5.60.0,  LQ_WDT                                                             18/03/26  16:19:20  PAGE 2   
+
+   57           * °æ±¾: V1.0, 2024-10-28
+   58           *
+   59           *----------------------  ¹¦ÄÜËµÃ÷  ------------------------------------------
+   60           * ²âÊÔ¿´ÃÅ¿Ú³¬Ê±¸´Î»¹¦ÄÜ£¬¸´Î»ºóLED0³õÊ¼»¯Íê³Éºó ÉÁË¸5´Î
+   61           * Õý³£Çé¿öÏÂ£¬³õÊ¼»¯ºóÖ÷Ñ­»·ÖÐÔÚÉèÖÃµÄÊ±¼äÄÚÎ¹¹·£¬³ÌÐò²»»á¸´Î»Ò²¾Í¿´²»µ½Á¬Ðø5´ÎµÄÉÁË¸
+   62           * Èô½«Ö÷Ñ­»·ÖÐµÄÑÓÊ±£¬ÐÞ¸ÄÎª³¬¹ý¿´ÃÅ¹·ÉèÖÃµÄ¸´Î»Ê±¼ä£¬Ôò»á´¥·¢¿´ÃÅ¹·¸´Î»
+   63           *
+   64           ***************************************************************************************/
+   65          void Test_Sample_WDT(void)
+   66          {
+   67   1          u8 i= 0;
+   68   1          GPIO_LED_Init();
+   69   1          WDT_Init(WDT_SCALE_32);    //·ÖÆµÏµÊý²ÎÊý£¬Ê±¼äÔ¼280ms
+   70   1      
+   71   1      // ³õÊ¼»¯ÍêºóLED1 ÉÁË¸£¬±íÊ¾³ÌÐò¸´Î»³õÊ¼»¯ÁË
+   72   1      
+   73   1          for(i=0;i<10;i++)
+   74   1          {
+   75   2              LED_Ctrl(LED0,RVS);
+   76   2              delay_ms(100);
+   77   2              Feeding_Dog();
+   78   2          }
+   79   1      
+   80   1          LED_Ctrl(LED0,OFF);     //³õÊ¼»¯Íê³Éºó¹Ø±ÕLED1
+   81   1      
+   82   1      
+   83   1          while(1)
+   84   1          {
+   85   2              Feeding_Dog();      //Î¹¹·£¬¼´Çå³ý¿´ÃÅ¹·¶¨Ê±Æ÷µ±Ç°¼ÆÊýÖµ£¬Ê¹ÆäÖØÐÂ¿ªÊ¼¼ÆÊý
+   86   2              delay_ms(270);      //ÑÓÊ±³¬¹ý280ms,Ôò»á´¥·¢¿´ÃÅ¹· ¸´Î»
+   87   2          LED_Ctrl(LED0,RVS);
+   88   2          }
+   89   1      }
+   90          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       113     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------          3
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

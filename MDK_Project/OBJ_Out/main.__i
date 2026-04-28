@@ -1,0 +1,1 @@
+"..\User\main.c" LARGE UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(..\Driver\Inc;..\LQ_LIB\Inc;..\User;..\CODE) DEFINE (AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\main.lst) TABS (2) OBJECT(.\OBJ_Out\main.obj)

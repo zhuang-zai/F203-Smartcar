@@ -1,0 +1,121 @@
+C251 COMPILER V5.60.0,  LQ_SBUS                                                            18/03/26  16:19:19  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_SBUS
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_SBUS.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_SBUS.c LARGE UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(..\D
+                    -river\Inc;..\LQ_LIB\Inc;..\User;..\CODE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_SBUS.lst) TABS(2) OBJECT(.\OBJ_O
+                    -ut\LQ_SBUS.obj) 
+
+stmt  level    source
+
+    1          
+    2          #include "LQ_SBUS.h"
+    3          #include <stdio.h>
+    4          #include "include.h"
+    5          
+    6          /***********************************************************
+    7          *函 数 名:UpDate_SBUS
+    8          *设计时间: 2023年10月12日
+    9          *作    者:  LQ008
+   10          *功能说明: 解析HotRC DS600 遥控器SUBS模块信息
+   11          ***********************************************************/
+   12          
+   13          
+   14          
+   15          
+   16          //typedef struct
+   17          //{
+   18          /*                通道值             键名          通道号       默认值范围  */
+   19              signed int rc_RLR  = 0;     //摇杆左右       CH1          432  992  1552
+   20              signed int rc_RUD  = 0;     //左手上下       CH2          432  992  1552
+   21              signed int rc_LUD  = 0;     //左手上下       CH3          432  992  1552
+   22              signed int rc_LLR  = 0;     //左手左右       CH4          432  992  1552
+   23              signed int rc_SW5  = 0;     //三档拨杆5      CH5          192  992  1792
+   24              signed int rc_SW6  = 0;     //两档拨杆6      CH6          192↓ -   1792↑
+   25              signed int rc_SW7  = 0;     //两档拨杆7      CH7          192   -   1792
+   26              signed int rc_SW8  = 0;     //三档拨杆8      CH8          192  992  1792    
+   27          //}hotRC_data;
+   28          
+   29          /* - - - - */                          //****     CHn
+   30          unsigned char SReadBuff[64];
+   31          
+   32          
+   33          unsigned int Status_flag    = 0;     //状态标志  
+   34          unsigned char sbus_Rec_Fini_Flag = 0;  //接收状态控制
+   35          //unsigned char sbus_receive_flag[5] = {0x00, 0x00, 0x03, 0x00, 0x0f};
+   36          unsigned char receive_flag = 0;
+   37          
+   38          /***********************************************************************
+   39           * 函数名：void UpDate_SBUS()
+   40           * 功  能：SBUS数据解析
+   41           * 返回值：无
+   42           *********************************************************************/
+   43          void UpDate_SBUS()
+   44          {
+   45   1      //    CHDATA[0]= ReadBuff4[0];
+   46   1          rc_RLR= ((SReadBuff[1] | SReadBuff[2] << 8 ) & 0x07FF); 
+   47   1          rc_RUD= ((SReadBuff[2] >> 3 | SReadBuff[3] << 5 ) & 0x07FF);
+   48   1          rc_LUD= (SReadBuff[3] >> 6 | SReadBuff[4] << 2 | SReadBuff[5] << 10 ) & 0x07FF;
+   49   1          rc_LLR= (SReadBuff[5] >> 1 | SReadBuff[6] << 7 ) & 0x07FF;
+   50   1          rc_SW5= (SReadBuff[6] >> 4 | SReadBuff[7] << 4 ) & 0x07FF;
+   51   1          rc_SW6= (SReadBuff[7] >> 7 | SReadBuff[8] << 1 | SReadBuff[9] << 9 ) & 0x07FF; 
+   52   1          rc_SW7= (SReadBuff[9] >> 2 | SReadBuff[10]<< 6) & 0x07FF;
+   53   1          rc_SW8= (SReadBuff[10]>> 5 | SReadBuff[11]<< 3) & 0x07FF;
+   54   1          
+   55   1          receive_flag = 1;
+   56   1          // Status_flag=(ReadBuff4[23] | ReadBuff4[24] << 8 ) & 0x07FF;
+   57   1      
+C251 COMPILER V5.60.0,  LQ_SBUS                                                            18/03/26  16:19:19  PAGE 2   
+
+   58   1      //    Usart3_Rec_Fini_Flag = 0;
+   59   1        
+   60   1        
+   61   1      //ReadBuff4[23]为遥控器状态标志,失控时 ReadBuff4[23]=0x0f，正常时 tmpbuf[23]=0x03
+   62   1      
+   63   1      }
+   64          
+   65          void Test_HotRC()
+   66          {
+   67   1          UART_Init(UART1,115200ul);//初始化串口1 打印数据信息
+   68   1          UART_Init(UART3,100000ul);//初始化串口4 接收SBUS信号
+   69   1          OLED_CLS();
+   70   1          OLED_P6x8Str(2, 0, "LQ HotRC Test");
+   71   1          printf("Test_HotRC\r\n");
+   72   1          while(1)
+   73   1          {
+   74   2              //串口1打印数据信息
+   75   2              printf("RLR:%04d RUD:%04d LLR:%04d LUD:%04d SW5:%04d SW6:%04d SW7:%04d SW8:%04d \r\n",rc_RLR ,rc_
+             -RUD ,rc_LLR ,rc_LUD ,rc_SW5 ,rc_SW6 ,rc_SW7 ,rc_SW8);
+   76   2              sbus_Rec_Fini_Flag = 1;   //开始从帧头接收
+   77   2              delay_ms(50);
+   78   2              LED_Ctrl(LED0, RVS);
+   79   2          }
+   80   1      }
+   81          
+   82          /**********************************************串口3中断服务函数中的代码，配合上面测试函数，以防丢失 在这
+             -里备份****************************************/
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       476     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =        84     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =       177     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

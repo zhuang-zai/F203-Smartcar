@@ -1,0 +1,205 @@
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  18/03/26  16:48:35  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Timer_Isr
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Timer_Isr.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\isr\AI8051U_Timer_Isr.c LARGE UNSIGNED_CHAR FLOAT64 BROWSE I
+                    -NCDIR(..\Driver\Inc;..\LQ_LIB\Inc;..\User;..\CODE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Timer_Isr.lst) TA
+                    -BS(2) OBJECT(.\OBJ_Out\AI8051U_Timer_Isr.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_Timer.h"
+    6          #include "include.h"
+    7          
+    8          //========================================================================
+    9          // 函数: Timer0_ISR_Handler
+   10          // 描述: Timer0中断函数.
+   11          // 参数: none.
+   12          // 返回: none.
+   13          // 版本: V1.0, 2024-11-23
+   14          //========================================================================
+   15          int last_M=0;
+   16          int ben_panduan=0;
+   17          u8 times_count =0;
+   18          void Timer0_ISR_Handler (void) interrupt TMR0_VECTOR    //进中断时已经清除标志
+   19          {
+   20   1        // TODO: 在此处添加用户代码
+   21   1      
+   22   1      //    times_count++;
+   23   1      //    if(times_count>20)   //200ms
+   24   1          {
+   25   2            
+   26   2      
+   27   2      
+   28   2      //  L=(Get_ADCResult(4)+Get_ADCResult(4))/2;
+   29   2      //  L2=(Get_ADCResult(5)+Get_ADCResult(5))/2;
+   30   2      //  R2=(Get_ADCResult(1)+Get_ADCResult(1))/2;
+   31   2      //  R=(Get_ADCResult(0)+Get_ADCResult(0))/2;
+   32   2      //  M = Get_ADCResult(2);   // 中间电感
+   33   2      //      
+   34   2      //      
+   35   2      //      
+   36   2        Inductor[0]=L;
+   37   2        Inductor[1]=L2;
+   38   2        Inductor[2]=R2;
+   39   2        Inductor[3]=R;
+   40   2            
+   41   2            
+   42   2        left_0=(float)(Inductor[0]-10)*100/(1845-10);
+   43   2        left_1=(float)(Inductor[1]-10)*100/(1280-10);
+   44   2        right_0=(float)(Inductor[2]-10)*100/(1280-10);
+   45   2        right_1=(float)(Inductor[3]-10)*100/(1845-10);
+   46   2      
+   47   2            
+   48   2            
+   49   2      if(run==1){
+   50   3          if(M>1900&&flag_ben==0)        //苯环  原先M >2300
+   51   3          {
+   52   4            current_angle=Angle_gyro_z*1.0;
+   53   4            if(L>R)
+   54   4            flag_ben=1;
+   55   4            else if(L<R)
+   56   4              flag_ben=2;   
+   57   4          }
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  18/03/26  16:48:35  PAGE 2   
+
+   58   3          else if(M<900&&flag_ben==1)    //左进环
+   59   3          flag_ben=3;    //进环标志
+   60   3          
+   61   3          else if(M<1000&&flag_ben==2)   //右进环
+   62   3            flag_ben=4;
+   63   3          
+   64   3          else if(flag_ben==3&&M>1800){          //左出环标志
+   65   4            flag_ben=0;        //出环标志
+   66   4      //      current_angle=Angle_gyro_z*1.0;
+   67   4          }
+   68   3      //    else if(out_ben == 1 && left_0 > 100) out_ben_turn = 1,out_ben = 0;
+   69   3          else    if(flag_ben==4&&M>1800){          //右出环标志
+   70   4            flag_ben=0;        //出环标志
+   71   4      //      current_angle=Angle_gyro_z*1.0;
+   72   4          }
+   73   3          
+   74   3          
+   75   3          
+   76   3          
+   77   3      //    if(flag_ben==6&&M<1500&&Angle_gyro_z>current_angle+60.0){
+   78   3      //        flag_ben=0;       //出环
+   79   3      //      time_ben=0;
+   80   3      //    }
+   81   3      //    else    if(flag_ben==5&&M<1500&&Angle_gyro_z>current_angle-60.0){
+   82   3      //        flag_ben=0;       //出环
+   83   3      //      time_ben=0;
+   84   3      //    }
+   85   3      }
+   86   2            led_flag++;
+   87   2            if(led_flag%50==0)
+   88   2              LED_Ctrl(LED0,RVS);
+   89   2            else LED_Ctrl(LED0,OFF);
+   90   2          }
+   91   1      }
+   92          
+   93          //========================================================================
+   94          // 函数: Timer1_ISR_Handler
+   95          // 描述: Timer1中断函数.
+   96          // 参数: none.
+   97          // 返回: none.
+   98          // 版本: V1.0, 2020-09-23
+   99          //========================================================================
+  100          void Timer1_ISR_Handler (void) interrupt TMR1_VECTOR    //进中断时已经清除标志
+  101          {
+  102   1        // TODO: 在此处添加用户代码
+  103   1      //  LED_Ctrl(LED0,RVS);
+  104   1        
+  105   1        Ultima_Control();
+  106   1      }
+  107          
+  108          //========================================================================
+  109          // 函数: Timer2_ISR_Handler
+  110          // 描述: Timer2中断函数.
+  111          // 参数: none.
+  112          // 返回: none.
+  113          // 版本: V1.0, 2020-09-23
+  114          //========================================================================
+  115          void Timer2_ISR_Handler (void) interrupt TMR2_VECTOR    //进中断时已经清除标志
+  116          {
+  117   1        // TODO: 在此处添加用户代码
+  118   1      //  LED_Ctrl(LED0,RVS);
+  119   1      
+  120   1      }
+  121          
+  122          //========================================================================
+  123          // 函数: Timer3_ISR_Handler
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  18/03/26  16:48:35  PAGE 3   
+
+  124          // 描述: Timer3中断函数.
+  125          // 参数: none.
+  126          // 返回: none.
+  127          // 版本: V1.0, 2020-09-23
+  128          //========================================================================
+  129          void Timer3_ISR_Handler (void) interrupt TMR3_VECTOR    //进中断时已经清除标志
+  130          {
+  131   1        // TODO: 在此处添加用户代码
+  132   1      //  LED_Ctrl(LED0,RVS);
+  133   1      
+  134   1      }
+  135          
+  136          //========================================================================
+  137          // 函数: Timer4_ISR_Handler
+  138          // 描述: Timer4中断函数.
+  139          // 参数: none.
+  140          // 返回: none.
+  141          // 版本: V1.0, 2020-09-23
+  142          //========================================================================
+  143          void Timer4_ISR_Handler (void) interrupt TMR4_VECTOR    //进中断时已经清除标志
+  144          {
+  145   1        // TODO: 在此处添加用户代码
+  146   1      //  LED_Ctrl(LED1,RVS);
+  147   1      }
+  148          
+  149          
+  150          //========================================================================
+  151          // 函数: Timer4_ISR_Handler
+  152          // 描述: Timer4中断函数.
+  153          // 参数: none.
+  154          // 返回: none.
+  155          // 版本: V1.0, 2020-09-23
+  156          //========================================================================
+  157          void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR    //进中断时已经清除标志
+  158          {
+  159   1        // TODO: 在此处添加用户代码
+  160   1      //  LED_Ctrl(LED0,RVS);
+  161   1      //    LED_Ctrl(Beep0,RVS);    
+  162   1        key_scan();
+  163   1      
+  164   1      }
+  165          
+  166          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       761     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =         5     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        20     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

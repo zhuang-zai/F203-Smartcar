@@ -1,0 +1,628 @@
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE control
+OBJECT MODULE PLACED IN .\OBJ_Out\control.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\CODE\control.c LARGE UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(..\Driver\
+                    -Inc;..\LQ_LIB\Inc;..\User;..\CODE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\control.lst) TABS(2) OBJECT(.\OBJ_Out\con
+                    -trol.obj) 
+
+stmt  level    source
+
+    1          #include "control.h"
+    2          #include <math.h>
+    3          
+    4          #define DEGREE_PER_PULSE 10
+    5          
+    6          PID Left_MOTOR_PID, Right_MOTOR_PID, Turn_PID_ele;  // 三个结构体变量
+    7          
+    8          unsigned char run = 0;  // 电机启停标志位
+    9          
+   10          int L, L2, M,M2, R2, R,vu,led_flag;       // 电感值
+   11          double eleValue, eleSub, eleAdd;  // 差比和
+   12          int16 left_0,left_1,right_0,right_1;
+   13          double Turn_ele[2]={0.00095, 0.00135};  // 转向环 PD 参数  原先t_e[0] = 0.00095,t_e[1] = 0.00135
+   14          double elemid = 0;          // 转向环目标位置偏差
+   15          double eleOut = 0;          // 转向环输出值
+   16          int z=0;
+   17          int L_md[4],L2_md[4],M_md[4],R2_md[4],R_md[4];
+   18          double k1;
+   19          int key_flag=1,star_flag=0;
+   20          
+   21          double Inductor[4];      //电感值
+   22          
+   23          int charge_flag=0;
+   24          
+   25          double kp = 1.0f;   
+   26          double ki = 0.0f;   
+   27          double kd = 0.15;    
+   28          
+   29          double last_encoder_L = 0;
+   30          double last_encoder_R = 0;
+   31          double current_angle;     // 当前累计旋转角度
+   32          double target_angle = 90.0f;     // 目标角度（单位：度，可修改）
+   33          
+   34          double delta_L ;
+   35          double delta_R ;
+   36           
+   37          double angle_delta;
+   38          
+   39          
+   40          
+   41          
+   42          double Left_MOTOR[3] = {23,4.1, 0};   // 左轮速度环 PID 参数
+   43          double Right_MOTOR[3] = {25, 4, 0};  // 右轮速度环 PID 参数
+   44          
+   45          double encoder_L, encoder_R;              // 左右轮编码器数据
+   46          double LEFT_MOTOR_Duty, RIGHT_MOTOR_Duty;       // 左右电机占空比
+   47          double Left_High_Speed, Right_High_Speed, High_Speed=110; // 左右轮目标速度、基础目标速度
+   48          
+   49          double M_K;
+   50          int time_ben=0;
+   51          int flag_ben=0;
+   52          int out_ben = 0;
+   53          int out_ben_turn = 0;
+   54          int chu=0;
+   55          signed short acc_X, acc_Y, acc_Z;
+   56          signed short gyro_X, gyro_Y, gyro_Z;
+   57          float Gyroz;  // 偏航角速度
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 2   
+
+   58          double Angle_gyro_z;  // 积分角度
+   59           
+   60              double Weight_H = 0;  // 水平权重
+   61              double Weight_V = 0;  // 竖直权重
+   62          
+   63          /**
+   64           * @brief 限幅保护函数
+   65           */
+   66          
+   67          
+   68          void key_scan(void){
+   69   1      
+   70   1            if (!KEY_Read(KEY0))    // K0按键调参 直道 弯道PID 速度x
+   71   1              {
+   72   2                  switch(key_flag)
+   73   2                  {
+   74   3                      case 1: High_Speed= High_Speed+10.0; break;
+   75   3                      case 2:  Turn_ele[0]+=0.0001;       break;
+   76   3                      case 3:  Turn_ele[1]+=0.0001;     break;
+   77   3                      case 4:   Left_MOTOR[0]+=0.1;     break;
+   78   3                      case 5:   Left_MOTOR[1]+=0.01;    break;
+   79   3                      case 6:   Right_MOTOR[0]+=0.1;     break;
+   80   3                      case 7:   Right_MOTOR[1]+=0.01;      break;
+   81   3                  }
+   82   2                  delay_ms(200);   
+   83   2              }
+   84   1              if (!KEY_Read(KEY1))  // K1按键调参 直道 弯道PID 速度
+   85   1              {
+   86   2                  switch(key_flag)
+   87   2                  {
+   88   3                      case 1: High_Speed= High_Speed-10.0;   break;
+   89   3                      case 2:  Turn_ele[0]-=0.0001;       break;
+   90   3                      case 3:  Turn_ele[1]-=0.0001;     break;
+   91   3                      case 4:   Left_MOTOR[0]-=0.1;     break;
+   92   3                      case 5:   Left_MOTOR[1]-=0.01; break;
+   93   3                      case 6:   Right_MOTOR[0]-=0.1;     break;
+   94   3                      case 7:   Right_MOTOR[1]-=0.01;      break;
+   95   3                  }
+   96   2                  delay_ms(200);
+   97   2              }
+   98   1              if(!KEY_Read(KEY2))  // K2按键选择需要调节参数
+   99   1              {
+  100   2                key_flag = (key_flag+1)%8;
+  101   2                if(key_flag==0) key_flag = 1;
+  102   2      //            switch(key_flag)
+  103   2      //            {
+  104   2      //                case 1: key_flag = 2; break;
+  105   2      //                case 2: key_flag = 3; break;
+  106   2      //                case 3: key_flag = 4; break;
+  107   2      //                case 4: key_flag = 1; break;
+  108   2      //                case 5: key_flag = 6; break;
+  109   2      //                case 6: key_flag = 7; break;
+  110   2      //                case 7: key_flag = 8; break;
+  111   2      //                case 8: key_flag = 1;break;
+  112   2      //            }
+  113   2                  delay_ms(200);
+  114   2              }
+  115   1      
+  116   1      
+  117   1      
+  118   1      }
+  119          
+  120          
+  121          
+  122          double range_protect(double duty, double min, double max)
+  123          {
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 3   
+
+  124   1          return duty >= max ? max : (duty <= min ? min : duty);
+  125   1      }
+  126          
+  127          
+  128          /**
+  129           * @brief 方向环控制函数，算出最终左右轮目标速度
+  130           */
+  131          void Dir_Control()
+  132          {
+  133   1        double Angle;  // 差速系数
+  134   1        
+  135   1        /* 采集各通道电感值 */
+  136   1        L = Get_ADCResult(4);   // 左横电感
+  137   1        L2 = Get_ADCResult(5);  // 左竖电感
+  138   1        M = Get_ADCResult(2);   // 中间电感
+  139   1        M2 = Get_ADCResult(3);  //新加  中竖电感
+  140   1        R2 = Get_ADCResult(1);  // 右竖电感
+  141   1        R = Get_ADCResult(0);   // 右横电感
+  142   1        
+  143   1        M_K=Calculate_Vertical();
+  144   1        
+  145   1        LQ_SPI_LSM60DSR_Read(&acc_X, &acc_Y, &acc_Z, &gyro_X, &gyro_Y, &gyro_Z);
+  146   1            Weight_H = Calculate_Weight_Mid(M);  // M ↑，水平循迹比重 ↑
+  147   1          Weight_V = 1.0000 - Weight_H;
+  148   1      
+  149   1      
+  150   1      
+  151   1        if(M<25)M=25;
+  152   1        
+  153   1        /* 差比和计算赛道偏差 */
+  154   1      
+  155   1      //  eleSub = Weight_H * (L - R) + Weight_V * (L2 - R2);    速度快  但是飘
+  156   1      //  eleAdd = (1-M_K+0.0001) * (Weight_H * (L + R) + Weight_V * (L2 + R2) + M);
+  157   1        eleSub = L - R +L2 - R2; //慢但是准
+  158   1        eleAdd = L + R + L2 + R2 + M;
+  159   1        eleValue = (eleSub / eleAdd) * 300000.0f; // 差比和计算：赛道偏差
+  160   1        
+  161   1        Angle_calculate();
+  162   1        
+  163   1        if(flag_ben==0||flag_ben==3||flag_ben==4){
+  164   2        eleOut = PlacePID_Control(&Turn_PID_ele, elemid, eleValue, Turn_ele);  // 调用位置式 PID
+  165   2        }
+  166   1      //     -----------------------------苯环只写了右入的  逻辑相反
+  167   1          else if(flag_ben==2){
+  168   2      
+  169   2            eleOut = -1*angle_pid(current_angle-75.0,Angle_gyro_z);
+  170   2            eleOut = range_protect(eleOut, -80, 80);
+  171   2          }
+  172   1      //    else if(flag_ben==6){
+  173   1      
+  174   1      //  eleOut = -1*angle_pid(current_angle-65.0,Angle_gyro_z);
+  175   1      //      eleOut = range_protect(eleOut, -80, 80);
+  176   1      //    }
+  177   1          
+  178   1           
+  179   1           
+  180   1          else if(flag_ben==1){
+  181   2      
+  182   2        eleOut = -1*angle_pid(current_angle+80 ,Angle_gyro_z);
+  183   2        eleOut = range_protect(eleOut, -82, 82);
+  184   2          }
+  185   1      //    else if(flag_ben == 0 && out_ben == 1)  //加入出苯环判断语句
+  186   1      //    {
+  187   1      //      eleOut = -1*angle_pid(current_angle+60,Angle_gyro_z);
+  188   1      //      eleOut = range_protect(eleOut, -80, 80);
+  189   1      //      out_ben = 0;
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 4   
+
+  190   1      //    }
+  191   1      //    else if(flag_ben==5){
+  192   1      
+  193   1      //  eleOut = -1*angle_pid(current_angle+65,Angle_gyro_z);
+  194   1      //      eleOut = range_protect(eleOut, -80, 80);
+  195   1      //    }
+  196   1        eleOut = range_protect(eleOut, -85, 85);  // 限幅保护，防止差速太大
+  197   1          
+  198   1          /*Battery condition*/
+  199   1      vu=Get_ADCResult(8)*(12.6-11)/(1970-1700)+1.1+11-(12.6-11)/(1970-1700)*1700;  //??
+  200   1        if(vu*2>15)
+  201   1          charge_flag=1;
+  202   1        
+  203   1        else if(vu*2<13)
+  204   1          charge_flag=0;
+  205   1        
+  206   1        else if(vu*2>13&&vu*2<15)charge_flag=2;
+  207   1      
+  208   1        else if (star_flag==0&&(charge_flag==2||charge_flag==0))
+  209   1          Motor_Ctrl(0,0);
+  210   1          
+  211   1        /*Start when the battery is fully charged*/
+  212   1        if(vu*2>15)
+  213   1        {
+  214   2          star_flag=1;
+  215   2        }
+  216   1        
+  217   1        
+  218   1            /* 冲出赛道保护 */
+  219   1        if(L<15 && L2<15 && R2<15 && R<15)
+  220   1        {
+  221   2          run=0;
+  222   2        }
+  223   1        else if(L>15 && L2>15 && R2>15 && R>15&&star_flag==1)
+  224   1        {
+  225   2          run=1;
+  226   2        }
+  227   1        
+  228   1        /* 速度设置 & 差速计算 */
+  229   1        if(run==1)  // 在赛道内
+  230   1        {
+  231   2      //          if(eleOut>60)
+  232   2      //              High_Speed = 115;
+  233   2      //          else if (eleOut<60&&eleOut>30)
+  234   2      //            High_Speed = 125;
+  235   2      //          else if (eleOut<30)
+  236   2      //            High_Speed = 130;   
+  237   2                if(eleOut>60)
+  238   2                    High_Speed = 60;  //90
+  239   2                else if (eleOut<60&&eleOut>30)
+  240   2                  High_Speed = 65;  //95
+  241   2                else if (eleOut<30)
+  242   2                  High_Speed = 75;      //105
+  243   2                else if (eleOut<10)
+  244   2                  High_Speed = 90;  //120
+  245   2                
+  246   2                
+  247   2                /*Enter the benzene ring*/
+  248   2                if(M>1900)
+  249   2                {
+  250   3                  High_Speed = 50;
+  251   3                }
+  252   2      //          
+  253   2      //      double abs_error = fabs(eleOut);
+  254   2      //    High_Speed = 114.66 * exp(-0.04 * abs_error) + 106.84;
+  255   2      //          
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 5   
+
+  256   2      //    if(High_Speed > 135) High_Speed = 135;
+  257   2      //    if(High_Speed < 115) High_Speed = 115;
+  258   2      //    .3333333333333333330
+  259   2      //        if(M>2300&&flag_ben==0)        //苯环
+  260   2      //      
+  261   2      //    {
+  262   2      
+  263   2      //      current_angle=Angle_gyro_z*1.0;
+  264   2      //      if(L>R)
+  265   2      //      flag_ben=1;
+  266   2      //      else if(L<R)
+  267   2      //        flag_ben=2;
+  268   2      //          
+  269   2      //    }
+  270   2      //    else if(M<1000&&flag_ben==1&&Angle_gyro_z>current_angle-70.0)    //左进环
+  271   2      //    flag_ben=3;    //进环标志
+  272   2      //    
+  273   2      //    else if(M<1000&&flag_ben==2&&Angle_gyro_z>current_angle+70.0)   //右进环
+  274   2      //      flag_ben=4;
+  275   2      //    
+  276   2      //    if(flag_ben==3&&M>2000){          //左出环标志
+  277   2      //      flag_ben=0;        //出环标志
+  278   2      ////      current_angle=Angle_gyro_z*1.0;
+  279   2      //    }
+  280   2      //    else    if(flag_ben==4&&M>2000){          //右出环标志
+  281   2      //      flag_ben=0;        //出环标志
+  282   2      ////      current_angle=Angle_gyro_z*1.0;
+  283   2      //    }
+  284   2      //    
+  285   2      //    
+  286   2      //    
+  287   2          
+  288   2          
+  289   2          
+  290   2          
+  291   2          
+  292   2        // 在这里修改基础速度
+  293   2        //  High_Speed=error_to_output(eleOut);
+  294   2      
+  295   2          
+  296   2          if(eleOut >= 0)  // 需要左转
+  297   2          {
+  298   3            Angle = (eleOut);
+  299   3            Left_High_Speed = High_Speed  - Angle*0.65 +gyro_Z*0.001;  //0.001
+  300   3            Right_High_Speed = High_Speed + Angle*0.55*0.7 -gyro_Z*0.001;  // 外轮加得少一点
+  301   3          }
+  302   2          else  // 需要右转
+  303   2          {
+  304   3            Angle = (-eleOut) ;
+  305   3            Left_High_Speed = High_Speed  + Angle*0.55*0.7-gyro_Z*0.001;  // 外轮加得少一点
+  306   3            Right_High_Speed = High_Speed  - Angle*0.65+gyro_Z*0.0015;
+  307   3          }
+  308   2      
+  309   2        }
+  310   1        else if(run==0)  // 出赛道 进入保护
+  311   1        {
+  312   2          High_Speed = 0;
+  313   2          Left_High_Speed = 0;
+  314   2          Right_High_Speed = 0;
+  315   2        }
+  316   1      }
+  317          
+  318          
+  319          /**
+  320           * @brief 电机控制函数，实现左右轮速度闭环控制
+  321           */
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 6   
+
+  322          void Motor_Control()
+  323          {
+  324   1        // 编码器数据在屏幕上已经显示，一定要核对确认：①左右不要搞反  ②正负不要搞反
+  325   1            encoder_L = -Read_Encoder(Enc_2);  // 左编码器
+  326   1            encoder_R = Read_Encoder(Enc_1);   // 右编码器
+  327   1        
+  328   1        // 下面有 A、B 两种占空比赋值方式，A 用于测试电机左右和正反转是否对应，B 可实现速度闭环
+  329   1        
+  330   1        // A：人为给定占空比，用于测试：①左右轮不要搞反  ②正反转不要搞反
+  331   1      //  LEFT_MOTOR_Duty = 2000;   // 2000 效果：左轮正转，速度较快
+  332   1      //  RIGHT_MOTOR_Duty = -1200; //  -1200 效果：右轮反转，速度较慢
+  333   1        
+  334   1        // B：闭环计算占空比，在确认编码器和电机对应无误后，可实现闭环
+  335   1        LEFT_MOTOR_Duty += PID_Realize(&Left_MOTOR_PID, encoder_L, Left_High_Speed, Left_MOTOR);
+  336   1        RIGHT_MOTOR_Duty += PID_Realize(&Right_MOTOR_PID, encoder_R, Right_High_Speed, Right_MOTOR);
+  337   1      
+  338   1      
+  339   1        if(LEFT_MOTOR_Duty>0)
+  340   1        {
+  341   2            LEFT_MOTOR_Duty = range_protect(LEFT_MOTOR_Duty, 0, MOTOR_MAX);
+  342   2        }
+  343   1        else
+  344   1        {
+  345   2            LEFT_MOTOR_Duty = range_protect(LEFT_MOTOR_Duty, -MOTOR_MAX, 0);
+  346   2        }
+  347   1      
+  348   1        if(RIGHT_MOTOR_Duty>0)
+  349   1        {
+  350   2            RIGHT_MOTOR_Duty = range_protect(RIGHT_MOTOR_Duty, 0, MOTOR_MAX);
+  351   2        }
+  352   1        else
+  353   1        {
+  354   2            RIGHT_MOTOR_Duty = range_protect(RIGHT_MOTOR_Duty, -MOTOR_MAX, 0);
+  355   2        }
+  356   1      Motor_Ctrl(-1*(int16)RIGHT_MOTOR_Duty, -1*(int16)LEFT_MOTOR_Duty);
+  357   1      }
+  358          
+  359          
+  360          /**
+  361           * @brief 综合控制函数，在中断中调用
+  362           */
+  363          
+  364          void Ultima_Control()
+  365          {
+  366   1      
+  367   1        Dir_Control();  // 转向控制
+  368   1        Motor_Control();  //电机控制
+  369   1      
+  370   1      }
+  371          
+  372          
+  373          
+  374          
+  375          
+  376          /**
+  377           * @brief 位置式 PID（用于转向控制）
+  378           */
+  379          double PlacePID_Control(PID*sptr, double NowPiont, double SetPoint, double *Turn_PID)
+  380          {
+  381   1        double Output;  // 本次输出
+  382   1        
+  383   1        sptr->KP = *Turn_PID;  // 参数赋值
+  384   1        sptr->KD = *(Turn_PID+1);
+  385   1        
+  386   1        sptr->iError = SetPoint - NowPiont;  // 当前误差 = 目标值 - 实际值
+  387   1        
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 7   
+
+  388   1        Output = sptr->KP * sptr->iError  // 比例项
+  389   1             + sptr->KD * (sptr->iError - sptr->LastError)  // 微分项
+  390   1            ;
+  391   1        
+  392   1        sptr->LastError = sptr->iError;  // 更新误差
+  393   1        
+  394   1        return Output;
+  395   1      }
+  396          
+  397          
+  398          /**
+  399           * @brief 增量式 PID（用于左右轮电机闭环控制）
+  400           */
+  401          double PID_Realize(PID* sptr, double ActualSpeed, double SetSpeed, double *MOTOR_PID)
+  402          {
+  403   1          double Increase;        // 单次PID输出
+  404   1          double iTermLimited;    // 限幅后的积分项
+  405   1      
+  406   1          // 参数赋值
+  407   1          sptr->KP = *MOTOR_PID;
+  408   1          sptr->KI = *(MOTOR_PID + 1);
+  409   1          sptr->KD = *(MOTOR_PID + 2);
+  410   1      
+  411   1          // 计算当前误差
+  412   1          sptr->iError = SetSpeed - ActualSpeed;
+  413   1      
+  414   1          // 积分项限幅：限制 KI * iError 在 [-900, +900]
+  415   1          iTermLimited = sptr->KI * sptr->iError;
+  416   1          if (iTermLimited > 1000) iTermLimited = 1000;
+  417   1          else if (iTermLimited < -1000) iTermLimited = -1000;
+  418   1      
+  419   1          // PID增量计算
+  420   1          Increase = sptr->KP * (sptr->iError - sptr->LastError)
+  421   1                   + iTermLimited
+  422   1                   + sptr->KD * (sptr->iError - 2 * sptr->LastError + sptr->PrevError);
+  423   1      
+  424   1          // 更新误差
+  425   1          sptr->PrevError = sptr->LastError;
+  426   1          sptr->LastError = sptr->iError;
+  427   1      
+  428   1          return Increase;
+  429   1      }
+  430          
+  431          
+  432          
+  433          
+  434          // 函数：动态权重，分配水平循迹和竖直循迹占比
+  435          double Calculate_Weight_Mid(double M)
+  436          {
+  437   1          double k = 0;
+  438   1       
+  439   1          if(M >= 1400)  // M >= 80，权重为 100%
+  440   1          {
+  441   2              k = 100.0;
+  442   2          }
+  443   1          else if (M >= 400&& M < 1400)  // 线性权重
+  444   1          {
+  445   2              k = 0.1*M -60;  // y=kx+b：根据 (800,0) 和 (2200,100) 解二元一次方程组
+  446   2          }
+  447   1          else  // M < 40，权重为 0%
+  448   1          {
+  449   2              k = 0.0;
+  450   2          }
+  451   1          
+  452   1          k *= 0.01;  // 将范围控制在：0.0 ~ 1.0
+  453   1          return k >= 1.0 ? 1.0 : (k <= 0.0 ? 0.0 : k);  // 将 k 限幅保护在 0.0 ~ 1.0 之间
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 8   
+
+  454   1      }
+  455          
+  456          
+  457          
+  458          
+  459          void Calculate_Error()
+  460          {
+  461   1          Weight_H = Calculate_Weight_Mid(M);  // M ↑，水平循迹比重 ↑
+  462   1          Weight_V = 1.0 - Weight_H;
+  463   1      }
+  464          
+  465          
+  466          
+  467          
+  468          double Calculate_Vertical() 
+  469          { 
+  470   1        double k = 0;
+  471   1        double sum = 4680.0;  // 两个竖直电感最大值的和
+  472   1        
+  473   1        k = fabs(L2 - R2) / sum;  // 浮点型绝对值使用 fabs()
+  474   1       
+  475   1        // 分母不能为 0，所以最小保护为 0.1
+  476   1        return k >= 1.0 ? 1.0 : (k <= 0.1 ? 0.1 : k);  // 将 k 限幅保护在 0.1 ~ 1.0 之间
+  477   1      }
+  478          
+  479          
+  480          
+  481          
+  482          void Angle_calculate()
+  483          {     
+  484   1        Gyroz=(double)gyro_Z;
+  485   1          if(Gyroz<32768)Gyroz = - (Gyroz / 16.4);
+  486   1          if(Gyroz>=32768)Gyroz = + (65535 - Gyroz) / 16.4;
+  487   1       
+  488   1          Angle_gyro_z += Gyroz * 0.005;  // 根据中断周期进行微调
+  489   1      }
+  490          
+  491          
+  492          /**
+  493           * 中位值平均滤波函数
+  494           * @param arr 输入数据数组
+  495           * @param times 数据采样次数
+  496           * @return 滤波后的平均值
+  497           */
+  498          int Median_Average_Filter(int* arr, int times)
+  499          {
+  500   1          int min = arr[0], max = arr[0], sum = 0;
+  501   1          int i = 0;
+  502   1          
+  503   1          // 遍历数组，找出最大值、最小值并求和
+  504   1          for (i = 0; i < times; i++)
+  505   1          {
+  506   2              if (arr[i] < min) min = arr[i];
+  507   2              if (arr[i] > max) max = arr[i];
+  508   2              sum += arr[i];
+  509   2          }
+  510   1       
+  511   1          // 计算去掉最大值和最小值后的平均值
+  512   1          return (sum - min - max) / (times - 2);
+  513   1      }
+  514          void adc_filter(void){
+  515   1      
+  516   1        int z=0;
+  517   1        
+  518   1        
+  519   1          for( z=0;z<4;z++){
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 9   
+
+  520   2          L_md[z]=Get_ADCResult(4);
+  521   2          L2_md[z]=Get_ADCResult(5);
+  522   2          M_md[z]=Get_ADCResult(2);
+  523   2          R2_md[z]=Get_ADCResult(1);
+  524   2          R_md[z]=Get_ADCResult(0);
+  525   2        }
+  526   1        
+  527   1        
+  528   1        L =Median_Average_Filter(L_md,4);
+  529   1        L2 =Median_Average_Filter(L2_md,4);
+  530   1        M =Median_Average_Filter(M_md,4);
+  531   1        R2 =Median_Average_Filter(R2_md,4);
+  532   1        R =Median_Average_Filter(R_md,4);
+  533   1        
+  534   1      }
+  535          
+  536          
+  537          double angle_pid(double target, double current)
+  538          {
+  539   1          double outputa=0;
+  540   1          double last_error = 0.0f;
+  541   1          double integral = 0.0f;
+  542   1          double derivative;
+  543   1          double error = 0.0;
+  544   1          error = target - current;
+  545   1          integral += error;
+  546   1      
+  547   1          derivative = error - last_error;
+  548   1         outputa = kp * error + ki * integral + kd * derivative;
+  549   1      
+  550   1          // 限幅处理
+  551   1          if (outputa > 80) outputa = 80;
+  552   1          else if (outputa < -80) outputa = -80;
+  553   1      
+  554   1          last_error = error;
+  555   1          return outputa;
+  556   1      }
+  557          
+  558          
+  559          
+  560          double Get_Speed_By_Error(double error)
+  561          {
+  562   1          double A = 106.38;
+  563   1          double k = 0.05;
+  564   1          double B = 106.27;
+  565   1          
+  566   1          double abs_error = fabs(error);
+  567   1          double speedd = 106.38 * exp(-0.05 * abs_error) + 106.27;
+  568   1      
+  569   1          // 可选：加个限幅保护
+  570   1          if(speedd > 130) speedd = 130;
+  571   1          if(speedd < 115) speedd = 115;
+  572   1      
+  573   1          return speedd;
+  574   1      }
+  575          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      6198     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =       555        152
+  xdata-const size     =    ------     ------
+C251 COMPILER V5.60.0,  control                                                            28/03/26  21:02:38  PAGE 10  
+
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =       291     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

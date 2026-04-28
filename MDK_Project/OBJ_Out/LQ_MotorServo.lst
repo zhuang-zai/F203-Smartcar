@@ -1,0 +1,643 @@
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_MotorServo
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_MotorServo.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_MotorServo.c LARGE UNSIGNED_CHAR FLOAT64 BROWSE INCDI
+                    -R(..\Driver\Inc;..\LQ_LIB\Inc;..\User;..\CODE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_MotorServo.lst) TABS(2) OB
+                    -JECT(.\OBJ_Out\LQ_MotorServo.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           ¡¾Æ½    Ì¨¡¿±±¾©ÁúÇñÖÇÄÜ¿Æ¼¼STC32Î»ºËÐÄ°å
+    3           ¡¾±à    Ð´¡¿ÁúÇñ¿Æ¼¼
+    4           ¡¾E-mail  ¡¿chiusir@163.com
+    5           ¡¾Èí¼þ°æ±¾¡¿V1.0 °æÈ¨ËùÓÐ£¬µ¥Î»Ê¹ÓÃÇëÏÈÁªÏµÊÚÈ¨
+    6           ¡¾Ïà¹ØÐÅÏ¢²Î¿¼ÏÂÁÐµØÖ·¡¿
+    7           ¡¾Íø    Õ¾¡¿http://www.lqist.cn
+    8           ¡¾ÌÔ±¦µêÆÌ¡¿http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           ¡¾  IDE  ¡¿ keil C251 V5.60
+   11           ¡¾Target ¡¿ STC32G/STC8051U/AI8051U 32Î»Ä£Ê½
+   12           ¡¾SYS CLK¡¿ 42 MHzÊ¹ÓÃÄÚ²¿¾§Õñ
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          //#include "LQ_MotorServo.h"
+   16          #include "include.h"
+   17          
+   18          
+   19          #ifdef USE7971
+               
+               /**************************************************************************************
+                * º¯ Êý Ãû£ºvoid Motor_Init(u16 freq)
+                * ¹¦    ÄÜ£ºµç»úPWM³õÊ¼»¯ ÊÊÓÃÓÚ7971Çý¶¯
+                * ²Î    Êý£ºu16 freq£ºÉèÖÃ²úÉúPWMµÄÆµÂÊ£¬Ò²¾ö¶¨Êä³öPWMµÄÂúÕ¼¿Õ±ÈÊ±¼ä
+                * ×÷    Õß£ºLQ008
+                * ×îºó¸üÐÂ: 2024Äê11ÔÂ17ÈÕ
+                * Èí¼þ°æ±¾: V1.0
+                * µ÷ÓÃ¾ÙÀý: MotorInit(12500)  //12.5KHZ   @45.1584MHzÊ±×î´óÕ¼¿Õ±ÈÊ±¼äÉèÖÃÖµ0~3613
+                *           PWMÆµÂÊ (¼ÆËã·½Ê½£ºPeriod»òfreq = (u16)(MAIN_Fosc/freq)
+                **************************************************************************************/
+               void Motor_Init(u16 freq)
+               {
+                 PWMx_InitDefine   PWMx_InitStructure;
+               
+                   PWMx_Duty PWMB_Duty;
+                   PWMB_Duty.PWM5_Duty = 0;
+                   PWMB_Duty.PWM6_Duty = 0;
+                   PWMB_Duty.PWM7_Duty = 0;
+                   PWMB_Duty.PWM8_Duty = 0;
+               
+                   u16 PWMx_Period = (u16)(MAIN_Fosc / freq);
+               
+                   //PWM5ÉèÖÃ
+                 PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+                 PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+                 PWMx_InitStructure.PWM_EnoSelect = ENO5P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+                 PWM_Configuration(PWM5, &PWMx_InitStructure);       //Ê¼»¯PWM5,  PWMB
+                   //PWM6ÉèÖÃ
+                 PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+                 PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+                 PWMx_InitStructure.PWM_EnoSelect =ENO6P;                //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+                 PWM_Configuration(PWM6, &PWMx_InitStructure);     //Ê¼»¯PWM6,   PWMB
+                   //PWM7ÉèÖÃ
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 2   
+
+                 PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+                 PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+                 PWMx_InitStructure.PWM_EnoSelect = ENO7P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+                 PWM_Configuration(PWM7, &PWMx_InitStructure);           //Ê¼»¯PWM7,   PWMB
+                   //PWM8ÉèÖÃ
+                 PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+                 PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+                 PWMx_InitStructure.PWM_EnoSelect = ENO8P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+                 PWM_Configuration(PWM8, &PWMx_InitStructure);           //Ê¼»¯PWM8,  PWMB
+                   //PWMB Í¨µÀ5~8ÉèÖÃ
+                 PWMx_InitStructure.PWM_Period        = PWMx_Period;     //ÖÜÆÚÊ±¼ä,  0~Period   (¼ÆËã·½Ê½£ºPeriod = MAIN
+             -_Fosc/freq)
+                 PWMx_InitStructure.PWM_DeadTime      = 0;               //Çø·¢ÉúÆ÷ÉèÖÃ, 0~255
+                 PWMx_InitStructure.PWM_MainOutEnable = ENABLE;          //Êä³öÊ¹ÄÜ, ENABLE,DISABLE
+                 PWMx_InitStructure.PWM_CEN_Enable    = ENABLE;          //ÄÜ¼ÆÊýÆ÷, ENABLE,DISABLE
+                 PWM_Configuration(PWMB, &PWMx_InitStructure);           //Ê¼»¯PWMÍ¨ÓÃ¼Ä´æÆ÷,  PWMA,PWMB
+               
+                   //PWMB Í¨µÀ5-8 Êä³ö¹Ü½ÅÑ¡Ôñ
+                   PWM5_USE_P50();
+                   PWM6_USE_P51();
+                   PWM7_USE_P52();
+                   PWM8_USE_P53();
+               
+                   //PWMÊä³ö¹Ü½ÅÉèÖÃ£¨Æô¶¯PWM¹¦ÄÜºóÊä³ö½Å×Ô¶¯ÉèÖÃÎªÍÆÍìÊä³öÄ£Ê½ AI8051UÐèÒªÊÖ¶¯ÉèÖÃÍÆÍìÊä³ö£©
+                 P5_MODE_OUT_PP(GPIO_Pin_LOW);               //P50~P53ËÄ¸ö¹Ü½ÅPWMÊä³öÄ£Ê½ÉèÎª ÍÆÍìÊä³ö
+               
+                 NVIC_PWM_Init(PWMB,DISABLE,Priority_0);     //PWMA,NVICÖÐ¶ÏÉèÖÃ£¬ÓÅÏÈ¼¶¿É¸ù¾ÝÊµ¼ÊÇé¿öÊÊµ±µ÷Õû
+               
+                   UpdatePwm(PWMB, &PWMB_Duty);
+               }
+               
+               
+               /*********************************************************************************
+                * º¯ Êý Ãû£ºvoid Motor_Ctrl(int16 Motor1, int16 Motor2)
+                * ¹¦    ÄÜ£º7971Ë«Â·µç»ú¿ØÖÆº¯Êý
+                * ²Î Êý Öµ£ºMotor1£ºµç»ú1Õ¼¿Õ±È£»Motor2£ºµç»ú2Õ¼¿Õ±È
+                * ·µ »Ø Öµ£ºÎÞ
+                * ×÷    Õß£ºLQ008
+                * ×îºó¸üÐÂ£º2024Äê11ÔÂ17ÈÕ
+                * Èí¼þ°æ±¾£ºV1.0
+                * µ÷ÓÃ¾ÙÀý£ºMotorCtrl (1000,-2000); //Á½¸öµç»úÒ»ÕýÒ»·´×ª¶¯
+                **********************************************************************************/
+               void Motor_Ctrl (int16 Motor1,int16 Motor2)
+               {
+                 if (Motor1 < 0)
+                 {
+                     Motor1=0-Motor1;
+                     UpdatePwmCh(PWM5, 0);
+                     UpdatePwmCh(PWM6, Motor1);
+                 }
+                 else
+                 {
+                     UpdatePwmCh(PWM5, Motor1);
+                     UpdatePwmCh(PWM6, 0);
+                 }
+               
+                 if (Motor2 < 0)
+                 {
+                     Motor2=0-Motor2;
+                     UpdatePwmCh(PWM7, 0);
+                     UpdatePwmCh(PWM8, Motor1);
+                 }
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 3   
+
+                 else
+                 {
+                     UpdatePwmCh(PWM7, Motor1);
+                     UpdatePwmCh(PWM8, 0);
+                 }
+               }
+               
+               
+                /*  USE7971*/
+               
+               #elif defined USEDRV8701
+  126          /**************************************************************************************
+  127           * º¯ Êý Ãû£ºvoid Motor_Init(u16 freq)
+  128           * ¹¦    ÄÜ£ºµç»úPWM³õÊ¼»¯   ÊÊÓÃÓÚ8701Çý¶¯
+  129           * ·µ »Ø Öµ£ºÎÞ
+  130           * ×÷    Õß£ºLQ008
+  131           * ×îºó¸üÐÂ: 2024Äê11ÔÂ17ÈÕ
+  132           * Èí¼þ°æ±¾: V1.0
+  133           * µ÷ÓÃ¾ÙÀý: MotorInit();  //12.5KHz @45.1584MHzÊ±×î´óÕ¼¿Õ±ÈÊ±¼äÉèÖÃÖµÎª0~3613
+  134           *           PWMÆµÂÊ ¼ÆËã·½Ê½£ºPeriod = (u16)(MAIN_Fosc/freq)  ×ÔÊÊÓ¦Ö÷Æµ
+  135           **************************************************************************************/
+  136          void Motor_Init(u16 freq)
+  137          {
+  138   1        PWMx_InitDefine   PWMx_InitStructure;
+  139   1      
+  140   1          u16 PWMx_Period = (u16)(MAIN_Fosc / freq);
+  141   1          //PWM5ÉèÖÃ
+  142   1        PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+  143   1        PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+  144   1        PWMx_InitStructure.PWM_EnoSelect = ENO5P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+  145   1        PWM_Configuration(PWM5, &PWMx_InitStructure);       //Ê¼»¯PWM5,  PWMB
+  146   1      //    //PWM6ÉèÖÃ
+  147   1      //  PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_M
+             -ATCH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+  148   1      //  PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+  149   1      //  PWMx_InitStructure.PWM_EnoSelect =ENO6P;                //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,
+             -ENO3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+  150   1      //  PWM_Configuration(PWM6, &PWMx_InitStructure);     //Ê¼»¯PWM6,   PWMB
+  151   1          //PWM7ÉèÖÃ
+  152   1        PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+  153   1        PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+  154   1        PWMx_InitStructure.PWM_EnoSelect = ENO7P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+  155   1        PWM_Configuration(PWM7, &PWMx_InitStructure);           //Ê¼»¯PWM7,   PWMB
+  156   1      //    //PWM8ÉèÖÃ
+  157   1      //  PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_M
+             -ATCH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+  158   1      //  PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+  159   1      //  PWMx_InitStructure.PWM_EnoSelect = ENO8P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,
+             -ENO3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+  160   1      //  PWM_Configuration(PWM8, &PWMx_InitStructure);           //Ê¼»¯PWM8,  PWMB
+  161   1          //PWMA Í¨µÀ1~4ÉèÖÃ
+  162   1        PWMx_InitStructure.PWM_Period        = PWMx_Period;     //ÖÜÆÚÊ±¼ä,  0~Period   (¼ÆËã·½Ê½£ºPeriod = MAIN
+             -_Fosc/freq)
+  163   1        PWMx_InitStructure.PWM_DeadTime      = 0;               //Çø·¢ÉúÆ÷ÉèÖÃ, 0~255
+  164   1        PWMx_InitStructure.PWM_MainOutEnable = ENABLE;          //Êä³öÊ¹ÄÜ, ENABLE,DISABLE
+  165   1        PWMx_InitStructure.PWM_CEN_Enable    = ENABLE;          //ÄÜ¼ÆÊýÆ÷, ENABLE,DISABLE
+  166   1        PWM_Configuration(PWMB, &PWMx_InitStructure);           //Ê¼»¯PWMÍ¨ÓÃ¼Ä´æÆ÷,  PWMA,PWMB
+  167   1      
+  168   1          //PWMB Í¨µÀ5-8 Êä³ö¹Ü½ÅÑ¡Ôñ
+  169   1          PWM5_USE_P50();
+  170   1      //    PWM6_USE_P51();       //ÉèÎªIO,×ö8701·½Ïò¿ØÖÆIO1
+  171   1          PWM7_USE_P52();
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 4   
+
+  172   1      //    PWM8_USE_P53();       //ÉèÎªIO,×ö8701·½Ïò¿ØÖÆIO2
+  173   1      
+  174   1          //PWMÊä³ö¹Ü½ÅÉèÖÃ£¨Æô¶¯PWM¹¦ÄÜºóÊä³ö½Å×Ô¶¯ÉèÖÃÎªÍÆÍìÊä³öÄ£Ê½ AI8051UÐèÒªÊÖ¶¯ÉèÖÃÍÆÍìÊä³ö£©
+  175   1        P5_MODE_OUT_PP(GPIO_Pin_0|GPIO_Pin_2);      //PWMÊä³ö¹Ü½ÅÄ£Ê½ÉèÎª ÍÆÍìÊä³ö
+  176   1      
+  177   1          //µç»úÇý¶¯·½Ïò¿ØÖÆIO³õÊ¼»¯
+  178   1          P5_MODE_OUT_PP(GPIO_Pin_1|GPIO_Pin_3);      //ÉèÎªIO,×ö8701·½Ïò¿ØÖÆIO,ÍÆÍìÊä³öÄ¬ÈÏ¸ßµçÆ½
+  179   1          GPIO_Write_Pin(Motor_Dir1,RESET);           //ÉèÎªµÍµçÆ½
+  180   1          GPIO_Write_Pin(Motor_Dir2,RESET);
+  181   1      
+  182   1        NVIC_PWM_Init(PWMB,DISABLE,Priority_0);     //PWMA,NVICÖÐ¶ÏÉèÖÃ£¬ÓÅÏÈ¼¶¿É¸ù¾ÝÊµ¼ÊÇé¿öÊÊµ±µ÷Õû
+  183   1          UpdatePwmCh(PWM5, 0);                       //Òª¸üÐÂµÄÍ¨µÀÒÔ¼°Õ¼¿Õ±ÈÊ±¼ä
+  184   1          UpdatePwmCh(PWM7, 0);
+  185   1      //    UpdatePwm(PWMB, &PWMB_Duty);      //´Ë·¨ÊÊºÏÒ»´Î¸üÐÂÒ»×é¶àÍ¨µÀ£¬µ«ÐèÒªÏÈ³õÊ¼»¯½á¹¹Ìå²¢¸øÃ¿¸öÍ¨µÀ¸³Ö
+             -µ£¬eg:PWMx_Duty PWMB_Duty;PWMB_Duty.PWM5_Duty=1200;
+  186   1      }
+  187          
+  188          
+  189          /**************************************************************************************
+  190           * º¯ Êý Ãû£ºvoid Motor_Ctrl(int16 Motor1,int16 Motor2)
+  191           * ¹¦    ÄÜ£ºLQDRV8701Ë«Â·µç»ú¿ØÖÆº¯Êý
+  192           * ²Î    Êý£ºMotor1£ºµç»ú1Õ¼¿Õ±È£»Motor2£ºµç»ú2Õ¼¿Õ±È
+  193           * ·µ »Ø Öµ£ºÎÞ
+  194           * ×÷    Õß£ºLQ008
+  195           * ×îºó¸üÐÂ: 2024Äê11ÔÂ17ÈÕ
+  196           * Èí¼þ°æ±¾: V1.0
+  197           * µ÷ÓÃ¾ÙÀý: MotorInit(12500)  //12.5KHz @45.1584MHz
+  198           *           PWMÆµÂÊ ¼ÆËã·½Ê½£ºPeriod = (u16)(MAIN_Fosc/freq)
+  199           **************************************************************************************/
+  200          void Motor_Ctrl(int16 Motor1,int16 Motor2)
+  201          {
+  202   1        if (Motor1 < 0)
+  203   1        {
+  204   2            Motor1 = 0-Motor1;
+  205   2            Motor_Dir1 = SET;
+  206   2            UpdatePwmCh(PWM5, Motor1);      //0~3614@45.158MHzÖ÷ÆµÊ±
+  207   2        }
+  208   1        else
+  209   1        {
+  210   2            Motor_Dir1 = RESET;
+  211   2            UpdatePwmCh(PWM5, Motor1);      //0~3614
+  212   2        }
+  213   1      
+  214   1        if (Motor2 < 0)
+  215   1        {
+  216   2            Motor2 = 0-Motor2;
+  217   2            Motor_Dir2 = SET;
+  218   2            UpdatePwmCh(PWM7, Motor2);
+  219   2        }
+  220   1        else
+  221   1        {
+  222   2            Motor_Dir2 = RESET;
+  223   2            UpdatePwmCh(PWM7, Motor2);
+  224   2        }
+  225   1      }
+  226          
+  227          
+  228          #endif    /*  USE8701*/
+  229          
+  230          /**************************************************************************************
+  231           *  º¯ Êý Ãû£ºTest_Motor(void)
+  232           *  ¹¦    ÄÜ£º²âÊÔ±ê¶¨Êä³öPWM¿ØÖÆµç»ú ,×¢ÒâÊ¹ÓÃÄÄ¸öÇý¶¯ÐèÒªÔÚÍ·ÎÄ¼þÖÐÇÐ»»ºê¶¨Òå
+  233           *  ²Î    Êý£ºÎÞ
+  234           *  ·µ »Ø Öµ£ºÎÞ
+  235           *  ×÷    Õß£ºLQ008
+  236           *  ×îºó¸üÐÂ£º2024Äê11ÔÂ17ÈÕ
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 5   
+
+  237           *  Èí¼þ°æ±¾£ºV1.0
+  238           *  µ÷ÓÃ¾ÙÀý£º
+  239           *  ×¢ÒâÊÂÏî£º×¢Òâ£¬Ò»¶¨ÒªÏÈÈ·¶¨µç³ØµçÑ¹Óëµç»ú¶î¶¨µçÑ¹ È»ºó¶Ôµç»úÊä³ö½øÐÐÏÞÖÆ£¬ÒÔÃâËð»µµç»úµÈÆ÷¼þ
+  240          ------------------------------------------------------------------------------------
+  241           * Ê¹ÓÃÁúÇñÄ¸°å²âÊÔµç»ú¼°Çý¶¯Á÷³Ì£º
+  242           * 1.ÏÈÊ¹ÓÃÍòÓÃ±í²âÁ¿µç³ØµçÑ¹£¬Îñ±Ø±£Ö¤µç³ØµçÑ¹ÔÚ7VÒÔÉÏ£¬·ñÔòÎÞÁ¦²»·´Ó¦£¡
+  243           * 2.½ÓºÃÄ¸°åµ½Çý¶¯°åµÄÐÅºÅÏß¼°µçÔ´Ïß£»
+  244           * 3.½ÓºÃÇý¶¯°åµ½µç»úµÄµ¼Ïß£»
+  245           * 4.ÉÕÐ´³ÌÐò²¢ÔËÐÐ£¬È·¶¨µç»úÄÜÕý³£×ª¶¯ºó£¬¿ªÆôÇý¶¯°åµçÔ´¿ª¹Ø£»
+  246           * 5.°´¼üK0/K1È·¶¨µç»ú×ª¶¯ËÙ¶È¼°·½Ïò£»
+  247           * 6.Èç¹û³öÏÖ·è×ª£¬°´ÏÂK1¼ü·µ»ØµÍËÙÄ£Ê½£¬»òÕßÖ±½Ó¹Ø±ÕÇý¶¯°åµçÔ´£¡
+  248           **************************************************************************************/
+  249          void Test_Motor (void)
+  250          {
+  251   1        short duty = 00;
+  252   1        char txt[16];
+  253   1        Motor_Init(Motor_FREQ);   //³õÊ¼»¯µç»úPWM£¬²ÎÊýPWMÆµÂÊ
+  254   1      
+  255   1        OLED_Init();
+  256   1        OLED_CLS();               // ÇåÆÁ
+  257   1        OLED_P6x8Str(2, 0, "LQ Motor Test");
+  258   1      //  Motor_Init(Motor_FREQ);                          // µç»ú³õÊ¼»¯
+  259   1      
+  260   1        printf("F:%.0f\n",MAIN_Fosc/12500.0);
+  261   1        while (1)
+  262   1        {
+  263   2          if (KEY_Read(KEY0) == 0)            // °´ÏÂKEY0¼ü£¬Õ¼¿Õ±È¼õÐ¡
+  264   2          {
+  265   3          if (duty > -3614)               // ÂúÕ¼¿Õ±ÈÎª3614 @45.1584 MHzÖ÷Æµ MAIN_Fosc/12500
+  266   3              duty -= 50;
+  267   3          }
+  268   2          if (KEY_Read(KEY2) == 0)            // °´ÏÂKEY2¼ü£¬Õ¼¿Õ±È¼Ó´ó
+  269   2          {
+  270   3          if (duty <3614)
+  271   3              duty += 50;
+  272   3          }
+  273   2          if (KEY_Read(KEY1) == 0)            // °´ÏÂKEY1¼ü£¬Õ¼¿Õ±ÈÖÐÖµ
+  274   2          {
+  275   3            duty = 50;
+  276   3          }
+  277   2      
+  278   2      
+  279   2          Motor_Ctrl(duty,duty);
+  280   2      
+  281   2          sprintf(txt, "PWM: %05d;", duty);
+  282   2          OLED_P6x8Str(0, 5, txt);      // ×Ö·û´®ÏÔÊ¾
+  283   2          UART1_PutStr(txt);
+  284   2      
+  285   2          LED_Ctrl(LED0, RVS);          // µçÆ½·­×ª,LEDÉÁË¸
+  286   2          delay_ms(100);                // ÑÓÊ±µÈ´ý
+  287   2        }
+  288   1      
+  289   1      }
+  290          
+  291          
+  292          
+  293          
+  294          
+  295          
+  296          
+  297          /**********************************************************************************
+  298           * º¯ Êý Ãû£ºvoid Servo_Init(u16 freq)
+  299           * ¹¦    ÄÜ£º¶æ»úPWM³õÊ¼»¯
+  300           * ²Î Êý Öµ£º¶æ»úPWMµÄÆµÂÊ  Ò»°ã50»ò100 Hz
+  301           * ·µ »Ø Öµ£ºÎÞ
+  302           * ×÷    Õß£ºchiusir
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 6   
+
+  303           * ×îºó¸üÐÂ£º2024Äê11ÔÂ17ÈÕ
+  304           * Èí¼þ°æ±¾£ºV1.0
+  305           * µ÷ÓÃ¾ÙÀý£ºÇý¶¯¶æ»ú ServoInit(100);  //100Hz
+  306           *           PWMÆµÂÊ ¼ÆËã·½Ê½£ºPeriod = (u16)(MAIN_Fosc/freq)  ×ÔÊÊÓ¦Ö÷Æµ
+  307           ***********************************************************************************/
+  308          void Servo_Init(u16 freq)
+  309          {
+  310   1        PWMx_InitDefine   PWMx_InitStructure;
+  311   1        /* ×¢ÒâÕâÀïµÄ¹Ü½ÅÑ¡ÔñÓëÊä³öÊ¹ÄÜ£¬PWA¾ßÓÐ»¥²¹Êä³ö¹¦ÄÜ£¬Òò´ËÓÃ²»µ½»¥²¹¹Ü½ÅÊä³ö£¬ÔòÐèÒªENOxN½ûÖ¹Êä³ö*/
+  312   1          /* PWM_EnoSelect = ENO1P|ENO1N;  //¼´Í¨µÀ1Êä³ö»¥²¹PWM£¬Á½¸ö¹Ü½ÅÕ¼¿Õ±È»¥²¹*/
+  313   1      
+  314   1          PWMA_Prescaler((MAIN_Fosc / 1000000 - 1));              //PWMÊ±ÖÓ Ô¤·ÖÆµÆ÷ÉèÖÃ PWM·ÖÆµµ½1M·¶Î§
+  315   1          //PWM1ÉèÖÃ
+  316   1        PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+  317   1        PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+  318   1        PWMx_InitStructure.PWM_EnoSelect = ENO1P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+  319   1        PWM_Configuration(PWM1, &PWMx_InitStructure);           //³õÊ¼»¯PWM1,  PWMA
+  320   1          //PWM2ÉèÖÃ
+  321   1        PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+  322   1        PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+  323   1        PWMx_InitStructure.PWM_EnoSelect = ENO2P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+  324   1        PWM_Configuration(PWM2, &PWMx_InitStructure);           //³õÊ¼»¯PWM2,  PWMA
+  325   1          //PWMA Í¨µÀ1~4ÉèÖÃ
+  326   1        PWMx_InitStructure.PWM_Period        = (u16)(1000000/freq);    //ÖÜÆÚÊ±¼ä,   0~Period
+  327   1        PWMx_InitStructure.PWM_DeadTime      = 0;               //ËÀÇø·¢ÉúÆ÷ÉèÖÃ, 0~255
+  328   1        PWMx_InitStructure.PWM_MainOutEnable = ENABLE;          //Ö÷Êä³öÊ¹ÄÜ, ENABLE,DISABLE
+  329   1        PWMx_InitStructure.PWM_CEN_Enable    = ENABLE;          //Ê¹ÄÜ¼ÆÊýÆ÷, ENABLE,DISABLE
+  330   1        PWM_Configuration(PWMA, &PWMx_InitStructure);           //³õÊ¼»¯PWMÍ¨ÓÃ¼Ä´æÆ÷,  PWMA
+  331   1      
+  332   1          //PWMA Í¨µÀ1-4 Êä³ö¹Ü½ÅÑ¡Ôñ
+  333   1          PWM1_USE_P10P11(); //½öÊ¹ÄÜP10Êä³ö¼´¿É£¬²»ÐèÒª»¥²¹¹Ü½ÅP11µÄÊä³ö£¬»¥²¹¹Ü½Å»¹¿É×öÆäËûÆÕÍ¨IOÊ¹ÓÃ
+  334   1          PWM2_USE_P12P13();
+  335   1      //    PWM3_USE_P14P15();
+  336   1      //    PWM4_USE_P16P17();
+  337   1      
+  338   1          //PWMÊä³ö¹Ü½ÅÉèÖÃ£¨Æô¶¯PWM¹¦ÄÜºóÊä³ö½Å×Ô¶¯ÉèÖÃÎªÍÆÍìÊä³öÄ£Ê½ AI8051UÐèÒªÊÖ¶¯ÉèÖÃÍÆÍìÊä³ö£©
+  339   1        P1_MODE_OUT_PP(GPIO_Pin_0|GPIO_Pin_2);
+  340   1        NVIC_PWM_Init(PWMA,DISABLE,Priority_0);                     //PWMA,NVICÖÐ¶ÏÉèÖÃ
+  341   1          UpdatePwmCh(PWM1, 0);                        //Òª¸üÐÂµÄÍ¨µÀÒÔ¼°Õ¼¿Õ±ÈÊ±¼ä
+  342   1          UpdatePwmCh(PWM2, 0);
+  343   1      //    UpdatePwmCh(PWM3, 0);                       //Òª¸üÐÂµÄÍ¨µÀÒÔ¼°Õ¼¿Õ±ÈÊ±¼ä
+  344   1      //    UpdatePwmCh(PWM4, 0);
+  345   1      //    UpdatePwm(PWMA, &PWMA_Duty);
+  346   1      
+  347   1      }
+  348          /**********************************************************************************
+  349           * º¯ Êý Ãû£ºvoid Servo_Ctrl (u16 duty)
+  350           * ¹¦    ÄÜ£º¶æ»ú×ª½Çº¯Êý£¬ÓÉÓÚÐ¡³µÀ­¸Ë·¶Î§ÏÞÖÆ£¬½ÏÐ¡
+  351           * ²Î Êý Öµ£ºshort Sduty£¬Õ¼¿Õ±È£¬·¶Î§0--10000£»
+  352           * ×÷    Õß£ºLQ008
+  353           * ×îºó¸üÐÂ£º2024Äê11ÔÂ17ÈÕ
+  354           * Èí¼þ°æ±¾£ºV1.0
+  355           * µ÷ÓÃ¾ÙÀý£ºServoCtrl(1500);//¶æ»úÖÐÖµ
+  356           **********************************************************************************/
+  357          void Servo_Ctrl(u8 Sx, u16 Sduty)
+  358          {
+  359   1        if (Sduty <= Servo_Median-1000)                  //ÏÞÖÆ·ùÖµ,¸ù¾ÝÊµ¼ÊÇé¿ö½øÐÐµ÷Õû
+  360   1        {
+  361   2            Sduty = Servo_Median-1000;
+  362   2        }
+  363   1        else if (Sduty >= Servo_Median+1000)            //ÏÞÖÆ·ùÖµ
+  364   1        {
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 7   
+
+  365   2            Sduty = Servo_Median+1000;
+  366   2        }
+  367   1        if(Servo1==Sx)
+  368   1            UpdatePwmCh(PWM1, Sduty);
+  369   1        if(Servo1==Sx)
+  370   1            UpdatePwmCh(PWM2, Sduty);
+  371   1      }
+  372          
+  373          
+  374          /******************************************************************************************
+  375            * º¯ Êý Ãû£ºTest_Servo(void)
+  376            * ¹¦    ÄÜ£º¶æ»úPWM¿ØÖÆ²âÊÔº¯Êý£¬²âÊÔ±ê¶¨Êä³öPWM¿ØÖÆSD5/S3010¶æ»ú
+  377            * ²Î Êý Öµ£ºÎÞ
+  378            * ·µ »Ø Öµ£ºÎÞ
+  379            * ×÷    Õß£ºLQ008
+  380            * ×îºó¸üÐÂ£º2024Äê11ÔÂ17ÈÕ
+  381            * Èí¼þ°æ±¾£ºV1.0
+  382            * ×¢ÒâÊÂÏî£º×¢Òâ£¬Ò»¶¨Òª¶Ô¶æ»ú´ò½Ç½øÐÐÏÞÖÆ   0.5ms~2.5ms ¶ÔÓ¦dutyÔÚ500~2600Ö®¼ä
+  383              ----------------------------------------------------------------------------
+  384            * Ê¹ÓÃÁúÇñÄ¸°å²âÊÔ¶æ»úÁ÷³Ì£º
+  385            *  1.ÏÈÊ¹ÓÃÍòÓÃ±í²âÁ¿µç³ØµçÑ¹£¬Îñ±Ø±£Ö¤µç³ØµçÑ¹ÔÚ7VÒÔÉÏ£¬·ñÔòÎÞÁ¦²»·´Ó¦£¡
+  386            *  2.È»ºóÈ·¶¨¶æ»ú¹©µçµçÑ¹£¬SD5¶æ»úÓÃ5V¹©µç£¬S3010ÓÃ6-7V¹©µç£¬SD012¶æ»úÓÃ5V¹©µç£¡£¡£¡
+  387            *  3.°Ñ¶æ»úµÄ¶æÅÌÈ¥µô£¬ÈÃ¶æ»ú¿ÉÒÔ×ÔÓÉ×ª¶¯£»
+  388            *  4.ÉÕÐ´³ÌÐò²¢ÔËÐÐ£¬ÈÃ¶æ»ú×ª¶¯µ½ÖÐÖµ¸½½ü£»Èç¹ûÃ»·´Ó¦ÖØ¸´1-2²½£¬»òÕßµ÷Õû¶æ»úµÄPWMÆµÂÊ¼ÆÕ¼¿Õ±È£¬ÄÜÊÜ¿ØÎª
+             -×¼£»
+  389            *  5.¶æ»úÊÜ¿ØºóÓÃÊÖÇá×ª£¬¶æ»ú»áÖ¨Ö¨Ïì£¬¶Ô¿¹×ª¶¯£¬´ËÊ±¿ÉÒÔ×°ÉÏ¶æÅÌ£»
+  390            *  6.°´¼üK0/K1È·¶¨¶æ»úµÄ×óÓÒ×ª¶¯¼«ÏÞ£¬²¢¼ÇÏÂÀ´£¬×÷ÎªºóÐøÏÞ·ù·ÀÖ¹¶æ»ú¶Â×ªÉÕ»Ù£¡
+  391           ******************************************************************************************/
+  392          void Test_Servo(void)
+  393          {
+  394   1        char txt[36];
+  395   1        u16 duty = Servo_Median;
+  396   1        Servo_Init(Servo_FREQ);   // ¶æ»ú³õÊ¼»¯£¬ÆµÂÊÎª50Hz,ÂúÕ¼¿Õ±È20000
+  397   1        Servo_Ctrl(Servo1,Servo_Median);  // ¶æ»úÖÐÖµ
+  398   1        Servo_Ctrl(Servo2,Servo_Median);  // ¶æ»úÖÐÖµ
+  399   1      
+  400   1        OLED_Init();
+  401   1        OLED_CLS();           // ÇåÆÁ
+  402   1        OLED_P6x8Str(22, 0, "LQ Servo Test");
+  403   1      
+  404   1        while (1)
+  405   1        {
+  406   2          if (!KEY_Read(KEY0))
+  407   2          {
+  408   3            if (duty > 500)    // ·ÀÖ¹duty³¬
+  409   3              duty -= 20;     // ±ê¶¨µÄÊ±ºò£¬¿ÉÒÔ°Ñ²½³¤¸ÄÐ¡µã£¬±ÈÈç10
+  410   3          }
+  411   2          if (!KEY_Read(KEY1))
+  412   2          {
+  413   3            duty = Servo_Median;
+  414   3          }
+  415   2          if (!KEY_Read(KEY2))
+  416   2          {
+  417   3              if(duty<2600)
+  418   3                  duty += 20;
+  419   3          }
+  420   2          Servo_Ctrl(Servo1,duty);           //¶æ»ú1Êä³ö
+  421   2          Servo_Ctrl(Servo2,duty);           //¶æ»ú1Êä³ö
+  422   2      
+  423   2          sprintf(txt, "Ser_duty:%05d   ", duty);
+  424   2          OLED_P6x8Str(1, 2, txt);  // ÏÔÊ¾
+  425   2          sprintf(txt, "S_Center:%05d ", Servo_Median);//ÏÔÊ¾µ±Ç°ºê¶¨Òå¶æ»úÖÐÖµ
+  426   2          OLED_P6x8Str(1, 4, txt);  // ÏÔÊ¾
+  427   2          LED_Ctrl(LED0, RVS);      // LEDÉÁË¸;
+  428   2          delay_ms(100);
+  429   2        }
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 8   
+
+  430   1      
+  431   1      }
+  432          
+  433          
+  434          
+  435          
+  436          
+  437          
+  438          
+  439          /******************************************************************************************
+  440           * º¯ Êý Ãû£ºvoid BLmotor_Init(u16 freq)
+  441           * ¹¦    ÄÜ£ºÎÞË¢µç»ú¿ØÖÆÒý½Å³õÊ¼»¯£¬ÆµÂÊÐèÒªºÍ¶æ»ú¿ØÖÆÆµÂÊ±£³ÖÒ»ÖÂ£¬ÍÆ¼ö50Hz
+  442           * ²Î Êý Öµ£ºu16 freq£ºÎÞ¸ÐÎÞË¢PWMÊä³öµÄÆµÂÊ£¬·¶Î§40--300£¬½¨Òé50Hz
+  443           * ·µ »Ø Öµ£ºÎÞ
+  444           * ×÷    Õß£ºLQ008
+  445           * ×îºó¸üÐÂ£º2024Äê11ÔÂ17ÈÕ
+  446           * Èí¼þ°æ±¾£ºV1.0
+  447           * µ÷ÓÃ¾ÙÀý£ºBLmotor_Init(50);  //³õÊ¼»¯P20 P22Òý½ÅÎªPWM£¬ÆµÂÊ50Hz,ÂúÕ¼¿Õ±È20000
+  448           ******************************************************************************************/
+  449          void BLmotor_Init(u16 freq)
+  450          {
+  451   1        PWMx_InitDefine   PWMx_InitStructure;
+  452   1        /* ×¢ÒâÕâÀïµÄ¹Ü½ÅÑ¡ÔñÓëÊä³öÊ¹ÄÜ£¬PWA¾ßÓÐ»¥²¹Êä³ö¹¦ÄÜ£¬Òò´ËÓÃ²»µ½»¥²¹¹Ü½ÅÊä³ö£¬ÔòÐèÒªENOxN½ûÖ¹Êä³ö*/
+  453   1          PWMA_Prescaler((MAIN_Fosc / 1000000 - 1));              //PWMÊ±ÖÓ Ô¤·ÖÆµÆ÷ÉèÖÃ PWM·ÖÆµµ½1M·¶Î§
+  454   1          //PWM3ÉèÖÃ
+  455   1        PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+  456   1        PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+  457   1        PWMx_InitStructure.PWM_EnoSelect = ENO3P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+  458   1        PWM_Configuration(PWM3, &PWMx_InitStructure);           //³õÊ¼»¯PWM3,  PWMA
+  459   1          //PWM4ÉèÖÃ
+  460   1        PWMx_InitStructure.PWM_Mode      = CCMRn_PWM_MODE1;     //Ä£Ê½, CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MAT
+             -CH_INVALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+  461   1        PWMx_InitStructure.PWM_Duty      = 0;                   //PWMÕ¼¿Õ±ÈÊ±¼ä, 0~Period
+  462   1        PWMx_InitStructure.PWM_EnoSelect = ENO4P;               //Êä³öÍ¨µÀÑ¡Ôñ, ENO1P,ENO1N,ENO2P,ENO2N,ENO3P,EN
+             -O3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+  463   1        PWM_Configuration(PWM4, &PWMx_InitStructure);           //³õÊ¼»¯PWM4,  PWMA
+  464   1          //PWMA Í¨µÀ1~4ÉèÖÃ
+  465   1        PWMx_InitStructure.PWM_Period        = 1000000/freq;    //ÖÜÆÚÊ±¼ä,   0~Period£¬×î¸ß¿ÉÉèÖÃ65535
+  466   1        PWMx_InitStructure.PWM_DeadTime      = 0;               //ËÀÇø·¢ÉúÆ÷ÉèÖÃ, 0~255
+  467   1        PWMx_InitStructure.PWM_MainOutEnable = ENABLE;          //Ö÷Êä³öÊ¹ÄÜ, ENABLE,DISABLE
+  468   1        PWMx_InitStructure.PWM_CEN_Enable    = ENABLE;          //Ê¹ÄÜ¼ÆÊýÆ÷, ENABLE,DISABLE
+  469   1        PWM_Configuration(PWMA, &PWMx_InitStructure);           //³õÊ¼»¯PWMÍ¨ÓÃ¼Ä´æÆ÷,  PWMA
+  470   1      
+  471   1          //PWMA Í¨µÀ1-4 Êä³ö¹Ü½ÅÑ¡Ôñ
+  472   1      //    PWM1_USE_P10P11(); //½öÊ¹ÄÜP10Êä³ö¼´¿É£¬²»ÐèÒª»¥²¹¹Ü½ÅP11µÄÊä³ö£¬»¥²¹¹Ü½Å»¹¿É×öÆäËûÆÕÍ¨IOÊ¹ÓÃ
+  473   1      //    PWM2_USE_P12P13();
+  474   1          PWM3_USE_P14P15();
+  475   1          PWM4_USE_P16P17();
+  476   1      
+  477   1          //PWMÊä³ö¹Ü½ÅÉèÖÃ£¨Æô¶¯PWM¹¦ÄÜºóÊä³ö½Å×Ô¶¯ÉèÖÃÎªÍÆÍìÊä³öÄ£Ê½ AI8051UÐèÒªÊÖ¶¯ÉèÖÃÍÆÍìÊä³ö£©
+  478   1        P1_MODE_OUT_PP(GPIO_Pin_4|GPIO_Pin_6);
+  479   1      
+  480   1        NVIC_PWM_Init(PWMA,DISABLE,Priority_0);                     //PWMA,NVICÖÐ¶ÏÉèÖÃ
+  481   1      //    UpdatePwmCh(PWM1, 5000);                       //Òª¸üÐÂµÄÍ¨µÀÒÔ¼°Õ¼¿Õ±ÈÊ±¼ä
+  482   1      //    UpdatePwmCh(PWM2, 5000);
+  483   1          UpdatePwmCh(PWM3, 0);                       //Òª¸üÐÂµÄÍ¨µÀÒÔ¼°Õ¼¿Õ±ÈÊ±¼ä,³õÊ¼»¯ºóÉèÎª0
+  484   1          UpdatePwmCh(PWM4, 0);
+  485   1      //    UpdatePwm(PWMA, &PWMA_Duty);
+  486   1      }
+  487          
+  488          /******************************************************************************************
+  489           * º¯ Êý Ãû£ºvoid BLmotor_Ctrl(u16 BLmotor1,u16 BLmotor2)
+  490           * ¹¦    ÄÜ£ºBLmotor ÎÞ¸ÐÎÞË¢µçµ÷¿ØÖÆ³ÌÐò£¬µ±PWM¸ßµçÆ½Ê±¼äÔÚ1-2msÇø¼äÄÚ£¬ÎÞË¢µç»úÐý×ª£¬2msÊ±×ªËÙ×î¸ß
+  491           * ²Î Êý Öµ£ºu16 BLmotor1£¬Õ¼¿Õ±È£¬·¶Î§0--10000£»
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 9   
+
+  492           * ×÷    Õß£ºLQ008
+  493           * ×îºó¸üÐÂ£º2024Äê11ÔÂ17ÈÕ
+  494           * Èí¼þ°æ±¾£ºV1.0
+  495           * µ÷ÓÃ¾ÙÀý£ºBLmotor_Ctrl(1000£¬1000);//µ±ÆµÂÊÎª50Ê±£¬ÉèÖÃ¸ßµçÆ½Ê±¼äÎª1ms
+  496           ******************************************************************************************/
+  497          void BLmotor_Ctrl(u16 BLmotor1,u16 BLmotor2)
+  498          {
+  499   1      //  if (Sduty <= Servo_Median-1000)                  //ÏÞÖÆ·ùÖµ,¸ù¾ÝÊµ¼ÊÇé¿ö½øÐÐµ÷Õû
+  500   1      //  {
+  501   1      //      Sduty = Servo_Median-1000;
+  502   1      //  }
+  503   1      //  else if (Sduty >= Servo_Median+1000)            //ÏÞÖÆ·ùÖµ
+  504   1      //  {
+  505   1      //      Sduty = Servo_Median+1000;
+  506   1      //  }
+  507   1          UpdatePwmCh(PWM3, BLmotor1);
+  508   1          UpdatePwmCh(PWM4, BLmotor2);
+  509   1      }
+  510          /*****************************************************************************************
+  511           * º¯ Êý Ãû£ºTest_BLSmotor(void)
+  512           * ¹¦    ÄÜ£ºÎÞ¸ÐÎÞË¢µç»ú²âÊÔ³ÌÐò£¬¿ØÖÆÎÞË¢µç»ú×ª¶¯
+  513           * ²Î Êý Öµ£ºÎÞ
+  514           * ·µ »Ø Öµ£ºÎÞ
+  515           * ×÷    Õß£ºLQ008
+  516           * ×îºó¸üÐÂ£º2024Äê11ÔÂ17ÈÕ
+  517           * Èí¼þ°æ±¾£ºV1.0
+  518           ---------------------------------------------------------------------------------------
+  519           * ×¢ÒâÊÂÏî£ºÐÅºÅÏß½ÓÎÞ¸ÐÎÞË¢Çý¶¯°åºó£¬ÐèÒª½«¿ØÖÆ°åºÍÇý¶¯°å¹²µØ
+  520           *  ÎÞË¢µç»ú¿ØÖÆº¯Êý,;PWM¸ßµçÆ½Ê±¼äÔÚ1-2msÄÚµç»úÐý×ª£¬
+  521           *  ÓÉÓÚÎÞË¢µç»úÐý×ªÐèÒª³õËÙ¶È£¬ËùÒÔµ±duty´ïµ½³õËÙ¶Èºó£¬µç»ú¿ªÊ¼×ª¶¯
+  522           *  ÉèÖÃ³õÊ¼»¯ÆµÂÊÊ±£¬ÆµÂÊÐèÒªÓë¶æ»úÆµÂÊ±£³ÖÒ»ÖÂ£¬ÍÆ¼ö50HzÆµÂÊ£¬ÂúÕ¼¿Õ±ÈÎª20000
+  523           ****************************************************************************************/
+  524          void Test_BLSmotor(void)
+  525          {
+  526   1        char txt[36];
+  527   1        u16 duty = 1000;
+  528   1      
+  529   1        BLmotor_Init(Servo_FREQ);     // ÆµÂÊÎª50Hz£¬´Ë´¦ÆµÂÊÐèÒªÓë¶æ»úÆµÂÊ±£³ÖÒ»ÖÂ,ÂúÕ¼¿Õ±È20000
+  530   1        BLmotor_Ctrl(1000,1000);      // ÉèÖÃ³õÊ¼duty£¬¸ßµçÆ½Ê±¼äÎª1ms£¬µç»úËÙ¶ÈÎª0
+  531   1      //  Servo_Init(50);       // ¶æ»ú³õÊ¼»¯£¬ÆµÂÊÎª50Hz,ÂúÕ¼¿Õ±È20000
+  532   1      //  Servo_Ctrl(Servo_Center);   // ¶æ»úÖÐÖµ
+  533   1      
+  534   1        OLED_Init();
+  535   1        OLED_CLS();           // ÇåÆÁ
+  536   1        OLED_P6x8Str(10, 0, "LQ BLSmotor Test");
+  537   1      
+  538   1        while (1)
+  539   1        {
+  540   2          if (!KEY_Read(KEY0))
+  541   2          {
+  542   3              if(duty >=900)
+  543   3                  duty -= 50;
+  544   3          }
+  545   2          if (!KEY_Read(KEY1))
+  546   2          {
+  547   3              duty = 1000;
+  548   3          }
+  549   2          if (!KEY_Read(KEY2))
+  550   2          {
+  551   3              if(duty <=2000)
+  552   3                  duty += 50;
+  553   3          }
+  554   2          BLmotor_Ctrl(duty,duty); //ÎÞË¢µç»ú¿ØÖÆº¯Êý,;PWM¸ßµçÆ½Ê±¼äÔÚ1-2msÄÚµç»úÐý×ª£¬
+  555   2                                    //ÓÉÓÚÎÞË¢µç»úÐý×ªÐèÒª³õËÙ¶È£¬ËùÒÔµ±duty´ïµ½³õËÙ¶Èºó£¬µç»ú¿ªÊ¼×ª¶¯
+  556   2          sprintf(txt, "BLS_Duty:%05d ", duty);
+  557   2          OLED_P6x8Str(10, 3, txt);   // ÏÔÊ¾
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      18/03/26  16:19:19  PAGE 10  
+
+  558   2          LED_Ctrl(LED0, RVS);      // LEDÉÁË¸;
+  559   2          delay_ms(100);
+  560   2        }
+  561   1      
+  562   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1276     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------        115
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =       111     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
