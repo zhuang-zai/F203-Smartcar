@@ -1,0 +1,81 @@
+C251 COMPILER V5.60.0,  main                                                               23/04/26  20:38:37  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE main
+OBJECT MODULE PLACED IN .\OBJ_Out\main.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\User\main.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(..\LQ_APP
+                    -\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bit) DEBUG PR
+                    -INT(.\OBJ_Out\main.lst) TABS(2) OBJECT(.\OBJ_Out\main.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           【平    台】北京龙邱智能科技STC32位核心板
+    3           【编    写】龙邱科技
+    4           【E-mail  】chiusir@163.com
+    5           【软件版本】V1.1 版权所有，单位使用请先联系授权
+    6           【相关信息参考下列地址】
+    7           【网    站】http://www.lqist.cn
+    8           【淘宝店铺】http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           【  IDE  】 keil C251 V5.60
+   11           【Target 】 STC32G/STC8051U/AI8051U 32位模式
+   12           【SYS CLK】 40 MHz使用内部晶振
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          // 下载时, 选择时钟频率 与"config.h"中宏定义保持一致 默认使用40M主频
+   16          
+   17          
+   18          #include "include.h"
+   19          
+   20          void main(void)
+   21          {
+   22   1          System_Init();  /* 系统初始化 必须保留 */
+   23   1          Global_IRQ_Enable(); // 使能全局中断
+   24   1          GPIO_LED_Init();
+   25   1          /*以下为手动添加*/
+   26   1          ADC_Init();  //电感采集初始化
+   27   1          IPS_LCD_Init();  //LCD初始化
+   28   1          LCD_CLS(u16_BLACK);
+   29   1          TIM_Init_ms(Timer1, 2);  // 定时器1中断初始化
+   30   1          TIM_Init_ms(Timer0, 3);  // 定时器0中断初始化
+   31   1          //Motor_Init(Motor_FREQ);  // 电机初始化
+   32   1          //Timer_EncInit(Timer3|Timer4);  // 编码器初始化
+   33   1          //lsm6dsr_init();  //软件陀螺仪初始化
+   34   1          LQ_HARD_SPI_LSM60DSR_Init(); // 硬件陀螺仪初始化
+   35   1          /*以上为手动添加*/
+   36   1          printf("USER Init OK  \n"); // printf选择 UART1~UART4（在STC32G_UART.h 中宏定义）
+   37   1          
+   38   1          while (1)
+   39   1          {
+   40   2              LED_Ctrl(LED0, RVS);
+   41   2              //delay_ms(100); // 100ms
+   42   2          }
+   43   1      }
+   44          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        78     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+C251 COMPILER V5.60.0,  main                                                               23/04/26  20:38:37  PAGE 2   
+
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        18     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
