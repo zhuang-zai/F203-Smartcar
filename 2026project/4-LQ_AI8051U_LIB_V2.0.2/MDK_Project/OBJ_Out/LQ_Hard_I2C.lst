@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  16:44:49  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  20:45:38  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_Hard_I2C
@@ -66,7 +66,7 @@ stmt  level    source
    54          
    55           //接收数据
    56           unsigned char Hard_IIC_RecvData()
-C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  16:44:49  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  20:45:38  PAGE 2   
 
    57           {
    58   1        I2CMSCR = 0x04; //发送 RECV 命令
@@ -134,7 +134,7 @@ stmt  level    source
   120   1        SendData(mem_addr); // 发送存储地址
   121   1        // RecvACK();
   122   1        Start();        // 发送起始命令
-C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  16:44:49  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  20:45:38  PAGE 3   
 
   123   1        SendData(dev_addr | 1); // 发送设备地址+读命令
   124   1        // RecvACK();
@@ -203,7 +203,7 @@ Module Information          Static   Overlayable
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
-C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  16:44:49  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  20:45:38  PAGE 4   
 
   pdata size           =    ------     ------
   xdata size           =    ------     ------

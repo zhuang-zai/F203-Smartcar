@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  16:44:47  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  20:45:36  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_LSM6DSR_Hard
@@ -66,7 +66,7 @@ stmt  level    source
                    I2C_InitStr.I2C_Enable = ENABLE;        // 使能I2C
                    I2C_InitStr.I2C_Mode = I2C_Mode_Master; // 主模式
                    I2C_InitStr.I2C_MS_WDTA = DISABLE;      // 主机模式无应答
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  16:44:47  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  20:45:36  PAGE 2   
 
                    I2C_Init(&I2C_InitStr);
                    NVIC_I2C_Init(I2C_Mode_Master, ENABLE, Priority_1);
@@ -134,7 +134,7 @@ stmt  level    source
   111   1          GPIO_Init(GPIO_P4, GPIO_Pin_0, GPIO_Mode_Out_PP);
   112   1      
   113   1          // 设置SPI引脚映射到P4.0-P4.3
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  16:44:47  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  20:45:36  PAGE 3   
 
   114   1          // SPI_S0 = 0; SPI_S1 = 1;
   115   1          // 00: P1.4 P1.5 P1.6 P1.7,
@@ -202,7 +202,7 @@ stmt  level    source
   177   1          LSM6DSR_CS_STA(LOW);
   178   1          SPI_Read_NByte(reg, buffer, sizel);
   179   1          LSM6DSR_CS_STA(HIGH);
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  16:44:47  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  20:45:36  PAGE 4   
 
   180   1      }
   181          
@@ -270,7 +270,7 @@ stmt  level    source
   243          {
   244   1          LSM60DSR_HARD_Init();
   245   1      
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  16:44:47  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Hard                                                    04/05/26  20:45:36  PAGE 5   
 
   246   1          LSM6DSR_CS_STA(LOW);
   247   1          

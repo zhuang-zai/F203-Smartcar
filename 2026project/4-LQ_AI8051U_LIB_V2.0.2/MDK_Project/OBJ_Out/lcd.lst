@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  lcd                                                                04/05/26  16:44:52  PAGE 1   
+C251 COMPILER V5.60.0,  lcd                                                                04/05/26  21:19:04  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE lcd
@@ -39,13 +39,18 @@ stmt  level    source
    27   1          
    28   1          sprintf(txt, "R1:%03d ", inductance_values[3]);
    29   1          LCD_ShowStr_16(0, 6, txt, u16_RED_IPS, u16_BLACK);
-   30   1      }
-   31          
+   30   1          
+   31   1          /*偏差*/
+   32   1          sprintf(txt, "eleV:%03d  DPID:%03d", Calculate_Deviation(),PID_CascadePosition(PID_GetController(PID_DI
+             -RECTION),Calculate_Deviation(),0));
+   33   1          LCD_ShowStr_16(0, 7, txt, u16_RED_IPS, u16_BLACK);
+   34   1      }
+   35          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       262     ------
+  code size            =       341     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -60,8 +65,10 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        44     ------
+  hconst size          =        65     ------
 End of Module Information.
+
+C251 COMPILER V5.60.0,  lcd                                                                04/05/26  21:19:04  PAGE 2   
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

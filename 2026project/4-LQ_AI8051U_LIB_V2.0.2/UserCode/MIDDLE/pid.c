@@ -3,15 +3,15 @@
 #define PID_GROUPS 3 // 可根据需要调整组数
 static PID_TypeDef pid_array[PID_GROUPS];
 
-// PID参数数组，按顺序：Kp, Ki, Kd, out_max, out_min, i_max, i_min, mode
-static const float pid_param_table[PID_GROUPS][8] = 
+// PID参数数组，按顺序：Kp, Ki, Kd, out_max, out_min,mode
+static const float pid_param_table[PID_GROUPS][6] = 
 {
     //左轮速度环 增量式PI
-    {12.0f, 1.2f, 0.0f, 7000,-7000,1000,-1000, PID_INCREMENT},
+    {9.0f, 3.5f, 0.0f, 3000,-3000,PID_INCREMENT},
     //右轮速度环 增量式PI
-    {12.0f, 1.2f, 0.0f, 7000,-7000,1000,-1000, PID_INCREMENT},
+    {9.0f, 3.5f, 0.0f, 3000,-3000,PID_INCREMENT},
     //方向环 位置式PD
-    {22.0f, 0.0f, 10.0f, 250,-250,0,0, PID_POSITION}
+    {0.65, 0.0f, 1.88f, 1200,-1200, PID_POSITION}
 };
 
 // 初始化所有PID结构体
@@ -26,15 +26,13 @@ void PID_AllInit(void)
             pid_param_table[i][2],
             pid_param_table[i][3],
             pid_param_table[i][4],
-            pid_param_table[i][5],
-            pid_param_table[i][6],
-            (PID_Mode)((int)pid_param_table[i][7])
+            (PID_Mode)((int)pid_param_table[i][5])
         );
     }
 }
 
 // PID初始化，支持位置式和增量式
-void PID_Init(PID_TypeDef *pid, float Kp, float Ki, float Kd, float out_max, float out_min, float i_max, float i_min, PID_Mode mode)
+void PID_Init(PID_TypeDef *pid, float Kp, float Ki, float Kd, float out_max, float out_min,PID_Mode mode)
 {
     pid->Kp = Kp;
     pid->Ki = Ki;
@@ -44,8 +42,6 @@ void PID_Init(PID_TypeDef *pid, float Kp, float Ki, float Kd, float out_max, flo
     pid->integral = 0;
     pid->output_max = out_max;
     pid->output_min = out_min;
-    pid->integral_max = i_max;
-    pid->integral_min = i_min;
     pid->output = 0;
     pid->mode = mode;
 }
@@ -72,9 +68,6 @@ int16 PID_CascadePosition(PID_TypeDef *pid, int16 current, int16 target)
     
     // 积分项
     pid->integral += error;
-    // 防积分饱和
-    if(pid->integral > pid->integral_max) pid->integral = pid->integral_max;
-    if(pid->integral < pid->integral_min) pid->integral = pid->integral_min;
     
     // 微分项
     derivative = error - pid->prev_error;

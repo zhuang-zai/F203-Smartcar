@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_IPSLCD
@@ -66,7 +66,7 @@ stmt  level    source
    54   1          LCD_Write_Byte(0x0C);
    55   1          LCD_Write_Byte(0x00);
    56   1          LCD_Write_Byte(0x33);
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 2   
 
    57   1          LCD_Write_Byte(0x33);
    58   1          LCD_Write_Cmd(0xB7);
@@ -134,7 +134,7 @@ stmt  level    source
   120            *
   121            */
   122          void IPSdelay_1us(unsigned int Del)     //
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 3   
 
   123          {
   124   1          delay_us(Del);
@@ -202,7 +202,7 @@ stmt  level    source
   186   1      }
   187          
   188          /*!
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 4   
 
   189            * @brief    Ð´°ë×Ö
   190            * @param    dat £ºÊý¾Ý
@@ -270,7 +270,7 @@ stmt  level    source
                #endif
   253   2          }
   254   1          else if(USE_HORIZONTAL==2)
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 5   
 
   255   1          {
   256   2      #ifdef IPS114
@@ -338,7 +338,7 @@ stmt  level    source
   317   1          unsigned char temp,sizex,t,m=0;
   318   1          unsigned int i,TypefaceNum;//Ò»¸ö×Ö·ûËùÕ¼×Ö½Ú´óÐ¡
   319   1          unsigned int x0=x;
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 6   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 6   
 
   320   1          sizex=sizey/2;
   321   1          TypefaceNum=(sizex/8+((sizex%8)?1:0))*sizey;
@@ -406,7 +406,7 @@ stmt  level    source
   381                º¯ÊýËµÃ÷£ºÏÔÊ¾12*06´óÐ¡µÄ×Ö·û´®
   382                Èë¿ÚÊý¾Ý£ºx    IPS114: ºá×ø±ê£¨ºáÆÁÊ±£º0-39     ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-10     ÊúÆÁÊ±£º0
              --19£©
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 7   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 7   
 
   383                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-39      ÊúÆÁÊ±£º0-39£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-19£
              -©
@@ -474,7 +474,7 @@ stmt  level    source
   437          /******************************************************************************
   438                º¯ÊýËµÃ÷£ºx    IPS114: ºá×ø±ê£¨ºáÆÁÊ±£º0-14     ÊúÆÁÊ±£º0-7£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-3     ÊúÆÁÊ±£º0-6
              -£©
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 8   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 8   
 
   439                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-14      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
   440                       x  IPS154: ºá×ø±ê£¨ºáÆÁÊ±£º0-14      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
@@ -542,7 +542,7 @@ stmt  level    source
              -or_dat)
   502          {
   503   1        int i,ds;
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 9   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 9   
 
   504   1        int dx,dy,inc_x, inc_y;
   505   1        int xerr = 0, yerr = 0;                       //³õÊ¼»¯±äÁ¿
@@ -610,7 +610,7 @@ stmt  level    source
   567                                          xe £º½áÊøx IPS154  (ºáÆÁx:0-240, ÊúÆÁx:0-240)
   568                                          xe £º½áÊøx IPS200  (ºáÆÁx:0-320, ÊúÆÁx:0-240)
   569                                          ys £º½áÊøy IPS114   (ºáÆÁy:0-135, ÊúÆÁx:0-240)
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 10  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 10  
 
   570                                          ys £º½áÊøy IPS130  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
   571                                          ys £º½áÊøy IPS154  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
@@ -678,7 +678,7 @@ stmt  level    source
   630   1          unsigned int i,j;
   631   1          unsigned long k=0;
   632   1          LCD_Address_Set(x,y,x+length-1,y+width-1);
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 11  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 11  
 
   633   1          for(i=0;i<length;i++)
   634   1          {
@@ -746,7 +746,7 @@ stmt  level    source
   695          //            adder += 1;
   696          //          }
   697          //        }
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 12  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 12  
 
   698          //        else              //ÏÔÊ¾¿Õ°××Ö·û
   699          //        {}
@@ -814,7 +814,7 @@ stmt  level    source
   760                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾µÄÐÐÊýºÍÁÐÊý
   761                          *s_dat ÒªÏÔÊ¾µÄºº×Ö
   762                          word_color ×ÖµÄÑÕÉ«
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 13  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 13  
 
   763                          back_color ×ÖµÄ±³¾°É«
   764                ·µ»ØÖµ£º  ÎÞ
@@ -882,7 +882,7 @@ stmt  level    source
   824          //    {
   825          //        wm = 0;
   826          //        adder = 1;
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 14  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 14  
 
   827          //        while(tfont_Idx[wm] > 127)
   828          //        {
@@ -950,7 +950,7 @@ stmt  level    source
   889            * @param    ÎÞ
   890            *
   891            * @return   ÎÞ
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 15  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 15  
 
   892            *
   893            * @note     ÎÞ
@@ -1018,7 +1018,7 @@ stmt  level    source
   953          void LCDSPI_Road(unsigned char wide_start, unsigned char high_start, unsigned char high, unsigned char wi
              -de, unsigned char *Pixle)
   954          {
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 16  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 16  
 
   955   1          uint32_t i;
   956   1          uint16_t color;
@@ -1087,7 +1087,7 @@ stmt  level    source
 Module Information          Static   Overlayable
 ------------------------------------------------
   code size            =      3363     ------
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 17  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  20:45:33  PAGE 17  
 
   ecode size           =    ------     ------
   data size            =    ------     ------
