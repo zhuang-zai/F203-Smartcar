@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_ADC                                                        27/03/26  21:26:32  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_ADC                                                        04/05/26  16:38:08  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_ADC
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_ADC.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_ADC.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_ADC.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_ADC.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_ADC.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_ADC.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    53          // 描述: ADC电源控制程序.
    54          // 参数: pwr: 电源控制,ENABLE或DISABLE.
    55          // 返回: none.
-   56          // 版本: V1.0, 2012-10-22
-C251 COMPILER V5.60.0,  AI8051U_ADC                                                        27/03/26  21:26:32  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_ADC                                                        04/05/26  16:38:08  PAGE 2   
 
+   56          // 版本: V1.0, 2012-10-22
    57          //========================================================================
    58          void ADC_PowerControl(u8 pwr)
    59          {
@@ -134,9 +135,9 @@ Module Information          Static   Overlayable
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
-  huge data size       =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_ADC                                                        27/03/26  21:26:32  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_ADC                                                        04/05/26  16:38:08  PAGE 3   
 
+  huge data size       =    ------     ------
   const size           =    ------     ------
   hconst size          =    ------     ------
 End of Module Information.

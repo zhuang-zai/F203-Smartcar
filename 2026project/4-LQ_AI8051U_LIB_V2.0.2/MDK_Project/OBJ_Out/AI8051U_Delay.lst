@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_Delay                                                      27/03/26  21:26:32  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Delay                                                      04/05/26  16:38:09  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Delay
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Delay.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_Delay.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE I
-                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_
-                    -32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Delay.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_Delay.obj) 
+                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\U
+                    -serCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Delay.lst) TABS(2) O
+                    -BJECT(.\OBJ_Out\AI8051U_Delay.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54          //========================================================================
    55          void I2C_Delay_2us(void)
    56          {
-   57   1        u8 dly;
-C251 COMPILER V5.60.0,  AI8051U_Delay                                                      27/03/26  21:26:32  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Delay                                                      04/05/26  16:38:09  PAGE 2   
 
+   57   1        u8 dly;
    58   1        dly = MAIN_Fosc / 2000000UL; // ∞¥2usº∆À„
    59   1        while (--dly)
    60   1          ;

@@ -4,6 +4,8 @@
 
 #include "AI8051U_Timer.h"
 #include "include.h"
+#include "inductance.h"
+#include "motor.h"
 
 //========================================================================
 // 函数: Timer0_ISR_Handler
@@ -12,24 +14,9 @@
 // 返回: none.
 // 版本: V1.0, 2024-11-23
 //========================================================================
-u8 times_count =0;
 void Timer0_ISR_Handler (void) interrupt TMR0_VECTOR		//进中断时已经清除标志
 {
-	// TODO: 在此处添加用户代码
-
-//    times_count++;
-//    if(times_count>20)   //200ms
-    {
-				/*归一化算法  用于电感调参*/
-				left_1 = Adc_Normalize(L,0,2100);
-				left_2 = Adc_Normalize(L2,0,2000);
-				AM = Adc_Normalize(M,0,2400);
-				right_2 = Adc_Normalize(R2,0,2200);
-				right_1 = Adc_Normalize(R,0,2100);
-				
-        LED_Ctrl(LED0,RVS);
-//        times_count = 0;
-    }
+	ScanInductance();
 }
 
 //========================================================================
@@ -41,10 +28,7 @@ void Timer0_ISR_Handler (void) interrupt TMR0_VECTOR		//进中断时已经清除标志
 //========================================================================
 void Timer1_ISR_Handler (void) interrupt TMR1_VECTOR		//进中断时已经清除标志
 {
-	// TODO: 在此处添加用户代码
-	Ultima_Control();
-	ADC_Display();
-//	LED_Ctrl(LED0,RVS);
+	
 }
 
 //========================================================================
@@ -97,7 +81,7 @@ void Timer4_ISR_Handler (void) interrupt TMR4_VECTOR		//进中断时已经清除标志
 void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR		//进中断时已经清除标志
 {
 	// TODO: 在此处添加用户代码
-	LED_Ctrl(LED0,RVS);
+//	LED_Ctrl(LED0,RVS);
 //    LED_Ctrl(Beep0,RVS);
 }
 

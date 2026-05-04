@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_DMA_Isr
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_DMA_Isr.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\isr\AI8051U_DMA_Isr.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE
-                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051
-                    -U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_DMA_Isr.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_DMA_Isr.obj) 
+                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..
+                    -\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_DMA_Isr.lst) TABS(
+                    -2) OBJECT(.\OBJ_Out\AI8051U_DMA_Isr.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   2        }
    55   1      
    56   1      }
-   57          
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 2   
 
+   57          
    58          //========================================================================
    59          // 函数: DMA_M2M_ISR_Handler
    60          // 描述: DMA M2M 中断函数.
@@ -133,9 +134,9 @@ stmt  level    source
   120   2      
   121   2      //    DMA_UR1T_TRIG();  //重新触发UART1发送功能
   122   2      //    DMA_UR1R_TRIG();  //重新触发UART1接收功能
-  123   2        }
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 3   
 
+  123   2        }
   124   1        if (DMA_UR1R_STA & 0x02)  //数据丢弃
   125   1        {
   126   2          DMA_UR1R_STA &= ~0x02;  //清标志位
@@ -201,9 +202,9 @@ stmt  level    source
   186   1        {
   187   2          DMA_UR3T_STA &= ~0x01;  //清标志位
   188   2          DmaTx3Flag = 1;
-  189   2        }
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 4   
 
+  189   2        }
   190   1        if (DMA_UR3T_STA & 0x04)  //数据覆盖
   191   1        {
   192   2          DMA_UR3T_STA &= ~0x04;  //清标志位
@@ -269,9 +270,9 @@ stmt  level    source
   252   1        {
   253   2          DMA_UR4R_STA &= ~0x01;  //清标志位
   254   2          DmaRx4Flag = 1;
-  255   2      
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 5   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 5   
 
+  255   2      
   256   2      //    DMA_UR4T_TRIG();  //重新触发UART4发送功能
   257   2      //    DMA_UR4R_TRIG();  //重新触发UART4接收功能
   258   2        }
@@ -337,9 +338,9 @@ stmt  level    source
   318          
   319          //========================================================================
   320          // 函数: DMA_I2CR_ISR_Handler
-  321          // 描述: DMA I2C 接收中断函数.
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 6   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 6   
 
+  321          // 描述: DMA I2C 接收中断函数.
   322          // 参数: none.
   323          // 返回: none.
   324          // 版本: V1.0, 2022-03-25
@@ -405,9 +406,9 @@ stmt  level    source
   384   1      
   385   1        //----------- DMA ADC --------------
   386   1        if(DMA_ADC_STA & 0x01)  //AD转换完成
-  387   1        {
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 7   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 7   
 
+  387   1        {
   388   2          DMA_ADC_STA &= ~0x01; //清标志位
   389   2          DmaADCFlag = 1;
   390   2        }
@@ -473,9 +474,9 @@ stmt  level    source
   450   1        if (DMA_UR3T_STA & 0x01)  //发送完成
   451   1        {
   452   2          DMA_UR3T_STA &= ~0x01;  //清标志位
-  453   2          DmaTx3Flag = 1;
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 8   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 8   
 
+  453   2          DmaTx3Flag = 1;
   454   2        }
   455   1        if (DMA_UR3T_STA & 0x04)  //数据覆盖
   456   1        {
@@ -541,9 +542,9 @@ stmt  level    source
                  if(LCMIFSTA & 0x01)
                  {
                    LCMIFSTA = 0x00;
-                   LcmFlag = 0;
-C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    27/03/26  21:26:30  PAGE 9   
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    04/05/26  16:38:05  PAGE 9   
 
+                   LcmFlag = 0;
                  }
                
                  //---------- DMA LCM -------------

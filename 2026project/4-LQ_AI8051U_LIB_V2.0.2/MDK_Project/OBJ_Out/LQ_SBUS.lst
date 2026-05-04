@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_SBUS                                                            16/04/26  19:10:20  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_SBUS                                                            04/05/26  16:44:49  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_SBUS
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_SBUS.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_SBUS.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(
-                    -..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bit)
-                    - DEBUG PRINT(.\OBJ_Out\LQ_SBUS.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_SBUS.obj) 
+                    -..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCod
+                    -e\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_SBUS.lst) TABS(2) OBJECT(.\OBJ_
+                    -Out\LQ_SBUS.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   1          
    55   1          receive_flag = 1;
    56   1          // Status_flag=(ReadBuff4[23] | ReadBuff4[24] << 8 ) & 0x07FF;
-   57   1      
-C251 COMPILER V5.60.0,  LQ_SBUS                                                            16/04/26  19:10:20  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_SBUS                                                            04/05/26  16:44:49  PAGE 2   
 
+   57   1      
    58   1      //    Usart3_Rec_Fini_Flag = 0;
    59   1        
    60   1        
@@ -133,9 +134,9 @@ stmt  level    source
   118          
   119          
   120          
-  121          
-C251 COMPILER V5.60.0,  LQ_SBUS                                                            16/04/26  19:10:20  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_SBUS                                                            04/05/26  16:44:49  PAGE 3   
 
+  121          
   122          
   123          
   124          

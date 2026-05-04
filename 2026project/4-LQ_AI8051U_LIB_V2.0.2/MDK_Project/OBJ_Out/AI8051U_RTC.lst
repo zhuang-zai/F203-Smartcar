@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_RTC                                                        27/03/26  21:26:33  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_RTC                                                        04/05/26  16:38:11  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_RTC
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_RTC.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_RTC.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_RTC.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_RTC.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_RTC.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_RTC.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   1      
    55   1        if(RTCx->RTC_Enable == ENABLE)
    56   1        {
-   57   2          RTCCR = 0x01;     //RTC使能
-C251 COMPILER V5.60.0,  AI8051U_RTC                                                        27/03/26  21:26:33  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_RTC                                                        04/05/26  16:38:11  PAGE 2   
 
+   57   2          RTCCR = 0x01;     //RTC使能
    58   2          while(RTCCFG & 0x01); //等待初始化完成,需要在 "RTC使能" 之后判断.
    59   2          //设置RTC时间需要32768Hz的1个周期时间,大约30.5us. 由于同步, 所以实际等待时间是0~30.5us.
    60   2          //如果不等待设置完成就睡眠, 则RTC会由于设置没完成, 停止计数, 唤醒后才继续完成设置并继续计数.

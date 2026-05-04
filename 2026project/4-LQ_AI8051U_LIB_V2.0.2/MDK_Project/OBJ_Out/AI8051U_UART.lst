@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_UART                                                       27/03/26  21:26:34  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_UART                                                       04/05/26  16:38:13  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_UART
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_UART.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_UART.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE IN
-                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_3
-                    -2Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_UART.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_UART.obj) 
+                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Us
+                    -erCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_UART.lst) TABS(2) OBJ
+                    -ECT(.\OBJ_Out\AI8051U_UART.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   2          COM1.B_TX_busy  = 0;
    55   2          COM1.RX_Cnt     = 0;
    56   2          COM1.RX_TimeOut = 0;
-   57   2      
-C251 COMPILER V5.60.0,  AI8051U_UART                                                       27/03/26  21:26:34  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_UART                                                       04/05/26  16:38:13  PAGE 2   
 
+   57   2      
    58   2          for(i=0; i<COM_TX1_Lenth; i++)  TX1_Buffer[i] = 0;
    59   2          for(i=0; i<COM_RX1_Lenth; i++)  RX1_Buffer[i] = 0;
    60   2      
@@ -133,9 +134,9 @@ stmt  level    source
                      if(j >= 65536UL)  return FAIL;  //´íÎó
                      j = 65536UL - j;
                      T2R = 0;    //Timer stop
-                     T2_CT = 0;  //Timer2 set As Timer
-C251 COMPILER V5.60.0,  AI8051U_UART                                                       27/03/26  21:26:34  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_UART                                                       04/05/26  16:38:13  PAGE 3   
 
+                     T2_CT = 0;  //Timer2 set As Timer
                      T2x12 = 1;  //Timer2 set as 1T mode
                      T2H = (u8)(j>>8);
                      T2L = (u8)j;
@@ -201,9 +202,9 @@ stmt  level    source
   186   2          COM4.RX_Cnt     = 0;
   187   2          COM4.RX_TimeOut = 0;
   188   2          for(i=0; i<COM_TX4_Lenth; i++)  TX4_Buffer[i] = 0;
-  189   2          for(i=0; i<COM_RX4_Lenth; i++)  RX4_Buffer[i] = 0;
-C251 COMPILER V5.60.0,  AI8051U_UART                                                       27/03/26  21:26:34  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_UART                                                       04/05/26  16:38:13  PAGE 4   
 
+  189   2          for(i=0; i<COM_RX4_Lenth; i++)  RX4_Buffer[i] = 0;
   190   2      
   191   2          if((COMx->UART_Mode == UART_9bit_BRTx) || (COMx->UART_Mode == UART_8bit_BRTx))  //¿É±ä²¨ÌØÂÊ
   192   2          {
@@ -269,9 +270,9 @@ stmt  level    source
   251          void UART1_PutStr(u8 *puts)
   252          {
   253   1          for (; *puts != 0;  puts++)  UART1_PutBuf(*puts);   //Óöµ½Í£Ö¹·û0½áÊø
-  254   1      }
-C251 COMPILER V5.60.0,  AI8051U_UART                                                       27/03/26  21:26:34  PAGE 5   
+C251 COMPILER V5.60.0,  AI8051U_UART                                                       04/05/26  16:38:13  PAGE 5   
 
+  254   1      }
   255          
   256          #endif
   257          
@@ -337,9 +338,9 @@ stmt  level    source
   315          #ifdef UART4
   316          void UART4_PutBuf(u8 dat) //´®¿Ú4·¢ËÍº¯Êý
   317          {
-  318   1          #if(UART_QUEUE_MODE == 1)
-C251 COMPILER V5.60.0,  AI8051U_UART                                                       27/03/26  21:26:34  PAGE 6   
+C251 COMPILER V5.60.0,  AI8051U_UART                                                       04/05/26  16:38:13  PAGE 6   
 
+  318   1          #if(UART_QUEUE_MODE == 1)
                  TX4_Buffer[COM4.TX_write] = dat;  //×°·¢ËÍ»º³å£¬Ê¹ÓÃ¶ÓÁÐÊ½Êý¾Ý·¢ËÍ£¬Ò»´ÎÐÔ·¢ËÍÊý¾Ý³¤¶È²»Òª³¬¹ý»º³åÇø´óÐ¡£
              -¨COM_TXn_Lenth£©
                  if(++COM4.TX_write >= COM_TX4_Lenth)  COM4.TX_write = 0;
@@ -406,9 +407,9 @@ Module Information          Static   Overlayable
 ------------------------------------------------
   code size            =       931     ------
   ecode size           =    ------     ------
-  data size            =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_UART                                                       27/03/26  21:26:34  PAGE 7   
+C251 COMPILER V5.60.0,  AI8051U_UART                                                       04/05/26  16:38:13  PAGE 7   
 
+  data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------

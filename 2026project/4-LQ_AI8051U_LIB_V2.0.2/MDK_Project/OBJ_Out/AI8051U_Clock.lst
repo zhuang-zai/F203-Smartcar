@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_Clock                                                      27/03/26  21:26:32  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      04/05/26  16:38:08  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Clock
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Clock.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_Clock.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE I
-                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_
-                    -32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Clock.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_Clock.obj) 
+                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\U
+                    -serCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Clock.lst) TABS(2) O
+                    -BJECT(.\OBJ_Out\AI8051U_Clock.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   1      }
    55          
    56          //========================================================================
-   57          // 函数: void HSPllClkConfig(u8 clksrc, u8 pcki, u8 pllsel, u8 div)
-C251 COMPILER V5.60.0,  AI8051U_Clock                                                      27/03/26  21:26:32  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      04/05/26  16:38:08  PAGE 2   
 
+   57          // 函数: void HSPllClkConfig(u8 clksrc, u8 pcki, u8 pllsel, u8 div)
    58          // 描述: 高速IO时钟初始化程序.
    59          // 参数: clksrc: 系统时钟选择, MCLKSEL_HIRC/MCLKSEL_XIRC/MCLKSEL_X32K/MCLKSEL_I32K/MCLKSEL_PLL/MCLKSEL_PL
              -L2/MCLKSEL_I48M.
@@ -134,9 +135,9 @@ Module Information          Static   Overlayable
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
-  xdata size           =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_Clock                                                      27/03/26  21:26:32  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      04/05/26  16:38:08  PAGE 3   
 
+  xdata size           =    ------     ------
   xdata-const size     =    ------     ------
   edata size           =    ------     ------
   bit size             =    ------     ------

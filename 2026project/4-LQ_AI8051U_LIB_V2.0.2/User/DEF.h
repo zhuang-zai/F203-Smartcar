@@ -12,7 +12,7 @@ typedef unsigned long           DWORD;
 typedef signed   char           CHAR;
 typedef signed   int            INT;
 typedef signed   long           LONG;
-                                
+
 typedef unsigned char           uint8_t;
 typedef unsigned int            uint16_t;
 typedef unsigned long           uint32_t;

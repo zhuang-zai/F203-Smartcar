@@ -16,29 +16,22 @@ QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
 
 
 #include "include.h"
+#include "init.h"
 
 void main(void)
 {
     System_Init();  /* 系统初始化 必须保留 */
     Global_IRQ_Enable(); // 使能全局中断
     GPIO_LED_Init();
-		/*以下为手动添加*/
-		ADC_Init();  //电感采集初始化
-		IPS_LCD_Init();  //LCD初始化
-		LCD_CLS(u16_BLACK);
-		TIM_Init_ms(Timer1, 2);  // 定时器1中断初始化
-		TIM_Init_ms(Timer0, 3);  // 定时器0中断初始化
-		//Motor_Init(Motor_FREQ);  // 电机初始化
-		//Timer_EncInit(Timer3|Timer4);  // 编码器初始化
-		//lsm6dsr_init();  //软件陀螺仪初始化
-		LQ_HARD_SPI_LSM60DSR_Init(); // 硬件陀螺仪初始化
-		/*以上为手动添加*/
-    printf("USER Init OK  \n"); // printf选择 UART1~UART4（在STC32G_UART.h 中宏定义）
+    
+    User_Init(); // 统一初始化所有外设和模块
 		
     while (1)
     {
         LED_Ctrl(LED0, RVS);
-        //delay_ms(100); // 100ms
+		Lcd_Display();
+		// 使用chassis控制: 外环差比和+方向PID，内环速度环PID
+		Chassis_Control();
     }
 }
 

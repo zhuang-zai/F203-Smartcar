@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_Exti_Isr                                                   16/04/26  19:10:21  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Exti_Isr                                                   04/05/26  16:44:50  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Exti_Isr
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Exti_Isr.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\isr\AI8051U_Exti_Isr.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWS
-                    -E INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI805
-                    -1U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Exti_Isr.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_Exti_Isr.obj) 
+                    -E INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;.
+                    -.\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Exti_Isr.lst) TAB
+                    -S(2) OBJECT(.\OBJ_Out\AI8051U_Exti_Isr.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   1        // TODO: 在此处添加用户代码
    55   1      //  LED_Ctrl(LED0,RVS);
    56   1      }
-   57          
-C251 COMPILER V5.60.0,  AI8051U_Exti_Isr                                                   16/04/26  19:10:21  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Exti_Isr                                                   04/05/26  16:44:50  PAGE 2   
 
+   57          
    58          //========================================================================
    59          // 函数: INT3_ISR_Handler
    60          // 描述: INT3中断函数. 管脚P3.7

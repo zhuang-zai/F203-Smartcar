@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  main                                                               23/04/26  20:38:37  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               04/05/26  16:44:41  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
 OBJECT MODULE PLACED IN .\OBJ_Out\main.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\User\main.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(..\LQ_APP
-                    -\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bit) DEBUG PR
-                    -INT(.\OBJ_Out\main.lst) TABS(2) OBJECT(.\OBJ_Out\main.obj) 
+                    -\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode\APP;..\
+                    -UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\main.lst) TABS(2) OBJECT(.\OBJ_Out\main.obj
+                    -) 
 
 stmt  level    source
 
@@ -27,37 +28,30 @@ stmt  level    source
    16          
    17          
    18          #include "include.h"
-   19          
-   20          void main(void)
-   21          {
-   22   1          System_Init();  /* 系统初始化 必须保留 */
-   23   1          Global_IRQ_Enable(); // 使能全局中断
-   24   1          GPIO_LED_Init();
-   25   1          /*以下为手动添加*/
-   26   1          ADC_Init();  //电感采集初始化
-   27   1          IPS_LCD_Init();  //LCD初始化
-   28   1          LCD_CLS(u16_BLACK);
-   29   1          TIM_Init_ms(Timer1, 2);  // 定时器1中断初始化
-   30   1          TIM_Init_ms(Timer0, 3);  // 定时器0中断初始化
-   31   1          //Motor_Init(Motor_FREQ);  // 电机初始化
-   32   1          //Timer_EncInit(Timer3|Timer4);  // 编码器初始化
-   33   1          //lsm6dsr_init();  //软件陀螺仪初始化
-   34   1          LQ_HARD_SPI_LSM60DSR_Init(); // 硬件陀螺仪初始化
-   35   1          /*以上为手动添加*/
-   36   1          printf("USER Init OK  \n"); // printf选择 UART1~UART4（在STC32G_UART.h 中宏定义）
-   37   1          
-   38   1          while (1)
-   39   1          {
-   40   2              LED_Ctrl(LED0, RVS);
-   41   2              //delay_ms(100); // 100ms
-   42   2          }
-   43   1      }
-   44          
+   19          #include "init.h"
+   20          
+   21          void main(void)
+   22          {
+   23   1          System_Init();  /* 系统初始化 必须保留 */
+   24   1          Global_IRQ_Enable(); // 使能全局中断
+   25   1          GPIO_LED_Init();
+   26   1          
+   27   1          User_Init(); // 统一初始化所有外设和模块
+   28   1          
+   29   1          while (1)
+   30   1          {
+   31   2              LED_Ctrl(LED0, RVS);
+   32   2          Lcd_Display();
+   33   2          // 使用chassis控制: 外环差比和+方向PID，内环速度环PID
+   34   2          Chassis_Control();
+   35   2          }
+   36   1      }
+   37          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =        78     ------
+  code size            =        45     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -67,14 +61,14 @@ Module Information          Static   Overlayable
   edata size           =    ------     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
-C251 COMPILER V5.60.0,  main                                                               23/04/26  20:38:37  PAGE 2   
-
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        18     ------
+  hconst size          =         2     ------
+C251 COMPILER V5.60.0,  main                                                               04/05/26  16:44:41  PAGE 2   
+
 End of Module Information.
 
 

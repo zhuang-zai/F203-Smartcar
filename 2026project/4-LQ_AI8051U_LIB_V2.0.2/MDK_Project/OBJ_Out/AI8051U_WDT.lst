@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_WDT                                                        27/03/26  21:26:34  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_WDT                                                        04/05/26  16:38:13  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_WDT
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_WDT.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_WDT.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_WDT.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_WDT.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_WDT.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_WDT.obj) 
 
 stmt  level    source
 

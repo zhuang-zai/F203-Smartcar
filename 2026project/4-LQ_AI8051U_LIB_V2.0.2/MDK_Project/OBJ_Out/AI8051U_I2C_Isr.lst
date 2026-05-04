@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_I2C_Isr                                                    27/03/26  21:26:31  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_I2C_Isr                                                    04/05/26  16:38:06  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_I2C_Isr
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_I2C_Isr.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\isr\AI8051U_I2C_Isr.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE
-                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051
-                    -U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_I2C_Isr.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_I2C_Isr.obj) 
+                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..
+                    -\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_I2C_Isr.lst) TABS(
+                    -2) OBJECT(.\OBJ_Out\AI8051U_I2C_Isr.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   3            I2CTXD = I2C_Buffer[I2CIsr.addr];
    55   3          }
    56   2          else
-   57   2          {
-C251 COMPILER V5.60.0,  AI8051U_I2C_Isr                                                    27/03/26  21:26:31  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_I2C_Isr                                                    04/05/26  16:38:06  PAGE 2   
 
+   57   2          {
    58   3            I2C_Buffer[I2CIsr.addr++] = I2CRXD; //处理RECV事件（RECV DATA）
    59   3          }
    60   2        }

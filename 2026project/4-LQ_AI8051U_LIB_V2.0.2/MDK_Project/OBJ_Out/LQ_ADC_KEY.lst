@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         16/04/26  19:10:16  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         04/05/26  16:44:43  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_ADC_KEY
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_ADC_KEY.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_ADC_KEY.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCD
-                    -IR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32B
-                    -it) DEBUG PRINT(.\OBJ_Out\LQ_ADC_KEY.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_ADC_KEY.obj) 
+                    -IR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\User
+                    -Code\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_ADC_KEY.lst) TABS(2) OBJECT(
+                    -.\OBJ_Out\LQ_ADC_KEY.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    50           *  函数返回：ADC按键的键值
    51           *  修改时间：2026年1月12日
    52           *  备    注：无
-   53           *************************************************************************/
-C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         16/04/26  19:10:16  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         04/05/26  16:44:43  PAGE 2   
 
+   53           *************************************************************************/
    54          u8 Get_ADC_Key()
    55          {
    56   1          u16 key_ADval = Get_ADCResult(ADC_CH10_P02); // Get_DmaAD_val();
@@ -134,9 +135,9 @@ Module Information          Static   Overlayable
   xdata-const size     =    ------     ------
   edata size           =         2          5
   bit size             =    ------     ------
-  ebit size            =    ------     ------
-C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         16/04/26  19:10:16  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         04/05/26  16:44:43  PAGE 3   
 
+  ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------

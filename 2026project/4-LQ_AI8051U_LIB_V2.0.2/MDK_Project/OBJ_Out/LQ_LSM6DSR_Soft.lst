@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    16/04/26  19:10:18  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  16:44:46  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_LSM6DSR_Soft
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_LSM6DSR_Soft.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_LSM6DSR_Soft.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE
-                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051
-                    -U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_LSM6DSR_Soft.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_LSM6DSR_Soft.obj) 
+                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..
+                    -\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_LSM6DSR_Soft.lst) TABS(
+                    -2) OBJECT(.\OBJ_Out\LQ_LSM6DSR_Soft.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    52           * @date    2025-12-28.
    53           * @example u8 val = lsm6dsr_read_reg(0x68, 0x10);
    54           *************************************************************************/
-   55          u8 lsm6dsr_read_reg(u8 reg)
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    16/04/26  19:10:18  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  16:44:46  PAGE 2   
 
+   55          u8 lsm6dsr_read_reg(u8 reg)
    56          {
    57   1          u8 dat = 0;
    58   1      #if defined(LSM6DSR_USE_SOFT_I2C)
@@ -133,9 +134,9 @@ stmt  level    source
   116           *************************************************************************/
   117          u8 lsm6dsr_read_id(void)
   118          {
-  119   1          return lsm6dsr_read_reg(LSM6DSR_WHO_AM);
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    16/04/26  19:10:18  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  16:44:46  PAGE 3   
 
+  119   1          return lsm6dsr_read_reg(LSM6DSR_WHO_AM);
   120   1      }
   121          
   122          /*************************************************************************
@@ -201,9 +202,9 @@ stmt  level    source
   181   1          *ax = ((u16)buf[7]  << 8) | buf[6];
   182   1          *ay = ((u16)buf[9]  << 8) | buf[8];
   183   1          *az = ((u16)buf[11] << 8) | buf[10];
-  184   1      }
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    16/04/26  19:10:18  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  16:44:46  PAGE 4   
 
+  184   1      }
   185          
   186          
   187          

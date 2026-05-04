@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_I2C_VL53                                                        16/04/26  19:10:19  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_I2C_VL53                                                        04/05/26  16:44:47  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_I2C_VL53
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_I2C_VL53.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_I2C_VL53.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\LQ_I2C_VL53.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_I2C_VL53.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_I2C_VL53.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\LQ_I2C_VL53.obj) 
 
 stmt  level    source
 
@@ -65,8 +66,8 @@ stmt  level    source
    54   1         soft_i2c_read_n_byte(&vl53_i2c_cfg, reg, dat, length);
    55   1      }
    56          
+C251 COMPILER V5.60.0,  LQ_I2C_VL53                                                        04/05/26  16:44:47  PAGE 2   
 
-C251 COMPILER V5.60.0,  LQ_I2C_VL53                                                        16/04/26  19:10:19  PAGE 2   
 
 
 Module Information          Static   Overlayable

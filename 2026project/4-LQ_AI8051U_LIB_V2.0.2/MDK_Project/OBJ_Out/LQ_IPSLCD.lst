@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_IPSLCD
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_IPSLCD.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_IPSLCD.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDI
-                    -R(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bi
-                    -t) DEBUG PRINT(.\OBJ_Out\LQ_IPSLCD.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_IPSLCD.obj) 
+                    -R(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserC
+                    -ode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_IPSLCD.lst) TABS(2) OBJECT(.\
+                    -OBJ_Out\LQ_IPSLCD.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   1          LCD_Write_Byte(0x0C);
    55   1          LCD_Write_Byte(0x00);
    56   1          LCD_Write_Byte(0x33);
-   57   1          LCD_Write_Byte(0x33);
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 2   
 
+   57   1          LCD_Write_Byte(0x33);
    58   1          LCD_Write_Cmd(0xB7);
    59   1          LCD_Write_Byte(0x35);
    60   1          LCD_Write_Cmd(0xBB);
@@ -133,9 +134,9 @@ stmt  level    source
   120            *
   121            */
   122          void IPSdelay_1us(unsigned int Del)     //
-  123          {
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 3   
 
+  123          {
   124   1          delay_us(Del);
   125   1      //  while(Del--)
   126   1      //  {
@@ -201,9 +202,9 @@ stmt  level    source
   186   1      }
   187          
   188          /*!
-  189            * @brief    Ð´°ë×Ö
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 4   
 
+  189            * @brief    Ð´°ë×Ö
   190            * @param    dat £ºÊý¾Ý
   191            * @return   ÎÞ
   192            * @note     ÎÞ
@@ -269,9 +270,9 @@ stmt  level    source
                #endif
   253   2          }
   254   1          else if(USE_HORIZONTAL==2)
-  255   1          {
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 5   
 
+  255   1          {
   256   2      #ifdef IPS114
   257   2              W_offset = 40; H_offset = 53;
   258   2      #endif
@@ -337,9 +338,9 @@ stmt  level    source
   317   1          unsigned char temp,sizex,t,m=0;
   318   1          unsigned int i,TypefaceNum;//Ò»¸ö×Ö·ûËùÕ¼×Ö½Ú´óÐ¡
   319   1          unsigned int x0=x;
-  320   1          sizex=sizey/2;
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 6   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 6   
 
+  320   1          sizex=sizey/2;
   321   1          TypefaceNum=(sizex/8+((sizex%8)?1:0))*sizey;
   322   1          num=num-' ';    //µÃµ½Æ«ÒÆºóµÄÖµ
   323   1          LCD_Address_Set(x,y,x+sizex-1,y+sizey-1);  //ÉèÖÃ¹â±êÎ»ÖÃ
@@ -405,9 +406,9 @@ stmt  level    source
   381                º¯ÊýËµÃ÷£ºÏÔÊ¾12*06´óÐ¡µÄ×Ö·û´®
   382                Èë¿ÚÊý¾Ý£ºx    IPS114: ºá×ø±ê£¨ºáÆÁÊ±£º0-39     ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-10     ÊúÆÁÊ±£º0
              --19£©
-  383                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-39      ÊúÆÁÊ±£º0-39£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-19£
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 7   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 7   
 
+  383                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-39      ÊúÆÁÊ±£º0-39£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-19£
              -©
   384                       x  IPS154: ºá×ø±ê£¨ºáÆÁÊ±£º0-39      ÊúÆÁÊ±£º0-39£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-19£
              -©
@@ -473,9 +474,9 @@ stmt  level    source
   437          /******************************************************************************
   438                º¯ÊýËµÃ÷£ºx    IPS114: ºá×ø±ê£¨ºáÆÁÊ±£º0-14     ÊúÆÁÊ±£º0-7£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-3     ÊúÆÁÊ±£º0-6
              -£©
-  439                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-14      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 8   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 8   
 
+  439                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-14      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
   440                       x  IPS154: ºá×ø±ê£¨ºáÆÁÊ±£º0-14      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
   441                       x  IPS200: ºá×ø±ê£¨ºáÆÁÊ±£º0-19      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
   442                          *p  ÒªÏÔÊ¾µÄ×Ö·û´®
@@ -541,9 +542,9 @@ stmt  level    source
              -or_dat)
   502          {
   503   1        int i,ds;
-  504   1        int dx,dy,inc_x, inc_y;
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 9   
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 9   
 
+  504   1        int dx,dy,inc_x, inc_y;
   505   1        int xerr = 0, yerr = 0;                       //³õÊ¼»¯±äÁ¿
   506   1      
   507   1        if(xs==xe)                            //Èç¹ûÊÇ»­´¹Ö±ÏßÔòÖ»Ðè¶ÔÊúÖ±×ø±ê¼ÆÊý
@@ -609,9 +610,9 @@ stmt  level    source
   567                                          xe £º½áÊøx IPS154  (ºáÆÁx:0-240, ÊúÆÁx:0-240)
   568                                          xe £º½áÊøx IPS200  (ºáÆÁx:0-320, ÊúÆÁx:0-240)
   569                                          ys £º½áÊøy IPS114   (ºáÆÁy:0-135, ÊúÆÁx:0-240)
-  570                                          ys £º½áÊøy IPS130  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 10  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 10  
 
+  570                                          ys £º½áÊøy IPS130  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
   571                                          ys £º½áÊøy IPS154  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
   572                                          ys £º½áÊøy IPS200  (ºáÆÁy:0-240, ÊúÆÁx:0-320)
   573                                          color_dat £ºÑÕÉ«
@@ -677,9 +678,9 @@ stmt  level    source
   630   1          unsigned int i,j;
   631   1          unsigned long k=0;
   632   1          LCD_Address_Set(x,y,x+length-1,y+width-1);
-  633   1          for(i=0;i<length;i++)
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 11  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 11  
 
+  633   1          for(i=0;i<length;i++)
   634   1          {
   635   2              for(j=0;j<width;j++)
   636   2              {
@@ -745,9 +746,9 @@ stmt  level    source
   695          //            adder += 1;
   696          //          }
   697          //        }
-  698          //        else              //ÏÔÊ¾¿Õ°××Ö·û
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 12  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 12  
 
+  698          //        else              //ÏÔÊ¾¿Õ°××Ö·û
   699          //        {}
   700          //        //y+=1;//×óÓÒ·½Ïò
   701          //        x+=1;//ÉÏÏÂ·½Ïò
@@ -813,9 +814,9 @@ stmt  level    source
   760                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾µÄÐÐÊýºÍÁÐÊý
   761                          *s_dat ÒªÏÔÊ¾µÄºº×Ö
   762                          word_color ×ÖµÄÑÕÉ«
-  763                          back_color ×ÖµÄ±³¾°É«
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 13  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 13  
 
+  763                          back_color ×ÖµÄ±³¾°É«
   764                ·µ»ØÖµ£º  ÎÞ
   765          ******************************************************************************/
   766          //void LCD_ShowChinese24x24(unsigned int x, unsigned int y,  char *s_dat,unsigned int word_color,unsigned
@@ -881,9 +882,9 @@ stmt  level    source
   824          //    {
   825          //        wm = 0;
   826          //        adder = 1;
-  827          //        while(tfont_Idx[wm] > 127)
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 14  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 14  
 
+  827          //        while(tfont_Idx[wm] > 127)
   828          //        {
   829          //          if(tfont_Idx[wm] == (uint8_t)s_dat[ii])
   830          //          {
@@ -949,9 +950,9 @@ stmt  level    source
   889            * @param    ÎÞ
   890            *
   891            * @return   ÎÞ
-  892            *
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 15  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 15  
 
+  892            *
   893            * @note     ÎÞ
   894            *
   895            * @see      LCD_Show_Logo();
@@ -1017,9 +1018,9 @@ stmt  level    source
   953          void LCDSPI_Road(unsigned char wide_start, unsigned char high_start, unsigned char high, unsigned char wi
              -de, unsigned char *Pixle)
   954          {
-  955   1          uint32_t i;
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 16  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 16  
 
+  955   1          uint32_t i;
   956   1          uint16_t color;
   957   1          uint32_t temp = high * wide;
   958   1          /* ÉèÖÃÏÔÊ¾·¶Î§ */
@@ -1086,9 +1087,9 @@ stmt  level    source
 Module Information          Static   Overlayable
 ------------------------------------------------
   code size            =      3363     ------
-  ecode size           =    ------     ------
-C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          16/04/26  19:10:16  PAGE 17  
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          04/05/26  16:44:43  PAGE 17  
 
+  ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
