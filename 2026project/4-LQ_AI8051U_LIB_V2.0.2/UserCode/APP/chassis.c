@@ -1,4 +1,4 @@
-﻿#include "chassis.h"
+#include "chassis.h"
 #include "inductance.h"
 #include "motor.h"
 #include "LQ_Encoder.h"
@@ -11,7 +11,7 @@ Chassis_TypeDef chassis;
  */
 void Chassis_Init(void)
 {
-    chassis.target_speed = 0;       // 初始化目标速度为0
+    chassis.target_speed = 500;       // 初始化目标速度为0
     chassis.current_deviation = 0;  // 初始化当前偏差为0
     chassis.left_speed = 0;         // 初始化左轮速度为0
     chassis.right_speed = 0;        // 初始化右轮速度为0

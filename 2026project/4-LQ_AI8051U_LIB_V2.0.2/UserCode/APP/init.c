@@ -21,8 +21,8 @@ void User_Init(void)
     // 2. LCD初始化
     IPS_LCD_Init();
     LCD_CLS(u16_BLACK);
-    // 3. 定时器初始化 - 2ms周期
-    TIM_Init_ms(Timer0, 2);
+    // 3. 定时器初始化 
+    TIM_Init_ms(Timer0, 1);
     TIM_Init_ms(Timer1, 2);
     // 4. 电机初始化
     Motor_Init(Motor_FREQ);

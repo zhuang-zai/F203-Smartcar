@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  20:45:37  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_CCD
@@ -66,7 +66,7 @@ stmt  level    source
    50          
    51          /**
    52            * @brief    CCD采集函数
-C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  20:45:37  PAGE 2   
 
    53            *
    54            * @param    p  ：  存放采集数据的首地址
@@ -134,7 +134,7 @@ stmt  level    source
   116   1      }
   117          
   118          /*******************************************************************
-C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  20:45:37  PAGE 3   
 
   119           * 函数名：uint16_t ccd_get_threshold(uint16_t ccd_data[CCD_W])
   120           * 功  能：CCD计算动态阈值
@@ -202,7 +202,7 @@ stmt  level    source
   182   4                  }
   183   3                  if (i <= 3) // 最小边线为3
   184   3                      Left = 3;
-C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  20:45:37  PAGE 4   
 
   185   3              }
   186   2      
@@ -272,7 +272,7 @@ Module Information          Static   Overlayable
   hconst size          =    ------     ------
 End of Module Information.
 
-C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  20:45:37  PAGE 5   
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -25,14 +25,12 @@ typedef struct
 	float integral;
 	float output_max;
 	float output_min;
-	float integral_max;
-	float integral_min;
 	float output;
 	PID_Mode mode;
 } PID_TypeDef;
 
 void PID_AllInit(void);
-void PID_Init(PID_TypeDef *pid, float Kp, float Ki, float Kd, float out_max, float out_min, float i_max, float i_min, PID_Mode mode);
+void PID_Init(PID_TypeDef *pid, float Kp, float Ki, float Kd, float out_max, float out_min,  PID_Mode mode);
 
 // 串级控制专用函数（高性能版本）
 int16 PID_CascadePosition(PID_TypeDef *pid, int16 current, int16 target);

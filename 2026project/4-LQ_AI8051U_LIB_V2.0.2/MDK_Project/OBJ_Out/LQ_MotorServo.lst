@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  16:44:46  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  20:45:35  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_MotorServo
@@ -66,7 +66,7 @@ stmt  level    source
                    PWMx_InitStructure.PWM_Duty = 0;               // PWM占空比时间, 0~Period
                    PWMx_InitStructure.PWM_EnoSelect = ENO6P;      // 输出通道选择,
                    PWM_Configuration(PWM6, &PWMx_InitStructure);  // 始化PWM6,   PWMB
-C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  16:44:46  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  20:45:35  PAGE 2   
 
                    // PWM7设置
                    PWMx_InitStructure.PWM_Mode = CCMRn_PWM_MODE1; // 模式,
@@ -134,7 +134,7 @@ stmt  level    source
                    }
                }
                
-C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  16:44:46  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  20:45:35  PAGE 3   
 
                /*  USE7971*/
                
@@ -202,7 +202,7 @@ stmt  level    source
   182           * 软件版本: V1.0
   183           * 调用举例: MotorInit(12500)  //12.5KHz @45.1584MHz
   184           *           PWM频率 计算方式：Period = (u16)(MAIN_Fosc/freq)
-C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  16:44:46  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  20:45:35  PAGE 4   
 
   185           **************************************************************************************/
   186          void Motor_Ctrl(int16 Motor1, int16 Motor2)
@@ -270,7 +270,7 @@ stmt  level    source
   248   1          PWMx_InitStructure.PWM_DeadTime = 0;                   // 死区发生器设置, 0~255
   249   1          PWMx_InitStructure.PWM_MainOutEnable = ENABLE;         // 主输出使能, ENABLE,DISABLE
   250   1          PWMx_InitStructure.PWM_CEN_Enable = ENABLE;            // 使能计数器, ENABLE,DISABLE
-C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  16:44:46  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  20:45:35  PAGE 5   
 
   251   1          PWM_Configuration(PWMA, &PWMx_InitStructure);          // 初始化PWM通用寄存器,  PWMA
   252   1      
@@ -338,7 +338,7 @@ stmt  level    source
   314   1          PWMx_InitStructure.PWM_MainOutEnable = ENABLE;  // 主输出使能, ENABLE,DISABLE
   315   1          PWMx_InitStructure.PWM_CEN_Enable = ENABLE;     // 使能计数器, ENABLE,DISABLE
   316   1          PWM_Configuration(PWMA, &PWMx_InitStructure);   // 初始化PWM通用寄存器,  PWMA
-C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  16:44:46  PAGE 6   
+C251 COMPILER V5.60.0,  LQ_MotorServo                                                      04/05/26  20:45:35  PAGE 6   
 
   317   1      
   318   1          // PWMA 通道1-4 输出管脚选择

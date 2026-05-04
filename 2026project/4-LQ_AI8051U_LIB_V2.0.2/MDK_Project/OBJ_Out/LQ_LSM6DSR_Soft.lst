@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  16:44:46  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  20:45:35  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_LSM6DSR_Soft
@@ -66,7 +66,7 @@ stmt  level    source
    52           * @date    2025-12-28.
    53           * @example u8 val = lsm6dsr_read_reg(0x68, 0x10);
    54           *************************************************************************/
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  16:44:46  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  20:45:35  PAGE 2   
 
    55          u8 lsm6dsr_read_reg(u8 reg)
    56          {
@@ -134,7 +134,7 @@ stmt  level    source
   116           *************************************************************************/
   117          u8 lsm6dsr_read_id(void)
   118          {
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  16:44:46  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  20:45:35  PAGE 3   
 
   119   1          return lsm6dsr_read_reg(LSM6DSR_WHO_AM);
   120   1      }
@@ -202,7 +202,7 @@ stmt  level    source
   181   1          *ax = ((u16)buf[7]  << 8) | buf[6];
   182   1          *ay = ((u16)buf[9]  << 8) | buf[8];
   183   1          *az = ((u16)buf[11] << 8) | buf[10];
-C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  16:44:46  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_LSM6DSR_Soft                                                    04/05/26  20:45:35  PAGE 4   
 
   184   1      }
   185          

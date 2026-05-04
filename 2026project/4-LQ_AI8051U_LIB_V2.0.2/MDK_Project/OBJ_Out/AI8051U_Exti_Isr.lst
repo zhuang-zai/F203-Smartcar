@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_Exti_Isr                                                   04/05/26  16:44:50  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Exti_Isr                                                   04/05/26  20:45:39  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Exti_Isr
@@ -66,7 +66,7 @@ stmt  level    source
    54   1        // TODO: 在此处添加用户代码
    55   1      //  LED_Ctrl(LED0,RVS);
    56   1      }
-C251 COMPILER V5.60.0,  AI8051U_Exti_Isr                                                   04/05/26  16:44:50  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Exti_Isr                                                   04/05/26  20:45:39  PAGE 2   
 
    57          
    58          //========================================================================

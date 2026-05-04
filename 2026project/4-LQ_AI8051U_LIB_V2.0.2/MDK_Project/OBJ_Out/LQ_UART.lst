@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_UART                                                            04/05/26  16:44:44  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_UART                                                            04/05/26  20:45:34  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_UART
@@ -66,7 +66,7 @@ stmt  level    source
    52   1          COMx_InitDefine   COMx_InitStructure;     // 结构体定义
    53   1      
    54   1          const uart_port = (UARTx_Pin >> 12) & 0x0F; // 0x0 -> UART0// 提取UART编号
-C251 COMPILER V5.60.0,  LQ_UART                                                            04/05/26  16:44:44  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_UART                                                            04/05/26  20:45:34  PAGE 2   
 
    55   1          const pin_group = (UARTx_Pin >> 8) & 0x0F;  // 0x1 -> 组1
    56   1          const rx_pin = UARTx_Pin & 0xFF;            // 0x30 -> 48(十进制)// 提取引脚号
@@ -134,7 +134,7 @@ stmt  level    source
   107   3                  UART_Configuration(UART4, &COMx_InitStructure);       //初始化串口UART4
   108   3                  NVIC_UART4_Init(ENABLE,Priority_1);   //中断使能, ENABLE/DISABLE; 优先级(低到高) Priority_0,Pr
              -iority_1,Priority_2,Priority_3
-C251 COMPILER V5.60.0,  LQ_UART                                                            04/05/26  16:44:44  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_UART                                                            04/05/26  20:45:34  PAGE 3   
 
   109   3              }break;
   110   2      
@@ -202,7 +202,7 @@ stmt  level    source
   172          
   173          
 
-C251 COMPILER V5.60.0,  LQ_UART                                                            04/05/26  16:44:44  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_UART                                                            04/05/26  20:45:34  PAGE 4   
 
 
 Module Information          Static   Overlayable

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        04/05/26  16:44:42  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        04/05/26  20:45:32  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_GPIO_LED
@@ -66,7 +66,7 @@ stmt  level    source
    54   2          if (sta == ON)      LED_PIN1 = LOW;
    55   2          else if (sta == OFF)  LED_PIN1 = HIGH;
    56   2          else if (sta == RVS)  LED_PIN1 = !LED_PIN1;
-C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        04/05/26  16:44:42  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        04/05/26  20:45:32  PAGE 2   
 
    57   2          break;
    58   2        case LED2:

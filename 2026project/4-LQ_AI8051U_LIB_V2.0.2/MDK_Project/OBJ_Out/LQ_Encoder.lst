@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  16:44:47  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  20:45:36  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_Encoder
@@ -66,7 +66,7 @@ stmt  level    source
    54   2          T4L = 0;
    55   2          T4T3M |= (1<<7);
    56   2          return tm;
-C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  16:44:47  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  20:45:36  PAGE 2   
 
    57   2        }
    58   1        else   return 0;
@@ -135,7 +135,7 @@ Module Information          Static   Overlayable
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
-C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  16:44:47  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  20:45:36  PAGE 3   
 
   far data size        =    ------     ------
   huge data size       =    ------     ------

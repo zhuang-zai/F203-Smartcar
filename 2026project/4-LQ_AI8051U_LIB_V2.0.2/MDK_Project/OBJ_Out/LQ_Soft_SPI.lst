@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  16:44:45  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  20:45:35  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_Soft_SPI
@@ -66,7 +66,7 @@ stmt  level    source
    54   4                      (*lqbuff) |= Soft_SPI_MISO_READ(cfg->miso); // 上升沿采样MISO(CPHA=0)
    55   4                      Soft_SPI_SCK_L(cfg->sck);                   // 产生一个下降沿
    56   4                  }
-C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  16:44:45  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  20:45:35  PAGE 2   
 
    57   3                  else if (Soft_SPI_Mode_1 == cfg->mode)
    58   3                  {
@@ -134,7 +134,7 @@ stmt  level    source
   120   1          soft_spi_read_write_n_byte(cfg, rx_buf, len + 1);
   121   1          for (i = 0; i < len; i++)
   122   1          {
-C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  16:44:45  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  20:45:35  PAGE 3   
 
   123   2              buf[i] = rx_buf[i + 1];
   124   2          }
@@ -203,7 +203,7 @@ Module Information          Static   Overlayable
   huge data size       =    ------     ------
   const size           =    ------     ------
   hconst size          =       128     ------
-C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  16:44:45  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  20:45:35  PAGE 4   
 
 End of Module Information.
 
