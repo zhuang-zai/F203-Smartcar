@@ -48,10 +48,9 @@
 #include "LQ_UTM.h"
 #include "LQ_SBUS.h"
 #include "LQ_CCD.h"
-#include "control.h"
 
-
-
-
+/*添加by zhuang消除了警告*/
+#include "lcd.h"
+#include "chassis.h"
 #endif
 

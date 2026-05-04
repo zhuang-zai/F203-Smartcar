@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  control                                                            23/04/26  21:57:25  PAGE 1   
+C251 COMPILER V5.60.0,  control                                                            28/04/26  19:27:17  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE control
 OBJECT MODULE PLACED IN .\OBJ_Out\control.obj
-COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\User_Code\control.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(.
-                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bit) 
-                    -DEBUG PRINT(.\OBJ_Out\control.lst) TABS(2) OBJECT(.\OBJ_Out\control.obj) 
+COMPILER INVOKED BY: D:\keil5-C251\C251\BIN\C251.EXE ..\UserCode\APP\control.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE IN
+                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Us
+                    -erCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\control.lst) TABS(2) OBJECT(.
+                    -\OBJ_Out\control.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   1      //    else
    55   1      //    High_Speed = 60;  
    56   1      //    High_Speed = 30;
-   57   1      //  }
-C251 COMPILER V5.60.0,  control                                                            23/04/26  21:57:25  PAGE 2   
+C251 COMPILER V5.60.0,  control                                                            28/04/26  19:27:17  PAGE 2   
 
+   57   1      //  }
    58   1      //  else
    59   1      //  {
    60   1      //    High_Speed = 0;
@@ -133,9 +134,9 @@ stmt  level    source
   120   2        }
   121   1        else
   122   1        {
-  123   2            LEFT_MOTOR_Duty = range_protect(LEFT_MOTOR_Duty, -MOTOR_MAX, 0);
-C251 COMPILER V5.60.0,  control                                                            23/04/26  21:57:25  PAGE 3   
+C251 COMPILER V5.60.0,  control                                                            28/04/26  19:27:17  PAGE 3   
 
+  123   2            LEFT_MOTOR_Duty = range_protect(LEFT_MOTOR_Duty, -MOTOR_MAX, 0);
   124   2        }
   125   1      
   126   1        if(RIGHT_MOTOR_Duty>0)
@@ -201,9 +202,9 @@ stmt  level    source
   186   1      
   187   1          // 计算当前误差
   188   1          sptr->iError = SetSpeed - ActualSpeed;
-  189   1      
-C251 COMPILER V5.60.0,  control                                                            23/04/26  21:57:25  PAGE 4   
+C251 COMPILER V5.60.0,  control                                                            28/04/26  19:27:17  PAGE 4   
 
+  189   1      
   190   1          // 积分项限幅：限制 KI * iError 在 [-900, +900]
   191   1      //    iTermLimited = sptr->KI * sptr->iError;
   192   1      //    if (iTermLimited > 1000) iTermLimited = 1000;
@@ -213,7 +214,7 @@ stmt  level    source
   196   1          Increase = sptr->KP * (sptr->iError - sptr->LastError)
   197   1                   + sptr->KI * sptr->iError;
   198   1                   + sptr->KD * (sptr->iError - 2 * sptr->LastError + sptr->PrevError);
-*** WARNING C138 IN LINE 198 OF ..\User_Code\control.c: expression with possibly no effect
+*** WARNING C138 IN LINE 198 OF ..\UserCode\APP\control.c: expression with possibly no effect
   199   1      
   200   1          // 更新误差
   201   1          sptr->PrevError = sptr->LastError;
@@ -269,9 +270,9 @@ stmt  level    source
   251   1              char txt[20];
   252   1      //        sprintf(txt, "ADV:%05d ", Get_ADCResult(ADC_CH10_P02)); // ADC_CH8-P00做电源电压 11.0V->1700左右，1
              -2.6V->1970左右
-  253   1      //        LCD_ShowStr_16(0,1,txt,u16_RED_IPS,u16_BLACK);         // 显示电源电压值
-C251 COMPILER V5.60.0,  control                                                            23/04/26  21:57:25  PAGE 5   
+C251 COMPILER V5.60.0,  control                                                            28/04/26  19:27:17  PAGE 5   
 
+  253   1      //        LCD_ShowStr_16(0,1,txt,u16_RED_IPS,u16_BLACK);         // 显示电源电压值
   254   1      //        sprintf(txt, "AL1:%d L1:%05d",(int)left_1,L); // ADC5-P15
   255   1      //        LCD_ShowStr_16(0,2,txt,u16_RED_IPS,u16_BLACK); 
   256   1      //        sprintf(txt, "AL2:%d L2:%05d",(int)left_2,L2); // ADC1P11

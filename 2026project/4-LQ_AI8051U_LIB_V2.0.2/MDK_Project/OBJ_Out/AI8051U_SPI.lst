@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_SPI                                                        27/03/26  21:26:34  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        04/05/26  16:38:12  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_SPI
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_SPI.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_SPI.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_SPI.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_SPI.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_SPI.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_SPI.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    53   2              SPITOCR &= ~0x80;   //从机接收超时功能禁止
    54   2          }
    55   1      
-   56   1          if(SPIx->TimeOutINTEnable == ENABLE) SPITOCR |= 0x40;   //从机接收超时中断使能
-C251 COMPILER V5.60.0,  AI8051U_SPI                                                        27/03/26  21:26:34  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        04/05/26  16:38:12  PAGE 2   
 
+   56   1          if(SPIx->TimeOutINTEnable == ENABLE) SPITOCR |= 0x40;   //从机接收超时中断使能
    57   1          else                                 SPITOCR &= ~0x40;  //从机接收超时中断禁止
    58   1      
    59   1          SPI_RxTimerOut = 0;
@@ -133,9 +134,9 @@ stmt  level    source
   119          // 版本: V1.0, 2020-09-14
   120          //========================================================================
   121          u8 SPI_ReadByte(void)
-  122          {
-C251 COMPILER V5.60.0,  AI8051U_SPI                                                        27/03/26  21:26:34  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        04/05/26  16:38:12  PAGE 3   
 
+  122          {
   123   1          SPDAT = 0xff;
   124   1          if(ESPI)
   125   1          {
@@ -202,9 +203,9 @@ Module Information          Static   Overlayable
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
-  pdata size           =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_SPI                                                        27/03/26  21:26:34  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        04/05/26  16:38:12  PAGE 4   
 
+  pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
   edata size           =       129          2

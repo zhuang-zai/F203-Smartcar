@@ -272,7 +272,7 @@
               <MiscControls></MiscControls>
               <Define>AI8051U_32Bit</Define>
               <Undefine></Undefine>
-              <IncludePath>..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control</IncludePath>
+              <IncludePath>..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE</IncludePath>
             </VariousControls>
           </C251>
           <Ax51>
@@ -323,21 +323,6 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>User_Code</GroupName>
-          <Files>
-            <File>
-              <FileName>control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User_Code\control.c</FilePath>
-            </File>
-            <File>
-              <FileName>measurement.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User_Code\measurement.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>User</GroupName>
           <Files>
             <File>
@@ -373,7 +358,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>APP</GroupName>
+          <GroupName>BSP_LQ</GroupName>
           <Files>
             <File>
               <FileName>LQ_WDT.c</FileName>
@@ -654,6 +639,61 @@
               <FileName>Readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\Readme.txt</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Middle</GroupName>
+          <Files>
+            <File>
+              <FileName>inductance.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\MIDDLE\inductance.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\MIDDLE\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>MPU.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\MIDDLE\MPU.c</FilePath>
+            </File>
+            <File>
+              <FileName>negative_pressure_fan.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\MIDDLE\negative_pressure_fan.c</FilePath>
+            </File>
+            <File>
+              <FileName>sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\MIDDLE\sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\MIDDLE\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\MIDDLE\pid.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application</GroupName>
+          <Files>
+            <File>
+              <FileName>chassis.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\APP\chassis.c</FilePath>
+            </File>
+            <File>
+              <FileName>init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UserCode\APP\init.c</FilePath>
             </File>
           </Files>
         </Group>

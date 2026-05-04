@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_EEPROM                                                          16/04/26  19:10:19  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          04/05/26  16:44:48  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_EEPROM
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_EEPROM.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_EEPROM.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDI
-                    -R(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bi
-                    -t) DEBUG PRINT(.\OBJ_Out\LQ_EEPROM.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_EEPROM.obj) 
+                    -R(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserC
+                    -ode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_EEPROM.lst) TABS(2) OBJECT(.\
+                    -OBJ_Out\LQ_EEPROM.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    53   1      
    54   1        DisableEEPROM();
    55   1      }
-   56          
-C251 COMPILER V5.60.0,  LQ_EEPROM                                                          16/04/26  19:10:19  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          04/05/26  16:44:48  PAGE 2   
 
+   56          
    57          /**********************************************************************************
    58           * 函 数 名：u8 IAP_Read_Byte(u32 eeprom_addr)
    59           * 功    能：从EEPROM指定地址，读取一个字节的数据
@@ -133,9 +134,9 @@ stmt  level    source
   119   2          IAP_ADDRL = (u8)eeprom_addr;     // 送地址低字节（地址需要改变时才需重新送地址）
   120   2          IAP_DATA = *nByte_addr;        // 送数据到IAP_DATA，只有数据改变时才需重新送
   121   2      
-  122   2          EEPROM_Trig(); // 触发EEPROM操作
-C251 COMPILER V5.60.0,  LQ_EEPROM                                                          16/04/26  19:10:19  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          04/05/26  16:44:48  PAGE 3   
 
+  122   2          EEPROM_Trig(); // 触发EEPROM操作
   123   2      
   124   2          eeprom_addr++; // 下一个地址
   125   2          nByte_addr++;  // 下一个数据
@@ -201,9 +202,9 @@ stmt  level    source
   183   2          OLED_P6x8Str(0, 3, txt); // 显示读出的数据
   184   2      
   185   2          EEPROM_Trig(); // 触发EEPROM操作
-  186   2      
-C251 COMPILER V5.60.0,  LQ_EEPROM                                                          16/04/26  19:10:19  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          04/05/26  16:44:48  PAGE 4   
 
+  186   2      
   187   2          eeprom_addr++; // 下一个地址
   188   2          buff++;      // 下一个数据
   189   2        } while (--length); // 直到结束
@@ -270,9 +271,9 @@ Module Information          Static   Overlayable
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
-  xdata-const size     =    ------     ------
-C251 COMPILER V5.60.0,  LQ_EEPROM                                                          16/04/26  19:10:19  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          04/05/26  16:44:48  PAGE 5   
 
+  xdata-const size     =    ------     ------
   edata size           =    ------         52
   bit size             =    ------     ------
   ebit size            =    ------     ------

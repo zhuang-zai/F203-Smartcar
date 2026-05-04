@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_CCD                                                             16/04/26  19:10:19  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_CCD
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_CCD.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_CCD.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(.
-                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bit) 
-                    -DEBUG PRINT(.\OBJ_Out\LQ_CCD.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_CCD.obj) 
+                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode
+                    -\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_CCD.lst) TABS(2) OBJECT(.\OBJ_Ou
+                    -t\LQ_CCD.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    50          
    51          /**
    52            * @brief    CCD采集函数
-   53            *
-C251 COMPILER V5.60.0,  LQ_CCD                                                             16/04/26  19:10:19  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 2   
 
+   53            *
    54            * @param    p  ：  存放采集数据的首地址
    55            *
    56            * @return   无
@@ -133,9 +134,9 @@ stmt  level    source
   116   1      }
   117          
   118          /*******************************************************************
-  119           * 函数名：uint16_t ccd_get_threshold(uint16_t ccd_data[CCD_W])
-C251 COMPILER V5.60.0,  LQ_CCD                                                             16/04/26  19:10:19  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 3   
 
+  119           * 函数名：uint16_t ccd_get_threshold(uint16_t ccd_data[CCD_W])
   120           * 功  能：CCD计算动态阈值
   121           * 参  数：ccd_data[CCD_W]
   122           * 返回值: 阈值((value1_max + value1_min) / 2)
@@ -201,9 +202,9 @@ stmt  level    source
   182   4                  }
   183   3                  if (i <= 3) // 最小边线为3
   184   3                      Left = 3;
-  185   3              }
-C251 COMPILER V5.60.0,  LQ_CCD                                                             16/04/26  19:10:19  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 4   
 
+  185   3              }
   186   2      
   187   2              for (j = 64; j <= 125; j++) // 从中间向右找边线 寻找跳变点提取边线
   188   2              {
@@ -270,6 +271,8 @@ Module Information          Static   Overlayable
   const size           =    ------     ------
   hconst size          =    ------     ------
 End of Module Information.
+
+C251 COMPILER V5.60.0,  LQ_CCD                                                             04/05/26  16:44:47  PAGE 5   
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

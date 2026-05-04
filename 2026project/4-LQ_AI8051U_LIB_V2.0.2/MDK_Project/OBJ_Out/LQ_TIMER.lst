@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_TIMER                                                           16/04/26  19:10:17  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           04/05/26  16:44:44  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_TIMER
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_TIMER.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_TIMER.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR
-                    -(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bit
-                    -) DEBUG PRINT(.\OBJ_Out\LQ_TIMER.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_TIMER.obj) 
+                    -(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCo
+                    -de\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_TIMER.lst) TABS(2) OBJECT(.\OB
+                    -J_Out\LQ_TIMER.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   4              TIMx_InitStructure.TIM_ClkSource = tim_clockT;        //指定时钟源,     指定时钟源为12T模式,TIM_CLO
              -CK_Ext外部时钟
    55   4              TIMx_InitStructure.TIM_ClkOut    = DISABLE;       //是否输出高速脉冲, ENABLE或DISABLE
-   56   4              TIMx_InitStructure.TIM_Value     = Period;              //初值,装载值
-C251 COMPILER V5.60.0,  LQ_TIMER                                                           16/04/26  19:10:17  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           04/05/26  16:44:44  PAGE 2   
 
+   56   4              TIMx_InitStructure.TIM_Value     = Period;              //初值,装载值
    57   4              TIMx_InitStructure.TIM_PS        = freq_ps;           //8位预分频器(n+1), 0~255
    58   4              TIMx_InitStructure.TIM_Run       = ENABLE;        //是否初始化后启动定时器, ENABLE或DISABLE
    59   4              Timer_Inilize(Timer0,&TIMx_InitStructure);        //初始化Timer0
@@ -133,9 +134,9 @@ stmt  level    source
   118   3           default:
   119   3              /*  */
   120   3              break;
-  121   3          }
-C251 COMPILER V5.60.0,  LQ_TIMER                                                           16/04/26  19:10:17  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           04/05/26  16:44:44  PAGE 3   
 
+  121   3          }
   122   2      
   123   2         }
   124   1      }

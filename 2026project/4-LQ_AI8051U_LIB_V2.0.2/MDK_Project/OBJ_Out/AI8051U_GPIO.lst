@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       27/03/26  21:26:33  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       04/05/26  16:38:10  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_GPIO
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_GPIO.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_GPIO.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE IN
-                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_3
-                    -2Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_GPIO.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_GPIO.obj) 
+                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Us
+                    -erCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_GPIO.lst) TABS(2) OBJ
+                    -ECT(.\OBJ_Out\AI8051U_GPIO.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    50   2          }
    51   1          if(GPIO == GPIO_P5)
    52   1          {
-   53   2          if(GPIOx->Mode == GPIO_Mode_Out_IN)         P5M0 &= ~GPIOx->Pin, P5M1 &= ~GPIOx->Pin;
-C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       27/03/26  21:26:33  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       04/05/26  16:38:10  PAGE 2   
 
+   53   2          if(GPIOx->Mode == GPIO_Mode_Out_IN)         P5M0 &= ~GPIOx->Pin, P5M1 &= ~GPIOx->Pin;
    54   2              if(GPIOx->Mode == GPIO_Mode_IN_FLOATING)    P5M0 &= ~GPIOx->Pin, P5M1 |=  GPIOx->Pin;
    55   2          if(GPIOx->Mode == GPIO_Mode_Out_PP)         P5M0 |=  GPIOx->Pin, P5M1 &= ~GPIOx->Pin;
    56   2          if(GPIOx->Mode == GPIO_Mode_Out_OD)         P5M0 |=  GPIOx->Pin, P5M1 |=  GPIOx->Pin;
@@ -133,9 +134,9 @@ stmt  level    source
   116          /*************************************************************************
   117           * @code    void GPIO_Set_IN_FLOATING(Pin_list Pin_x);
   118           * @brief   设置引脚为浮空输入模式，该函数用户不需要动
-  119           * @param   Pin_x:引脚号
-C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       27/03/26  21:26:33  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       04/05/26  16:38:10  PAGE 3   
 
+  119           * @param   Pin_x:引脚号
   120           * @return  无
   121           * @date    2025-10-22.
   122           * @example GPIO_Set_IN_FLOATING(P2_0); // 设置 P2_0 管脚为浮空输入
@@ -201,9 +202,9 @@ stmt  level    source
   182   2              case GPIO_P3: P3M0 |= Pin_Bit, P3M1 |= Pin_Bit; break;
   183   2              case GPIO_P4: P4M0 |= Pin_Bit, P4M1 |= Pin_Bit; break;
   184   2              case GPIO_P5: P5M0 |= Pin_Bit, P5M1 |= Pin_Bit; break;
-  185   2              case GPIO_P6: P6M0 |= Pin_Bit, P6M1 |= Pin_Bit; break;
-C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       27/03/26  21:26:33  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       04/05/26  16:38:10  PAGE 4   
 
+  185   2              case GPIO_P6: P6M0 |= Pin_Bit, P6M1 |= Pin_Bit; break;
   186   2              case GPIO_P7: P7M0 |= Pin_Bit, P7M1 |= Pin_Bit; break;
   187   2              default: break;
   188   2          }
@@ -269,9 +270,9 @@ stmt  level    source
   248           * @param   Pin_x  ：管脚标号.
   249           * @param   enable ：使能标志, ENABLE-使能, DISABLE-禁止.
   250           * @return  none.
-  251           * @date    2025-12-22.
-C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       27/03/26  21:26:33  PAGE 5   
+C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       04/05/26  16:38:10  PAGE 5   
 
+  251           * @date    2025-12-22.
   252           * @example GPIO_down_up(P2_0, ENABLE); // 设置 P2_0 管脚下拉
   253           *************************************************************************/
   254          void gpio_pull_down(Pin_list Pin_x, u8 _enable)
@@ -337,9 +338,9 @@ stmt  level    source
   311   1          if (Pin_x <= P7_7)
   312   1          {
   313   2              (_enable == ENABLE) ? ((*(&P0DR + port_offSet) &= ~pin_num)) : ((*(&P0DR + port_offSet)) |= pin_n
-             -um);
-C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       27/03/26  21:26:33  PAGE 6   
+C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       04/05/26  16:38:10  PAGE 6   
 
+             -um);
   314   2          }
   315   1      }
   316          
@@ -405,9 +406,9 @@ stmt  level    source
   374   2              default: break;
   375   2          }
   376   1      }
-  377          
-C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       27/03/26  21:26:33  PAGE 7   
+C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       04/05/26  16:38:10  PAGE 7   
 
+  377          
   378          /*************************************************************************
   379           * @code    u8 gpio_read_pin(Pin_list Pin_x)
   380           * @brief   获取其 GPIO 引脚电平状态.
@@ -474,9 +475,9 @@ Module Information          Static   Overlayable
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
-  huge data size       =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       27/03/26  21:26:33  PAGE 8   
+C251 COMPILER V5.60.0,  AI8051U_GPIO                                                       04/05/26  16:38:10  PAGE 8   
 
+  huge data size       =    ------     ------
   const size           =    ------     ------
   hconst size          =    ------     ------
 End of Module Information.

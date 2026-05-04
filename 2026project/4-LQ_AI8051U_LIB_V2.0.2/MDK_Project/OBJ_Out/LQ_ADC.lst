@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_ADC                                                             23/04/26  14:40:24  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_ADC                                                             04/05/26  16:44:43  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_ADC
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_ADC.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_ADC.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(.
-                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32Bit) 
-                    -DEBUG PRINT(.\OBJ_Out\LQ_ADC.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_ADC.obj) 
+                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode
+                    -\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_ADC.lst) TABS(2) OBJECT(.\OBJ_Ou
+                    -t\LQ_ADC.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    50           * 该函数用于初始化ADC和OLED显示屏，并在OLED上显示多个ADC通道的采样值
    51           */
    52          
-   53          //#define USE_OLED  // 使用USE_OLED
-C251 COMPILER V5.60.0,  LQ_ADC                                                             23/04/26  14:40:24  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_ADC                                                             04/05/26  16:44:43  PAGE 2   
 
+   53          //#define USE_OLED  // 使用USE_OLED
    54          #define USE_IPS_LCD  // 使用IPS_LCD
    55          
    56          void Test_ADC()
@@ -134,9 +135,9 @@ Module Information          Static   Overlayable
 ------------------------------------------------
   code size            =       480     ------
   ecode size           =    ------     ------
-  data size            =    ------     ------
-C251 COMPILER V5.60.0,  LQ_ADC                                                             23/04/26  14:40:24  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_ADC                                                             04/05/26  16:44:43  PAGE 3   
 
+  data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------

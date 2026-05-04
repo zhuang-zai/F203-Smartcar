@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_OLED096
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_OLED096.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_OLED096.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCD
-                    -IR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32B
-                    -it) DEBUG PRINT(.\OBJ_Out\LQ_OLED096.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_OLED096.obj) 
+                    -IR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\User
+                    -Code\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_OLED096.lst) TABS(2) OBJECT(
+                    -.\OBJ_Out\LQ_OLED096.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    52   1          OLED_WrCmd(0x00);//-not offset  不偏移
    53   1          OLED_WrCmd(0xd5);//--set display clock divide ratio/oscillator frequency  设置显示时钟除法比/振荡器频
              -率
-   54   1          OLED_WrCmd(0x80);//--set divide ratio, Set Clock as 100 Frames/Sec   设置除法比，将时钟设置为 100 帧/
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 2   
 
+   54   1          OLED_WrCmd(0x80);//--set divide ratio, Set Clock as 100 Frames/Sec   设置除法比，将时钟设置为 100 帧/
              -秒
    55   1          OLED_WrCmd(0xd9);//--set pre-charge period  设置预充电周期
    56   1          OLED_WrCmd(0xf1);//Set Pre-Charge as 15 Clocks & Discharge as 1 Clock  将预充电设置为 15 个时钟和放电
@@ -133,9 +134,9 @@ stmt  level    source
   115              { 0x00, 0x7F, 0x08, 0x08, 0x08, 0x7F },   // H
   116              { 0x00, 0x00, 0x41, 0x7F, 0x41, 0x00 },   // I
   117              { 0x00, 0x20, 0x40, 0x41, 0x3F, 0x01 },   // J
-  118              { 0x00, 0x7F, 0x08, 0x14, 0x22, 0x41 },   // K
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 3   
 
+  118              { 0x00, 0x7F, 0x08, 0x14, 0x22, 0x41 },   // K
   119              { 0x00, 0x7F, 0x40, 0x40, 0x40, 0x40 },   // L
   120              { 0x00, 0x7F, 0x02, 0x0C, 0x02, 0x7F },   // M
   121              { 0x00, 0x7F, 0x04, 0x08, 0x10, 0x7F },   // N
@@ -201,9 +202,9 @@ stmt  level    source
   181              0x00,0xF0,0x90,0x90,0x90,0x90,0xFE,0x90,0x90,0x90,0x90,0xF0,0x00,0x00,
   182              0x00,0x0F,0x04,0x04,0x04,0x04,0x3F,0x44,0x44,0x44,0x44,0x47,0x70,0x00,//电2
   183              0x80,0x82,0x82,0x82,0x82,0x82,0xC2,0xA2,0x92,0x8A,0x86,0x82,0x80,0x00,
-  184              0x00,0x00,0x00,0x00,0x40,0x40,0x7F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,//子3
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 4   
 
+  184              0x00,0x00,0x00,0x00,0x40,0x40,0x7F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,//子3
   185              0x40,0x48,0x48,0xF8,0x44,0x44,0x20,0xC4,0x18,0x00,0xFE,0x00,0x00,0x00,
   186              0x08,0x04,0x03,0x7F,0x02,0x04,0x02,0x02,0x02,0x02,0x7F,0x01,0x01,0x00,//科4
   187              0x10,0x10,0xFE,0x10,0x00,0x90,0x90,0x90,0xFE,0x90,0x90,0x10,0x00,0x00,
@@ -269,9 +270,9 @@ stmt  level    source
   246              0x00,0x02,0x04,0x18,0xE0,0x00,0x00,0x00,0x00,0x40,0x20,0x18,0x07,0x00,0x00,0x00,//)9
   247              0x40,0x40,0x80,0xF0,0x80,0x40,0x40,0x00,0x02,0x02,0x01,0x0F,0x01,0x02,0x02,0x00,//*10
   248              0x00,0x00,0x00,0xF0,0x00,0x00,0x00,0x00,0x01,0x01,0x01,0x1F,0x01,0x01,0x01,0x00,//+11
-  249              0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0xB0,0x70,0x00,0x00,0x00,0x00,0x00,//,12
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 5   
 
+  249              0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0xB0,0x70,0x00,0x00,0x00,0x00,0x00,//,12
   250              0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x01,0x01,0x01,0x01,0x01,0x01,//-13
   251              0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x30,0x30,0x00,0x00,0x00,0x00,0x00,//.14
   252              0x00,0x00,0x00,0x00,0x80,0x60,0x18,0x04,0x00,0x60,0x18,0x06,0x01,0x00,0x00,0x00,///15
@@ -337,9 +338,9 @@ stmt  level    source
   312              0x08,0xF8,0x00,0x00,0x80,0x80,0x80,0x00,0x20,0x3F,0x24,0x02,0x2D,0x30,0x20,0x00,//k75
   313              0x00,0x08,0x08,0xF8,0x00,0x00,0x00,0x00,0x00,0x20,0x20,0x3F,0x20,0x20,0x00,0x00,//l76
   314              0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x00,0x20,0x3F,0x20,0x00,0x3F,0x20,0x00,0x3F,//m77
-  315              0x80,0x80,0x00,0x80,0x80,0x80,0x00,0x00,0x20,0x3F,0x21,0x00,0x00,0x20,0x3F,0x20,//n78
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 6   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 6   
 
+  315              0x80,0x80,0x00,0x80,0x80,0x80,0x00,0x00,0x20,0x3F,0x21,0x00,0x00,0x20,0x3F,0x20,//n78
   316              0x00,0x00,0x80,0x80,0x80,0x80,0x00,0x00,0x00,0x1F,0x20,0x20,0x20,0x20,0x1F,0x00,//o79
   317              0x80,0x80,0x00,0x80,0x80,0x00,0x00,0x00,0x80,0xFF,0xA1,0x20,0x20,0x11,0x0E,0x00,//p80
   318              0x00,0x00,0x00,0x80,0x80,0x80,0x80,0x00,0x00,0x0E,0x11,0x20,0x20,0xA0,0xFF,0x80,//q81
@@ -405,9 +406,9 @@ stmt  level    source
   378              0XC1,0XC1,0XC1,0XC1,0XC1,0X01,0X01,0X01,0X01,0X01,0X01,0XFF,0XFF,0XFF,0XFF,0XFF,
   379              0XFF,0XFF,0XFF,0XFF,0X00,0X00,0X00,0XFF,0XFF,0X00,0XFF,0XFF,0XFF,0X00,0XFE,0XFF,
   380              0X00,0X00,0X03,0X0F,0X1F,0X1E,0X18,0X00,0XFF,0XFF,0XFF,0XFF,0X80,0X80,0X00,0X00,
-  381              0X80,0X80,0XFF,0XFF,0XFF,0XFF,0X40,0X00,0X00,0X02,0X1A,0X7A,0XFA,0XF2,0XE3,0X83,
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 7   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 7   
 
+  381              0X80,0X80,0XFF,0XFF,0XFF,0XFF,0X40,0X00,0X00,0X02,0X1A,0X7A,0XFA,0XF2,0XE3,0X83,
   382              0X83,0XC3,0XF2,0XFE,0X7E,0X3E,0X0E,0X00,0X00,0X07,0X0F,0X1F,0X3F,0X3F,0X7F,0X7F,
   383              0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,
   384              0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X7F,0X00,0X00,0X00,
@@ -473,9 +474,9 @@ stmt  level    source
   444   2              if(cmd&0x80){OLED_DI_H;}
   445   2              else{OLED_DI_L;}
   446   2              OLED_CK_H;
-  447   2              OLED_CK_L;
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 8   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 8   
 
+  447   2              OLED_CK_L;
   448   2              cmd<<=1;
   449   2          }
   450   1          OLED_CS_H;
@@ -541,9 +542,9 @@ stmt  level    source
   510            * @return   无
   511            *
   512            * @note     无
-  513            *
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 9   
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 9   
 
+  513            *
   514            * @see      OLED_CLS(); //清屏
   515            *
   516            * @date     2019/6/13 星期四
@@ -609,9 +610,9 @@ stmt  level    source
   575            */
   576          void OLED_ClrDot(unsigned char x,unsigned char y)
   577          {
-  578   1          OLED_Set_Pos(x,(unsigned char)(y>>3));
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 10  
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 10  
 
+  578   1          OLED_Set_Pos(x,(unsigned char)(y>>3));
   579   1          OLED_WrCmd((unsigned char)(0xb0+(y>>3)));
   580   1          OLED_WrCmd((unsigned char)(((x&0xf0)>>4)|0x10));
   581   1          OLED_WrCmd((unsigned char)((x&0x0f)|0x00));
@@ -677,9 +678,9 @@ stmt  level    source
   640          
   641          
   642          /*!
-  643            * @brief    写入一组标准ASCII字符串
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 11  
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 11  
 
+  643            * @brief    写入一组标准ASCII字符串
   644            *
   645            * @param    x  : 0-127
   646            * @param    y  : 0-7
@@ -745,9 +746,9 @@ stmt  level    source
   706   2          }
   707   1      }
   708          
-  709          /*!
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 12  
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 12  
 
+  709          /*!
   710            * @brief    输出汉字字符串
   711            *
   712            * @param    x  : 0-127
@@ -813,9 +814,9 @@ stmt  level    source
   772   3                  tm=y+1;
   773   3              OLED_Set_Pos(x,tm);
   774   3      
-  775   3                  for(wm = 0;wm < 16;wm++)
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 13  
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 13  
 
+  775   3                  for(wm = 0;wm < 16;wm++)
   776   3                  {
   777   4                      OLED_WrDat(0);
   778   4                  }
@@ -881,9 +882,9 @@ stmt  level    source
   837            */
   838          void OLED_Show_LQLogo(void)
   839          {
-  840   1          unsigned int ii=0;
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 14  
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 14  
 
+  840   1          unsigned int ii=0;
   841   1          unsigned char x,y;
   842   1      
   843   1          for(y=0;y<8;y++)
@@ -949,9 +950,9 @@ stmt  level    source
   903          /*!
   904            * @brief    画边线 MT9V034显示图像时 可以用这个画边线
   905            *
-  906            * @param    无
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 15  
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 15  
 
+  906            * @param    无
   907            *
   908            * @return   无
   909            *
@@ -1017,9 +1018,9 @@ stmt  level    source
   969          {
   970   1          unsigned char i = 0, j = 0,temp=0;
   971   1          unsigned char wide_start = (128 - wide)/2;
-  972   1        unsigned char tm;
-C251 COMPILER V5.60.0,  LQ_OLED096                                                         16/04/26  19:10:16  PAGE 16  
+C251 COMPILER V5.60.0,  LQ_OLED096                                                         04/05/26  16:44:42  PAGE 16  
 
+  972   1        unsigned char tm;
   973   1          for(i=0;i<high-7;i+=8)
   974   1          {
   975   2              tm=i/8+1;

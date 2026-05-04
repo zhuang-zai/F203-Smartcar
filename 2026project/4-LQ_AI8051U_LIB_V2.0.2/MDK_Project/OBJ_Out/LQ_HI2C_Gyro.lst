@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       16/04/26  19:10:20  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       04/05/26  16:44:49  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_HI2C_Gyro
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_HI2C_Gyro.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_HI2C_Gyro.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE IN
-                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_3
-                    -2Bit) DEBUG PRINT(.\OBJ_Out\LQ_HI2C_Gyro.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_HI2C_Gyro.obj) 
+                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Us
+                    -erCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_HI2C_Gyro.lst) TABS(2) OBJ
+                    -ECT(.\OBJ_Out\LQ_HI2C_Gyro.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54            * @brief    初始化陀螺仪
    55            * @param    无
    56            * @return   0：初始化成功   1：失败
-   57            * @note     使用前先初始化IIC接口
-C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       16/04/26  19:10:20  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       04/05/26  16:44:49  PAGE 2   
 
+   57            * @note     使用前先初始化IIC接口
    58            * @see      MPU6050_Init();
    59            * @date     2019/6/12 星期三
    60            *************************************************************************/
@@ -133,9 +134,9 @@ stmt  level    source
   117          
   118          /**************************************************************************
   119            * @brief    陀螺仪 读一个寄存器
-  120            *
-C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       16/04/26  19:10:20  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       04/05/26  16:44:49  PAGE 3   
 
+  120            *
   121            * @param    addr  :器件地址
   122            * @param    reg   :寄存器地址
   123            *
@@ -201,9 +202,9 @@ stmt  level    source
   183          
   184          
   185          
-  186          
-C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       16/04/26  19:10:20  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       04/05/26  16:44:49  PAGE 4   
 
+  186          
   187          
   188          
   189          

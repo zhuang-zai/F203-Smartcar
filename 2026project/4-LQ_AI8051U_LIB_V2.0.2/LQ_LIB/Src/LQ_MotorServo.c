@@ -110,11 +110,11 @@ void Motor_Ctrl(int16 Motor1, int16 Motor2)
     {
         Motor2 = 0 - Motor2;
         UpdatePwmCh(PWM7, 0);
-        UpdatePwmCh(PWM8, Motor1);
+        UpdatePwmCh(PWM8, Motor2);
     }
     else
     {
-        UpdatePwmCh(PWM7, Motor1);
+        UpdatePwmCh(PWM7, Motor2);
         UpdatePwmCh(PWM8, 0);
     }
 }

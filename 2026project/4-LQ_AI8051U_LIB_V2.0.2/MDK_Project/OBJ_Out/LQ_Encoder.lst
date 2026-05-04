@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_Encoder                                                         16/04/26  19:10:18  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  16:44:47  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_Encoder
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_Encoder.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_Encoder.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCD
-                    -IR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32B
-                    -it) DEBUG PRINT(.\OBJ_Out\LQ_Encoder.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_Encoder.obj) 
+                    -IR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\User
+                    -Code\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_Encoder.lst) TABS(2) OBJECT(
+                    -.\OBJ_Out\LQ_Encoder.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   2          T4L = 0;
    55   2          T4T3M |= (1<<7);
    56   2          return tm;
-   57   2        }
-C251 COMPILER V5.60.0,  LQ_Encoder                                                         16/04/26  19:10:18  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  16:44:47  PAGE 2   
 
+   57   2        }
    58   1        else   return 0;
    59   1      }
    60          
@@ -134,9 +135,9 @@ Module Information          Static   Overlayable
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
-  far data size        =    ------     ------
-C251 COMPILER V5.60.0,  LQ_Encoder                                                         16/04/26  19:10:18  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_Encoder                                                         04/05/26  16:44:47  PAGE 3   
 
+  far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
   hconst size          =    ------     ------

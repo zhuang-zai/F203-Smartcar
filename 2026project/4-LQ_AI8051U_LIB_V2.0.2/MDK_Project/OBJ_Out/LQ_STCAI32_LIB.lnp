@@ -1,5 +1,3 @@
-".\OBJ_Out\control.obj",
-".\OBJ_Out\measurement.obj",
 ".\OBJ_Out\main.obj",
 "..\Driver\AI8051U_32_MDU32.LIB",
 ".\OBJ_Out\LQ_WDT.obj",
@@ -53,7 +51,16 @@
 ".\OBJ_Out\AI8051U_SPI.obj",
 ".\OBJ_Out\AI8051U_Timer.obj",
 ".\OBJ_Out\AI8051U_UART.obj",
-".\OBJ_Out\AI8051U_WDT.obj" 
+".\OBJ_Out\AI8051U_WDT.obj",
+".\OBJ_Out\inductance.obj",
+".\OBJ_Out\motor.obj",
+".\OBJ_Out\MPU.obj",
+".\OBJ_Out\negative_pressure_fan.obj",
+".\OBJ_Out\sensor.obj",
+".\OBJ_Out\lcd.obj",
+".\OBJ_Out\pid.obj",
+".\OBJ_Out\chassis.obj",
+".\OBJ_Out\init.obj" 
 TO ".\OBJ_Out\LQ_STCAI32_LIB" 
 PRINT(".\OBJ_Out\LQ_STCAI32_LIB.map") CASE DISABLEWARNING (57,16) 
 REMOVEUNUSED

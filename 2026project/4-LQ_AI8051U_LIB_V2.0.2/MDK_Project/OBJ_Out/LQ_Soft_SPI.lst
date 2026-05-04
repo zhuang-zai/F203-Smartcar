@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        16/04/26  19:10:18  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  16:44:45  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_Soft_SPI
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_Soft_SPI.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_Soft_SPI.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\LQ_Soft_SPI.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_Soft_SPI.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_Soft_SPI.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\LQ_Soft_SPI.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   4                      (*lqbuff) |= Soft_SPI_MISO_READ(cfg->miso); // 上升沿采样MISO(CPHA=0)
    55   4                      Soft_SPI_SCK_L(cfg->sck);                   // 产生一个下降沿
    56   4                  }
-   57   3                  else if (Soft_SPI_Mode_1 == cfg->mode)
-C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        16/04/26  19:10:18  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  16:44:45  PAGE 2   
 
+   57   3                  else if (Soft_SPI_Mode_1 == cfg->mode)
    58   3                  {
    59   4                      Soft_SPI_SCK_H(cfg->sck); // 产生一个上升沿
    60   4                      (*lqbuff) = (*lqbuff) << 1;
@@ -133,9 +134,9 @@ stmt  level    source
   120   1          soft_spi_read_write_n_byte(cfg, rx_buf, len + 1);
   121   1          for (i = 0; i < len; i++)
   122   1          {
-  123   2              buf[i] = rx_buf[i + 1];
-C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        16/04/26  19:10:18  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  16:44:45  PAGE 3   
 
+  123   2              buf[i] = rx_buf[i + 1];
   124   2          }
   125   1      }
   126          
@@ -202,9 +203,9 @@ Module Information          Static   Overlayable
   huge data size       =    ------     ------
   const size           =    ------     ------
   hconst size          =       128     ------
-End of Module Information.
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        04/05/26  16:44:45  PAGE 4   
 
-C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        16/04/26  19:10:18  PAGE 4   
+End of Module Information.
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

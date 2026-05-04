@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_PWM
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_PWM.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_PWM.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_PWM.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_PWM.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_PWM.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_PWM.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   2      
    55   2          if (PWMx->PWM_EnoSelect & ENO2P)
    56   2          {
-   57   3            PWMA_CC2E_Enable(); // 开启输入捕获/比较输出
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 2   
 
+   57   3            PWMA_CC2E_Enable(); // 开启输入捕获/比较输出
    58   3            PWMA_ENO |= ENO2P;
    59   3          }
    60   2          else
@@ -133,9 +134,9 @@ stmt  level    source
   120   2          {
   121   3            PWMA_CC4E_Enable(); // 开启输入捕获/比较输出
   122   3            PWMA_ENO |= ENO4P;
-  123   3          }
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 3   
 
+  123   3          }
   124   2          else
   125   2          {
   126   3            PWMA_CC4E_Disable(); // 关闭输入捕获/比较输出
@@ -201,9 +202,9 @@ stmt  level    source
   185   2          if (PWMx->PWM_EnoSelect & ENO6P)
   186   2          {
   187   3            PWMB_CC6E_Enable(); // 开启输入捕获/比较输出
-  188   3            PWMB_ENO |= ENO6P;
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 4   
 
+  188   3            PWMB_ENO |= ENO6P;
   189   3          }
   190   2          else
   191   2          {
@@ -269,9 +270,9 @@ stmt  level    source
   250   2          PWMB_AutoReload(PWMx->PWM_Period);         // 周期设置
   251   2          PWMB_BrakeOutputEnable(PWMx->PWM_MainOutEnable); // 主输出使能
   252   2          PWMB_CEN_Enable(PWMx->PWM_CEN_Enable);       // 使能计数器
-  253   2          return SUCCESS;
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 5   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 5   
 
+  253   2          return SUCCESS;
   254   2        }
   255   1      
   256   1        return FAIL; // 错误
@@ -337,9 +338,9 @@ stmt  level    source
   316   2          PWMA_Duty3(Duty);
   317   2          PWMA_Duty4(Duty);
   318   2          break;
-  319   2      
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 6   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 6   
 
+  319   2      
   320   2        case PWMB:
   321   2          PWMB_Duty5(Duty);
   322   2          PWMB_Duty6(Duty);
@@ -405,9 +406,9 @@ stmt  level    source
   382          {
   383   1        while (HSPWMA_ADR & 0x80)
   384   1          ;           // 等待前一个异步读写完成
-  385   1        HSPWMA_DAT = dat;     // 准备需要写入的数据
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 7   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 7   
 
+  385   1        HSPWMA_DAT = dat;     // 准备需要写入的数据
   386   1        HSPWMA_ADR = addr & 0x7f; // 设置间接访问地址,只需要设置原XFR地址的低7位
   387   1                      // HSPWMA_ADDR寄存器的最高位写0,表示写数据
   388   1      }
@@ -473,9 +474,9 @@ stmt  level    source
   448   2          {
   449   3            tmpENO &= ~ENO2P;
   450   3            tmpCCER1 &= ~0x10;
-  451   3          }
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 8   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 8   
 
+  451   3          }
   452   2          if (PWMx->PWM_EnoSelect & ENO2N)
   453   2          {
   454   3            tmpENO |= ENO2N;
@@ -541,9 +542,9 @@ stmt  level    source
   514   2          WritePWMA((u8)&PWMA_CCR1L, (u8)DUTYx->PWM1_Duty);
   515   2          WritePWMA((u8)&PWMA_CCR2H, (u8)(DUTYx->PWM2_Duty >> 8)); // 设置输出PWM的占空比
   516   2          WritePWMA((u8)&PWMA_CCR2L, (u8)DUTYx->PWM2_Duty);
-  517   2          WritePWMA((u8)&PWMA_CCR3H, (u8)(DUTYx->PWM3_Duty >> 8)); // 设置输出PWM的占空比
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 9   
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 9   
 
+  517   2          WritePWMA((u8)&PWMA_CCR3H, (u8)(DUTYx->PWM3_Duty >> 8)); // 设置输出PWM的占空比
   518   2          WritePWMA((u8)&PWMA_CCR3L, (u8)DUTYx->PWM3_Duty);
   519   2          WritePWMA((u8)&PWMA_CCR4H, (u8)(DUTYx->PWM4_Duty >> 8)); // 设置输出PWM的占空比
   520   2          WritePWMA((u8)&PWMA_CCR4L, (u8)DUTYx->PWM4_Duty);
@@ -609,9 +610,9 @@ stmt  level    source
   580   2          WritePWMB((u8)&PWMB_CCER2, tmpCCER2);
   581   2          WritePWMB((u8)&PWMB_ENO, tmpENO);            // 使能PWM信号输出端口
   582   2          WritePWMB((u8)&PWMB_CCR5H, (u8)(DUTYx->PWM5_Duty >> 8)); // 设置输出PWM的占空比
-  583   2          WritePWMB((u8)&PWMB_CCR5L, (u8)DUTYx->PWM5_Duty);
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 10  
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 10  
 
+  583   2          WritePWMB((u8)&PWMB_CCR5L, (u8)DUTYx->PWM5_Duty);
   584   2          WritePWMB((u8)&PWMB_CCR6H, (u8)(DUTYx->PWM6_Duty >> 8)); // 设置输出PWM的占空比
   585   2          WritePWMB((u8)&PWMB_CCR6L, (u8)DUTYx->PWM6_Duty);
   586   2          WritePWMB((u8)&PWMB_CCR7H, (u8)(DUTYx->PWM7_Duty >> 8)); // 设置输出PWM的占空比
@@ -677,9 +678,9 @@ stmt  level    source
   646   2          WritePWMB((u8)&PWMB_CCR8L, (u8)PWMx->PWM8_Duty);
   647   2          break;
   648   2      
-  649   2        case PWMA:
-C251 COMPILER V5.60.0,  AI8051U_PWM                                                        27/03/26  21:26:33  PAGE 11  
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        04/05/26  16:38:11  PAGE 11  
 
+  649   2        case PWMA:
   650   2          WritePWMA((u8)&PWMA_CCR1H, (u8)(PWMx->PWM1_Duty >> 8)); // 设置输出PWM的占空比
   651   2          WritePWMA((u8)&PWMA_CCR1L, (u8)PWMx->PWM1_Duty);
   652   2          WritePWMA((u8)&PWMA_CCR2H, (u8)(PWMx->PWM2_Duty >> 8)); // 设置输出PWM的占空比

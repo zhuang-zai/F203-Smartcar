@@ -1,0 +1,77 @@
+C251 COMPILER V5.60.0,  init                                                               04/05/26  16:44:53  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE init
+OBJECT MODULE PLACED IN .\OBJ_Out\init.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\UserCode\APP\init.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(.
+                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode
+                    -\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\init.lst) TABS(2) OBJECT(.\OBJ_Out\
+                    -init.obj) 
+
+stmt  level    source
+
+    1          #include "init.h"
+    2          #include "lcd.h"
+    3          #include "motor.h"
+    4          #include "chassis.h"
+    5          #include "LQ_MotorServo.h"
+    6          #include "LQ_IPSLCD.h"
+    7          #include "LQ_TIMER.h"
+    8          #include "LQ_HI2C_Gyro.h"
+    9          #include "pid.h"
+   10          #include "inductance.h"
+   11          
+   12          /**
+   13           * @brief 统一初始化所有外设和模块
+   14           * 包含: ADC, LCD, Timer, Motor, PID, Chassis等
+   15           */
+   16          void User_Init(void)
+   17          {
+   18   1          //LQ写的
+   19   1          // 1. ADC初始化
+   20   1          ADC_Init();
+   21   1          // 2. LCD初始化
+   22   1          IPS_LCD_Init();
+   23   1          LCD_CLS(u16_BLACK);
+   24   1          // 3. 定时器初始化 - 2ms周期
+   25   1          TIM_Init_ms(Timer0, 2);
+   26   1          TIM_Init_ms(Timer1, 2);
+   27   1          // 4. 电机初始化
+   28   1          Motor_Init(Motor_FREQ);
+   29   1          // 5. 陀螺仪初始化（可选）
+   30   1          // lsm6dsr_init();  //软件陀螺仪初始化
+   31   1          LQ_HARD_SPI_LSM60DSR_Init(); // 硬件陀螺仪初始化
+   32   1      
+   33   1          //下面是我自己写的
+   34   1          //PID参数初始化（速度环+方向环）
+   35   1          PID_AllInit();
+   36   1          //底盘初始化
+   37   1          Chassis_Init();
+   38   1          delay_ms(100);
+   39   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        51     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+C251 COMPILER V5.60.0,  init                                                               04/05/26  16:44:53  PAGE 2   
+
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

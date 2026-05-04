@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_DMA                                                        27/03/26  21:26:32  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        04/05/26  16:38:09  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_DMA
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_DMA.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_DMA.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_DMA.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_DMA.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_DMA.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_DMA.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   1          DMA_M2M_CFG &= ~0x10; // 数据写入后地址自减
    55   1      
    56   1        if (DMA->DMA_Enable == ENABLE)
-   57   1          DMA_M2M_CR |= 0x80; // 使能M2M DMA
-C251 COMPILER V5.60.0,  AI8051U_DMA                                                        27/03/26  21:26:32  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        04/05/26  16:38:09  PAGE 2   
 
+   57   1          DMA_M2M_CR |= 0x80; // 使能M2M DMA
    58   1        else
    59   1          DMA_M2M_CR &= ~0x80; // 禁止M2M DMA
    60   1      }
@@ -133,9 +134,9 @@ stmt  level    source
   120   2          DMA_UR1T_TXAL = (u8)(DMA->DMA_TX_Buffer);
   121   2          DMA_UR1R_RXAH = (u8)(DMA->DMA_RX_Buffer >> 8);
   122   2          DMA_UR1R_RXAL = (u8)(DMA->DMA_RX_Buffer);
-  123   2          DMA_UR1R_AMT = (u8)DMA->DMA_RX_Length;        // 设置传输总字节数(低8位)：n+1
-C251 COMPILER V5.60.0,  AI8051U_DMA                                                        27/03/26  21:26:32  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        04/05/26  16:38:09  PAGE 3   
 
+  123   2          DMA_UR1R_AMT = (u8)DMA->DMA_RX_Length;        // 设置传输总字节数(低8位)：n+1
   124   2          DMA_UR1R_AMTH = (u8)(DMA->DMA_RX_Length >> 8); // 设置传输总字节数(高8位)：n+1
   125   2      
   126   2          if (DMA->DMA_TX_Enable == ENABLE)
@@ -201,9 +202,9 @@ stmt  level    source
   186   1        {
   187   2          DMA_UR4T_STA = 0x00;
   188   2          DMA_UR4R_STA = 0x00;
-  189   2          DMA_UR4T_AMT = (u8)DMA->DMA_TX_Length;
-C251 COMPILER V5.60.0,  AI8051U_DMA                                                        27/03/26  21:26:32  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        04/05/26  16:38:09  PAGE 4   
 
+  189   2          DMA_UR4T_AMT = (u8)DMA->DMA_TX_Length;
   190   2          DMA_UR4T_AMTH = (u8)(DMA->DMA_TX_Length >> 8);
   191   2          DMA_UR4T_TXAH = (u8)(DMA->DMA_TX_Buffer >> 8);
   192   2          DMA_UR4T_TXAL = (u8)(DMA->DMA_TX_Buffer);
@@ -269,9 +270,9 @@ stmt  level    source
   252   1        DMA_I2CR_AMTH = (u8)(DMA->DMA_RX_Length >> 8); // 设置传输总字节数(高8位)：n+1
   253   1      
   254   1        if (DMA->DMA_TX_Enable == ENABLE)
-  255   1          DMA_I2CT_CR |= 0x80; // 使能I2CT DMA
-C251 COMPILER V5.60.0,  AI8051U_DMA                                                        27/03/26  21:26:32  PAGE 5   
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        04/05/26  16:38:09  PAGE 5   
 
+  255   1          DMA_I2CT_CR |= 0x80; // 使能I2CT DMA
   256   1        else
   257   1          DMA_I2CT_CR &= ~0x80; // 禁止I2CT DMA
   258   1        if (DMA->DMA_RX_Enable == ENABLE)

@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        16/04/26  19:10:17  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        04/05/26  16:44:45  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_Soft_I2C
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_Soft_I2C.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_Soft_I2C.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\LQ_Soft_I2C.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_Soft_I2C.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_Soft_I2C.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\LQ_Soft_I2C.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54           * @brief   模拟I2C停止信号.
    55           * @param   cfg : 软件I2C配置参数.
    56           * @return  none.
-   57           * @date    2025-12-25.
-C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        16/04/26  19:10:17  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        04/05/26  16:44:45  PAGE 2   
 
+   57           * @date    2025-12-25.
    58           * @note    模拟I2C内部使用.
    59           *************************************************************************/
    60          void soft_i2c_stop(Soft_I2C_cfg_t *cfg)
@@ -133,9 +134,9 @@ stmt  level    source
   118   1          Soft_I2C_SCL_L(cfg->scl);
   119   1      }
   120          
-  121          /*************************************************************************
-C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        16/04/26  19:10:17  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        04/05/26  16:44:45  PAGE 3   
 
+  121          /*************************************************************************
   122           * @code    void soft_i2c_nack(Soft_I2C_cfg_t *cfg)
   123           * @brief   模拟I2C不产生ACK应答.
   124           * @param   cfg : 软件I2C配置参数.
@@ -201,9 +202,9 @@ stmt  level    source
   183   1          for (i = 0; i < 8; i++)
   184   1          {
   185   2              Soft_I2C_SCL_L(cfg->scl);
-  186   2              i2c_delay();
-C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        16/04/26  19:10:17  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        04/05/26  16:44:45  PAGE 4   
 
+  186   2              i2c_delay();
   187   2              Soft_I2C_SCL_H(cfg->scl);
   188   2              receive <<= 1;
   189   2              if (Soft_I2C_SDA_READ(cfg->sda))
@@ -269,9 +270,9 @@ stmt  level    source
   248   1          soft_i2c_send_byte(cfg, reg);               // 发送寄存器地址
   249   1          soft_i2c_wait_ack(cfg);
   250   1          soft_i2c_send_byte(cfg, data_t);
-  251   1          if (soft_i2c_wait_ack(cfg))
-C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        16/04/26  19:10:17  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        04/05/26  16:44:45  PAGE 5   
 
+  251   1          if (soft_i2c_wait_ack(cfg))
   252   1          {
   253   2              soft_i2c_stop(cfg);
   254   2              return 1;       // 数据写入失败
@@ -337,9 +338,9 @@ stmt  level    source
   313          {
   314   1          u8 count = 0;
   315   1          soft_i2c_start(cfg);
-  316   1          soft_i2c_send_byte(cfg, ((cfg->addr) << 1)); // 发送从机地址
-C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        16/04/26  19:10:17  PAGE 6   
+C251 COMPILER V5.60.0,  LQ_Soft_I2C                                                        04/05/26  16:44:45  PAGE 6   
 
+  316   1          soft_i2c_send_byte(cfg, ((cfg->addr) << 1)); // 发送从机地址
   317   1          if (soft_i2c_wait_ack(cfg))
   318   1          {
   319   2              soft_i2c_stop(cfg);

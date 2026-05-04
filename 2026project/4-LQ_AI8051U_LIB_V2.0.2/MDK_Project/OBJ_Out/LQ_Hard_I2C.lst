@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        16/04/26  19:10:20  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  16:44:49  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_Hard_I2C
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_Hard_I2C.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_Hard_I2C.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\LQ_Hard_I2C.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_Hard_I2C.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_Hard_I2C.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\LQ_Hard_I2C.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54          
    55           //接收数据
    56           unsigned char Hard_IIC_RecvData()
-   57           {
-C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        16/04/26  19:10:20  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  16:44:49  PAGE 2   
 
+   57           {
    58   1        I2CMSCR = 0x04; //发送 RECV 命令
    59   1        Hard_IIC_Wait();
    60   1        return I2CRXD;
@@ -133,9 +134,9 @@ stmt  level    source
   120   1        SendData(mem_addr); // 发送存储地址
   121   1        // RecvACK();
   122   1        Start();        // 发送起始命令
-  123   1        SendData(dev_addr | 1); // 发送设备地址+读命令
-C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        16/04/26  19:10:20  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  16:44:49  PAGE 3   
 
+  123   1        SendData(dev_addr | 1); // 发送设备地址+读命令
   124   1        // RecvACK();
   125   1        do
   126   1        {
@@ -202,9 +203,9 @@ Module Information          Static   Overlayable
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
-  pdata size           =    ------     ------
-C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        16/04/26  19:10:20  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_Hard_I2C                                                        04/05/26  16:44:49  PAGE 4   
 
+  pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
   edata size           =         2         12

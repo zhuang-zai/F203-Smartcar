@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  AI8051U_Timer                                                      27/03/26  21:26:34  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Timer                                                      04/05/26  16:38:12  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Timer
 OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Timer.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_Timer.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE I
-                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_
-                    -32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Timer.lst) TABS(2) OBJECT(.\OBJ_Out\AI8051U_Timer.obj) 
+                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\U
+                    -serCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Timer.lst) TABS(2) O
+                    -BJECT(.\OBJ_Out\AI8051U_Timer.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    52   2          Timer2_Stop();              // 停止计数
    53   2          Timer2_CLK_Select(TIMx->TIM_ClkSource); // 对外计数或分频, 定时12T/1T
    54   2          Timer2_CLK_Output(TIMx->TIM_ClkOut);  // 输出时钟使能
-   55   2      
-C251 COMPILER V5.60.0,  AI8051U_Timer                                                      27/03/26  21:26:34  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Timer                                                      04/05/26  16:38:12  PAGE 2   
 
+   55   2      
    56   2          T2_Load(TIMx->TIM_Value);
    57   2          TM2PS = TIMx->TIM_PS;
    58   2          Timer2_Run(TIMx->TIM_Run);
@@ -134,9 +135,9 @@ Module Information          Static   Overlayable
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
-  far data size        =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_Timer                                                      27/03/26  21:26:34  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_Timer                                                      04/05/26  16:38:12  PAGE 3   
 
+  far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
   hconst size          =    ------     ------

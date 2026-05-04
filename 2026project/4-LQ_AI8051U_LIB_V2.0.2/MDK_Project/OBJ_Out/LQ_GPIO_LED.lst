@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        16/04/26  19:10:15  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        04/05/26  16:44:42  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_GPIO_LED
 OBJECT MODULE PLACED IN .\OBJ_Out\LQ_GPIO_LED.obj
 COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_GPIO_LED.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
-                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32
-                    -Bit) DEBUG PRINT(.\OBJ_Out\LQ_GPIO_LED.lst) TABS(2) OBJECT(.\OBJ_Out\LQ_GPIO_LED.obj) 
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_GPIO_LED.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\LQ_GPIO_LED.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    54   2          if (sta == ON)      LED_PIN1 = LOW;
    55   2          else if (sta == OFF)  LED_PIN1 = HIGH;
    56   2          else if (sta == RVS)  LED_PIN1 = !LED_PIN1;
-   57   2          break;
-C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        16/04/26  19:10:15  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        04/05/26  16:44:42  PAGE 2   
 
+   57   2          break;
    58   2        case LED2:
    59   2          if (sta == ON)      LED_PIN2 = LOW;
    60   2          else if (sta == OFF)  LED_PIN2 = HIGH;
