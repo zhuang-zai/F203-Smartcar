@@ -28,7 +28,8 @@ void Timer0_ISR_Handler (void) interrupt TMR0_VECTOR		//进中断时已经清除标志
 //========================================================================
 void Timer1_ISR_Handler (void) interrupt TMR1_VECTOR		//进中断时已经清除标志
 {
-	
+	// 使用chassis控制: 外环差比和+方向PID，内环速度环PID
+		Chassis_Control();
 }
 
 //========================================================================

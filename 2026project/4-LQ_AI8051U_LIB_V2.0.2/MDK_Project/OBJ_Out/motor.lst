@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  motor                                                              04/05/26  20:45:40  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              08/05/26  14:45:28  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
@@ -20,14 +20,15 @@ stmt  level    source
     7           */
     8          void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
     9          {
-   10   1       int16 _encoder_L = Read_Encoder(1);//读取编码器数值(真实速度)
-   11   1       int16 _encoder_R = -1 * Read_Encoder(2);//读取编码器数值(真实速度)
+   10   1        int16 _encoder_L = -1 * Read_Encoder(1);//读取编码器数值(真实速度) ,左编码器前进为负�
+             -��因此前面加上负号
+   11   1        int16 _encoder_R = Read_Encoder(2);//读取编码器数值(真实速度)
    12   1      
    13   1       //速度环占据比，分别用PID_LEFT和PID_RIGHT索引来实现左右轮控制
-   14   1       Left_Target_Speed = PID_Calculate_ByIndex(PID_LEFT, _encoder_L, Left_Target_Speed);
-   15   1       Right_Target_Speed = PID_Calculate_ByIndex(PID_RIGHT, _encoder_R, Right_Target_Speed);
+   14   1       int16 left_pwm = PID_Calculate_ByIndex(PID_LEFT, _encoder_L, Left_Target_Speed);
+   15   1       int16 right_pwm = PID_Calculate_ByIndex(PID_RIGHT, _encoder_R, Right_Target_Speed);
    16   1      
-   17   1       Motor_Ctrl(Right_Target_Speed, Left_Target_Speed); //输出需要自己确保正确
+   17   1       Motor_Ctrl(right_pwm, left_pwm); //输出需要自己确保正确
    18   1      }
 
 

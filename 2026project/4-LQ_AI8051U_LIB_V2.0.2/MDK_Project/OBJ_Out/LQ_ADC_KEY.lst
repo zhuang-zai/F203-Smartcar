@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         04/05/26  20:45:33  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         08/05/26  14:45:23  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_ADC_KEY
@@ -66,7 +66,7 @@ stmt  level    source
    50           *  函数返回：ADC按键的键值
    51           *  修改时间：2026年1月12日
    52           *  备    注：无
-C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         04/05/26  20:45:33  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         08/05/26  14:45:23  PAGE 2   
 
    53           *************************************************************************/
    54          u8 Get_ADC_Key()
@@ -135,7 +135,7 @@ Module Information          Static   Overlayable
   xdata-const size     =    ------     ------
   edata size           =         2          5
   bit size             =    ------     ------
-C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         04/05/26  20:45:33  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_ADC_KEY                                                         08/05/26  14:45:23  PAGE 3   
 
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
