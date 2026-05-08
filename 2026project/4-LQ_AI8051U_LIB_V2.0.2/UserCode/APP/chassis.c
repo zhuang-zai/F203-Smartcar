@@ -2,6 +2,7 @@
 #include "inductance.h"
 #include "motor.h"
 #include "LQ_Encoder.h"
+#include "LQ_LSM6DSR_Hard.h"
 
 Chassis_TypeDef chassis;
 
@@ -15,6 +16,29 @@ void Chassis_Init(void)
     chassis.current_deviation = 0;  // 初始化当前偏差为0
     chassis.left_speed = 0;         // 初始化左轮速度为0
     chassis.right_speed = 0;        // 初始化右轮速度为0
+}
+
+/**
+ * @brief 获取陀螺仪Z轴角速度 (偏航角速度)
+ * @return int16 Z轴原始角速度数据
+ */
+int16 Get_Yaw_Rate(void)
+{
+    int16 ax, ay, az, gx, gy, gz;
+    
+    // 调用底层函数读取6轴数据
+    // 注意：传入的是变量的地址(&)，底层函数会把读到的值放进这些变量里
+#ifdef HARDWARE_SPI
+    LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+#elif defined HARDWARE_IIC
+    LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
+#else
+    // 如果都没有定义，默认给0防止报错，请检查你的工程宏定义
+    gz = 0; 
+#endif
+
+    // 我们只需要 Z轴的角速度 (Gyro Z)
+    return gz; 
 }
 
 /**
@@ -43,7 +67,7 @@ int Calculate_Deviation(void)
     else if(eleValue < -100.0f) eleValue = -100.0f;
 
     // 转换为整型返回给控制层
-    return (int)eleValue;
+    return (int)(eleValue*10.0f);
 }
 
 /**
@@ -52,29 +76,46 @@ int Calculate_Deviation(void)
  */
 void Chassis_Control(void)
 {
-    const PID_TypeDef *direction_pid;
-    int16 direction_output;
+    const PID_TypeDef *direction_pid; //外环：赛道偏差PID
+		const PID_TypeDef *gyro_pid;      // 内环：陀螺仪偏航 PID
+	
+		static int16 target_yaw_rate = 0; // 外环输出：期望的偏航角速度 (需加 static 保持降频时的数值)
+    int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
+    int16 final_turn_output;          // 内环输出：最终给车轮的差速修正量
     
-    // 1. 获取当前的循迹偏差
-    chassis.current_deviation = Calculate_Deviation();
-    
-    // 2. 获取方向环PID控制器句柄
+		// 控制外环降频的静态计数器
+    static uint8_t loop_count = 0;
+	
+    // 2. 获取方向环PID控制器句柄和偏航角速度环PID句柄
     direction_pid = PID_GetController(PID_DIRECTION);
+		gyro_pid = PID_GetController(PID_GYRO_Z);
     
     // 3. 计算PID输出
-    if (direction_pid != NULL) {
+    if (direction_pid != NULL && gyro_pid != NULL) 
+		{
+				loop_count++;
+			if(loop_count >= 1)  //自行设置降频器  由于电感读取速度较慢
+			{
+				loop_count = 0;
+				// 1. 获取当前的循迹偏差
+				chassis.current_deviation = Calculate_Deviation();
         // 级联位置/方向PID计算，目标值设为0（即赛道中心）
-        direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
+        target_yaw_rate = -1 * PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
+				
+			}
+			
+			actual_yaw_rate = Get_Yaw_Rate();  //读取当前的偏航角速度
+			final_turn_output = PID_CascadePosition((PID_TypeDef *)gyro_pid, actual_yaw_rate, target_yaw_rate);
     } else {
         // 如果PID未初始化，输出为0
-        direction_output = 0;
+        final_turn_output = 0;
     }
     
     // 4. 差速分配
-    // 左轮速度 = 基础速度 + 转向修正
-    chassis.left_speed = chassis.target_speed + direction_output;
-    // 右轮速度 = 基础速度 - 转向修正
-    chassis.right_speed = chassis.target_speed - direction_output;
+    // 左轮速度 = 基础速度 - 转向修正
+    chassis.left_speed = chassis.target_speed - final_turn_output;
+    // 右轮速度 = 基础速度 + 转向修正
+    chassis.right_speed = chassis.target_speed + final_turn_output;
     
     // 5. 执行电机控制
     Motor_Control(chassis.left_speed, chassis.right_speed);

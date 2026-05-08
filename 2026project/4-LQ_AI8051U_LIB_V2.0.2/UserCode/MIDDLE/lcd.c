@@ -29,7 +29,7 @@ void Lcd_Display(void)
     LCD_ShowStr_16(0, 6, txt, u16_RED_IPS, u16_BLACK);
 		
 		/*偏差*/
-		sprintf(txt, "eleV:%03d  DPID:%03d", Calculate_Deviation(),PID_CascadePosition(PID_GetController(PID_DIRECTION),Calculate_Deviation(),0));
+		sprintf(txt, "eleV:%04d  DPID:%04d", Calculate_Deviation(),PID_CascadePosition(PID_GetController(PID_DIRECTION),Calculate_Deviation(),0));
     LCD_ShowStr_16(0, 7, txt, u16_RED_IPS, u16_BLACK);
 }
 

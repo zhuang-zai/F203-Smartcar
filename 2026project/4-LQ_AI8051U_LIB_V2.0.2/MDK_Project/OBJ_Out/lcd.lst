@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  lcd                                                                04/05/26  21:19:04  PAGE 1   
+C251 COMPILER V5.60.0,  lcd                                                                08/05/26  14:45:29  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE lcd
@@ -41,7 +41,7 @@ stmt  level    source
    29   1          LCD_ShowStr_16(0, 6, txt, u16_RED_IPS, u16_BLACK);
    30   1          
    31   1          /*偏差*/
-   32   1          sprintf(txt, "eleV:%03d  DPID:%03d", Calculate_Deviation(),PID_CascadePosition(PID_GetController(PID_DI
+   32   1          sprintf(txt, "eleV:%04d  DPID:%04d", Calculate_Deviation(),PID_CascadePosition(PID_GetController(PID_DI
              -RECTION),Calculate_Deviation(),0));
    33   1          LCD_ShowStr_16(0, 7, txt, u16_RED_IPS, u16_BLACK);
    34   1      }
@@ -68,7 +68,7 @@ Module Information          Static   Overlayable
   hconst size          =        65     ------
 End of Module Information.
 
-C251 COMPILER V5.60.0,  lcd                                                                04/05/26  21:19:04  PAGE 2   
+C251 COMPILER V5.60.0,  lcd                                                                08/05/26  14:45:29  PAGE 2   
 
 
 C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

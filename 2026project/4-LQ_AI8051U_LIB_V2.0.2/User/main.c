@@ -30,8 +30,6 @@ void main(void)
     {
         LED_Ctrl(LED0, RVS);
 		Lcd_Display();
-		// 使用chassis控制: 外环差比和+方向PID，内环速度环PID
-		Chassis_Control();
     }
 }
 
