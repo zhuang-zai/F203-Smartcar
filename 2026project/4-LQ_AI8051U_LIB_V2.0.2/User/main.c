@@ -28,8 +28,9 @@ void main(void)
 		
     while (1)
     {
-        LED_Ctrl(LED0, RVS);
-		Lcd_Display();
+			//BLmotor_Ctrl_w1(1200);
+			LED_Ctrl(LED0, RVS);
+			Lcd_Display();
     }
 }
 

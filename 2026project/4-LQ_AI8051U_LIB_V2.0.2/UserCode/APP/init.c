@@ -29,7 +29,9 @@ void User_Init(void)
     // 5. 陀螺仪初始化（可选）
     // lsm6dsr_init();  //软件陀螺仪初始化
     LQ_HARD_SPI_LSM60DSR_Init(); // 硬件陀螺仪初始化
-
+		//负压风扇初始化
+		BLmotor_Init_1(Servo_FREQ); // 频率为50Hz，此处频率需要与舵机频率保持一致,满占空比20000
+		BLmotor_Ctrl_w1(900);
     //下面是我自己写的
     //PID参数初始化（速度环+方向环）
     PID_AllInit();

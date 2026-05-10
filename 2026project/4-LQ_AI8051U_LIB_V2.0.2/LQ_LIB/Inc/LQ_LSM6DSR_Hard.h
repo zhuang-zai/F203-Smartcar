@@ -145,6 +145,7 @@ void Test_LSM6DSR_Hard(void);             // 测试硬件IIC读取LSM6DSR六轴陀螺仪
 
 void LQ_HARD_SPI_LSM60DSR_Init(void);     // 硬件SPI初始化
 void LSM6DSR_Read_Data(int16 *ax, int16 *ay, int16 *az, int16 *gx, int16 *gy, int16 *gz);           // 测试硬件SPI读取LSM6DSR六轴陀螺仪
+int Get_Yaw_Rate();
 #endif
 
 

@@ -5,7 +5,8 @@
 #include "LQ_LSM6DSR_Hard.h"
 
 Chassis_TypeDef chassis;
-
+int16 direction_output;          // 内环输出：最终给车轮的差速修正量
+int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
 /**
  * @brief 底盘初始化
  * 初始化底盘结构体中的速度和目标偏差变量
@@ -76,46 +77,29 @@ int Calculate_Deviation(void)
  */
 void Chassis_Control(void)
 {
-    const PID_TypeDef *direction_pid; //外环：赛道偏差PID
-		const PID_TypeDef *gyro_pid;      // 内环：陀螺仪偏航 PID
-	
-		static int16 target_yaw_rate = 0; // 外环输出：期望的偏航角速度 (需加 static 保持降频时的数值)
-    int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
-    int16 final_turn_output;          // 内环输出：最终给车轮的差速修正量
-    
-		// 控制外环降频的静态计数器
-    static uint8_t loop_count = 0;
+    const PID_TypeDef *direction_pid; //外环：赛道偏差PID  
 	
     // 2. 获取方向环PID控制器句柄和偏航角速度环PID句柄
     direction_pid = PID_GetController(PID_DIRECTION);
-		gyro_pid = PID_GetController(PID_GYRO_Z);
     
     // 3. 计算PID输出
-    if (direction_pid != NULL && gyro_pid != NULL) 
+    if (direction_pid != NULL) 
 		{
-				loop_count++;
-			if(loop_count >= 1)  //自行设置降频器  由于电感读取速度较慢
-			{
-				loop_count = 0;
 				// 1. 获取当前的循迹偏差
 				chassis.current_deviation = Calculate_Deviation();
         // 级联位置/方向PID计算，目标值设为0（即赛道中心）
-        target_yaw_rate = -1 * PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
-				
-			}
-			
-			actual_yaw_rate = Get_Yaw_Rate();  //读取当前的偏航角速度
-			final_turn_output = PID_CascadePosition((PID_TypeDef *)gyro_pid, actual_yaw_rate, target_yaw_rate);
+        direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
     } else {
         // 如果PID未初始化，输出为0
-        final_turn_output = 0;
+        direction_output = 0;
     }
-    
+    //读取当前的偏航角速度
+		actual_yaw_rate = Get_Yaw_Rate();
     // 4. 差速分配
-    // 左轮速度 = 基础速度 - 转向修正
-    chassis.left_speed = chassis.target_speed - final_turn_output;
-    // 右轮速度 = 基础速度 + 转向修正
-    chassis.right_speed = chassis.target_speed + final_turn_output;
+    // 左轮速度 = 基础速度 + 转向修正
+    chassis.left_speed = chassis.target_speed + direction_output;
+    // 右轮速度 = 基础速度 - 转向修正
+    chassis.right_speed = chassis.target_speed - direction_output;
     
     // 5. 执行电机控制
     Motor_Control(chassis.left_speed, chassis.right_speed);

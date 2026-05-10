@@ -347,3 +347,49 @@ void BLmotor_Ctrl(u16 BLmotor1, u16 BLmotor2)
     UpdatePwmCh(PWM4, BLmotor2);
 }
 
+/******************************************************************************************
+ * 函 数 名：void BLmotor_Init_1(u16 freq)   
+ * 功    能：无刷电机控制引脚初始化，适用于一体板P23引脚
+ ******************************************************************************************/
+void BLmotor_Init_1(u16 freq)
+{
+    PWMx_InitDefine PWMx_InitStructure;
+    /* 注意这里的管脚选择与输出使能，PWA具有互补输出功能，因此用不到互补管脚输出，则需要ENOxN禁止输出*/
+    PWMA_Prescaler((MAIN_Fosc / 1000000 - 1)); // PWM时钟 预分频器设置 PWM分频到1M范围
+
+    PWMx_InitStructure.PWM_Mode = CCMRn_PWM_MODE1; // 模式,
+    PWMx_InitStructure.PWM_Duty = 0;               // PWM占空比时间, 0~Period
+    PWMx_InitStructure.PWM_EnoSelect = ENO2N;      // 输出通道选择 PWM2_N通道 P23
+    PWM_Configuration(PWM2, &PWMx_InitStructure);  // 初始化PWM2,  PWMA
+
+    // PWMA 通道
+    PWMx_InitStructure.PWM_Period = 1000000 / freq; // 周期时间,   0~Period，最高可设置65535
+    PWMx_InitStructure.PWM_DeadTime = 0;            // 死区发生器设置, 0~255
+    PWMx_InitStructure.PWM_MainOutEnable = ENABLE; // 主输出使能, ENABLE,DISABLE
+    PWMx_InitStructure.PWM_CEN_Enable = ENABLE;     // 使能计数器, ENABLE,DISABLE
+    PWM_Configuration(PWMA, &PWMx_InitStructure);   // 初始化PWM通用寄存器,  PWMA
+
+    // PWMA 通道 输出管脚选择
+    PWM2_USE_P22P23();   // 仅使用P23
+
+    GPIO_Init(GPIO_P2, GPIO_Pin_3, GPIO_Mode_Out_PP); // P23管脚PWM输出模式设为 推挽输出
+    UpdatePwmCh(PWM2, 0);                                          // 要更新的通道以及占空比时间,初始化后设为0
+}
+
+/******************************************************************************************
+ * 函 数 名：void BLmotor_Ctrl_w1(u16 BLmotor_duty)
+ * 功    能：BLmotor 无感无刷电调控制程序 (单通道安全版)
+ ******************************************************************************************/
+void BLmotor_Ctrl_w1(u16 BLmotor_duty)
+{
+    // 完美的限幅保护，防止传入错误数据导致电调死机或风扇狂转
+    if (BLmotor_duty < 900)  
+    {
+        BLmotor_duty = 900;
+    }
+    if (BLmotor_duty > 2000) 
+    {
+        BLmotor_duty = 2000;
+    }
+    UpdatePwmCh(PWM2, BLmotor_duty);
+}
