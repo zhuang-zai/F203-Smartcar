@@ -45,6 +45,8 @@ void Motor_Init(u16 freq);                   //电机PWM及方向IO初始化
 void Servo_Init(u16 freq);
 void BLmotor_Init(u16 freq);
 
+void BLmotor_Init_1(u16 freq);
+void BLmotor_Ctrl_w1(u16 BLmotor_duty);
 
 void Motor_Ctrl(int16 Motor1,int16 Motor2);  //电机驱动控函数声明
 void Servo_Ctrl(u8 Sx, u16 Sduty);

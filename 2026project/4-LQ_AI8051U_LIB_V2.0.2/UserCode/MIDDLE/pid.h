@@ -12,8 +12,7 @@ typedef enum {
 typedef enum {
 	PID_LEFT = 0,
 	PID_RIGHT = 1,
-	PID_DIRECTION = 2,
-	PID_GYRO_Z = 3
+	PID_DIRECTION = 2
 } PID_Index;
 
 typedef struct
