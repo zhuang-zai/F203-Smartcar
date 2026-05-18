@@ -4,9 +4,14 @@
 
 #include "AI8051U_UART.h"
 #include "include.h"
+#include <stdlib.h> // 必须包含这个头文件，因为要用到 atof 字符串转浮点数函数
+#include "pid.h"    // 包含你的 PID 头文件
 bit B_ULinRX1_Flag;
 bit B_ULinRX2_Flag;
 
+
+char vofa_rx_buf[20]; // 接收缓冲区
+u8 vofa_rx_cnt = 0;   // 缓冲区指针
 //========================================================================
 // 函数: UART1_ISR_Handler
 // 描述: UART1中断函数.
@@ -20,27 +25,61 @@ void UART1_ISR_Handler (void) interrupt UART1_VECTOR
 	u8 Status;
 
 	if(RI)
-	{
-		RI = 0;
+    {
+        char c; // 定义一个局部变量，用来暂存串口接收到的这个字节
+        RI = 0;
+        
+        c = SBUF; // 核心原则：整个中断里只读一次 SBUF！防丢失！
 
-		//--------USART LIN---------------
-		Status = USARTCR5;
-		if(Status & 0x02)     //if LIN header is detected
-		{
-			B_ULinRX1_Flag = 1;
-		}
+        //-------- 原有 USART LIN 逻辑 (完全不动) ---------------
+        Status = USARTCR5;
+        if(Status & 0x02)     //if LIN header is detected
+        {
+            B_ULinRX1_Flag = 1;
+        }
 
-		if(Status & 0xc0)     //if LIN break is detected / LIN header error is detected
-		{
-			COM1.RX_Cnt = 0;
-		}
-		USARTCR5 &= ~0xcb;    //Clear flag
-		//--------------------------------
+        if(Status & 0xc0)     //if LIN break is detected / LIN header error is detected
+        {
+            COM1.RX_Cnt = 0;
+        }
+        USARTCR5 &= ~0xcb;    //Clear flag
+        //-----------------------------------------------------
 
-        if(COM1.RX_Cnt >= COM_RX1_Lenth)	COM1.RX_Cnt = 0;
-        RX1_Buffer[COM1.RX_Cnt++] = SBUF;
+        //-------- 原有环形队列逻辑 (把 SBUF 替换为 c) ---------
+        if(COM1.RX_Cnt >= COM_RX1_Lenth) COM1.RX_Cnt = 0;
+        RX1_Buffer[COM1.RX_Cnt++] = c; 
         COM1.RX_TimeOut = TimeOutSet1;
-	}
+        //-----------------------------------------------------
+
+        //++++++++ 新增：VOFA+ 调参嗅探器 (并行处理，互不干扰) ++++++++
+        if (vofa_rx_cnt < 19) {
+            vofa_rx_buf[vofa_rx_cnt++] = c; // 把暂存的字符喂给 VOFA 缓存
+        }
+
+        // 识别到感叹号，说明一条指令发送完毕，开始解析
+        if (c == '!') 
+        {
+            vofa_rx_buf[vofa_rx_cnt] = '\0'; // 补充结束符
+
+            // 解析 Kp: 例如收到 "P2.50!"
+            if (vofa_rx_buf[0] == 'P') 
+            {
+                float new_kp = atof(&vofa_rx_buf[1]);
+                PID_SetKp(PID_LEFT, new_kp);
+                PID_SetKp(PID_RIGHT, new_kp);
+            }
+            // 解析 Ki: 例如收到 "I0.25!"
+            else if (vofa_rx_buf[0] == 'I') 
+            {
+                float new_ki = atof(&vofa_rx_buf[1]);
+                PID_SetKi(PID_LEFT, new_ki);
+                PID_SetKi(PID_RIGHT, new_ki);
+            }
+
+            vofa_rx_cnt = 0; // 命令处理完，清零指针迎接下一条指令
+        }
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    }
 
 	if(TI)
 	{

@@ -7,12 +7,22 @@ static PID_TypeDef pid_array[PID_GROUPS];
 static const float pid_param_table[PID_GROUPS][6] = 
 {
     //左轮速度环 增量式PI
-    {0.0f, 3.5f, 0.0f, 3000,-3000,PID_INCREMENT},
+    {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},
     //右轮速度环 增量式PI
-    {0.0f, 3.5f, 0.0f, 3000,-3000,PID_INCREMENT},
+    {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},
     //方向环 位置式PD
     {0.65f, 0.0f, 1.88f, 1200,-1200, PID_POSITION}
 };
+
+void PID_SetKp(PID_Index index, float Kp) {
+    if(index >= 0 && index < PID_GROUPS) pid_array[index].Kp = Kp;
+}
+void PID_SetKi(PID_Index index, float Ki) {
+    if(index >= 0 && index < PID_GROUPS) pid_array[index].Ki = Ki;
+}
+void PID_SetKd(PID_Index index, float Kd) {
+    if(index >= 0 && index < PID_GROUPS) pid_array[index].Kd = Kd;
+}
 
 // 初始化所有PID结构体
 void PID_AllInit(void)
@@ -99,11 +109,12 @@ int16 PID_CascadeIncrement(PID_TypeDef *pid, int16 current, int16 target)
     
     // 更新输出
     output = pid->output + delta;
-    pid->output = output;
-    
-    // 输出限幅
+	
+		// 输出限幅
     if(output > pid->output_max) output = pid->output_max;
     if(output < pid->output_min) output = pid->output_min;
+    pid->output = output;
+    
     
     // 更新历史误差
     pid->prev_prev_error = pid->prev_error;

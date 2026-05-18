@@ -44,5 +44,7 @@ const PID_TypeDef* PID_GetController(PID_Index index);
 
 // 向后兼容的通用PID计算函数
 int16 PID_Calculate(PID_TypeDef *pid, int16 current, int16 target);
-
+void PID_SetKp(PID_Index index, float Kp);
+void PID_SetKi(PID_Index index, float Ki);
+void PID_SetKd(PID_Index index, float Kd);
 #endif

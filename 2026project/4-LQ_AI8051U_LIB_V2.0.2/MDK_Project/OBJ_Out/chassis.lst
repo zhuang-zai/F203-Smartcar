@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  chassis                                                            10/05/26  15:47:08  PAGE 1   
+C251 COMPILER V5.60.0,  chassis                                                            18/05/26  20:23:13  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE chassis
@@ -25,7 +25,7 @@ stmt  level    source
    13           */
    14          void Chassis_Init(void)
    15          {
-   16   1          chassis.target_speed = 500;       // 初始化目标速度为0
+   16   1          chassis.target_speed = 500;       // 初始化目标速度为50%
    17   1          chassis.current_deviation = 0;  // 初始化当前偏差为0
    18   1          chassis.left_speed = 0;         // 初始化左轮速度为0
    19   1          chassis.right_speed = 0;        // 初始化右轮速度为0
@@ -66,7 +66,7 @@ stmt  level    source
    54   1          int* adc_values = GetInductance();
    55   1          
    56   1          // 计算左右两侧电感值的差值 (分子)，反映偏向哪一侧
-C251 COMPILER V5.60.0,  chassis                                                            10/05/26  15:47:08  PAGE 2   
+C251 COMPILER V5.60.0,  chassis                                                            18/05/26  20:23:13  PAGE 2   
 
    57   1          int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
    58   1          
@@ -96,34 +96,35 @@ stmt  level    source
    82   1          // 2. 获取方向环PID控制器句柄和偏航角速度环PID句柄
    83   1          direction_pid = PID_GetController(PID_DIRECTION);
    84   1          
-   85   1          // 3. 计算PID输出
-   86   1          if (direction_pid != NULL) 
-   87   1          {
-   88   2              // 1. 获取当前的循迹偏差
-   89   2              chassis.current_deviation = Calculate_Deviation();
-   90   2              // 级联位置/方向PID计算，目标值设为0（即赛道中心）
-   91   2              direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0
-             -);
-   92   2          } else {
-   93   2              // 如果PID未初始化，输出为0
-   94   2              direction_output = 0;
-   95   2          }
-   96   1          //读取当前的偏航角速度
-   97   1          actual_yaw_rate = Get_Yaw_Rate();
-   98   1          // 4. 差速分配
-   99   1          // 左轮速度 = 基础速度 + 转向修正
-  100   1          chassis.left_speed = chassis.target_speed + direction_output;
-  101   1          // 右轮速度 = 基础速度 - 转向修正
-  102   1          chassis.right_speed = chassis.target_speed - direction_output;
-  103   1          
-  104   1          // 5. 执行电机控制
-  105   1          Motor_Control(chassis.left_speed, chassis.right_speed);
-  106   1      }
+   85   1      //    // 3. 计算PID输出
+   86   1      //    if (direction_pid != NULL) 
+   87   1      //    {
+   88   1      //        // 1. 获取当前的循迹偏差
+   89   1      //        chassis.current_deviation = Calculate_Deviation();
+   90   1      //        // 级联位置/方向PID计算，目标值设为0（即赛道中心）
+   91   1      //        direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation,
+             - 0);
+   92   1      //    } else {
+   93   1      //        // 如果PID未初始化，输出为0
+   94   1      //        direction_output = 0;
+   95   1      //    }
+   96   1          direction_output = 0;
+   97   1          //读取当前的偏航角速度
+   98   1          actual_yaw_rate = Get_Yaw_Rate();
+   99   1          // 4. 差速分配
+  100   1          // 左轮速度 = 基础速度 + 转向修正
+  101   1          chassis.left_speed = chassis.target_speed + direction_output;
+  102   1          // 右轮速度 = 基础速度 - 转向修正
+  103   1          chassis.right_speed = chassis.target_speed - direction_output;
+  104   1          
+  105   1          // 5. 执行电机控制
+  106   1          Motor_Control(chassis.left_speed, chassis.right_speed);
+  107   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       278     ------
+  code size            =       245     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -134,9 +135,9 @@ Module Information          Static   Overlayable
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
-  ebitaddressable size =    ------     ------
-C251 COMPILER V5.60.0,  chassis                                                            10/05/26  15:47:08  PAGE 3   
+C251 COMPILER V5.60.0,  chassis                                                            18/05/26  20:23:13  PAGE 3   
 
+  ebitaddressable size =    ------     ------
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------

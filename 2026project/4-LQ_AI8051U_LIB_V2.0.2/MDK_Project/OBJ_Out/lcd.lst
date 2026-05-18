@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  lcd                                                                10/05/26  15:47:08  PAGE 1   
+C251 COMPILER V5.60.0,  lcd                                                                18/05/26  19:09:52  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE lcd
@@ -13,7 +13,7 @@ stmt  level    source
     1          #include "lcd.h"
     2          #include "inductance.h"
     3          #include "chassis.h"
-    4          
+    4          #include "motor.h"
     5          char txt[30];
     6          int *inductance_values; // 用于存储电感值的全局变量
     7          
@@ -27,32 +27,35 @@ stmt  level    source
    15   1          inductance_values = GetInductance(); // 将只读电感值赋值给局部变量
    16   1      
    17   1          sprintf(txt, "L1:%03d L2:%03d", inductance_values[0],inductance_values[1]);
-   18   1          LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
+   18   1          LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
    19   1          
    20   1          sprintf(txt, "M:%03d ", inductance_values[2]);
-   21   1          LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
+   21   1          LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
    22   1          
    23   1          sprintf(txt, "R1:%03d R2:%03d", inductance_values[3],inductance_values[4]);
-   24   1          LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
+   24   1          LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
    25   1          
    26   1          
    27   1          /*偏差*/
    28   1          sprintf(txt, "eleV:%04d  Dout:%04d", Calculate_Deviation(),direction_output);
-   29   1          LCD_ShowStr_16(0, 4, txt, u16_RED_IPS, u16_BLACK);
+   29   1          LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
    30   1          /*偏航角*/
    31   1          sprintf(txt, "yawrate:%04d",actual_yaw_rate);
-   32   1          LCD_ShowStr_16(0, 5, txt, u16_RED_IPS, u16_BLACK);
+   32   1          LCD_ShowStr_16(0, 4, txt, u16_RED_IPS, u16_BLACK);
    33   1          /*左右目标速度*/
    34   1          sprintf(txt,"LTS:%d  RTS:%d",chassis.left_speed,chassis.right_speed);
-   35   1          LCD_ShowStr_16(0, 6, txt, u16_RED_IPS, u16_BLACK);
-   36   1          
-   37   1      }
-   38          
+   35   1          LCD_ShowStr_16(0, 5, txt, u16_RED_IPS, u16_BLACK);
+   36   1          sprintf(txt,"EL:%d  ER:%d",_encoder_L,_encoder_R);
+   37   1          LCD_ShowStr_16(0, 6, txt, u16_RED_IPS, u16_BLACK);
+   38   1          sprintf(txt,"LPWM:%04d RPWM:%04d",left_pwm,right_pwm);
+   39   1          LCD_ShowStr_16(0, 7, txt, u16_RED_IPS, u16_BLACK);
+   40   1      }
+   41          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       335     ------
+  code size            =       445     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -64,12 +67,12 @@ Module Information          Static   Overlayable
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
+C251 COMPILER V5.60.0,  lcd                                                                18/05/26  19:09:52  PAGE 2   
+
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-C251 COMPILER V5.60.0,  lcd                                                                10/05/26  15:47:08  PAGE 2   
-
-  hconst size          =        89     ------
+  hconst size          =       122     ------
 End of Module Information.
 
 
