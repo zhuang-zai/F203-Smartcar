@@ -9,4 +9,6 @@
  */
 void User_Init(void);
 
+extern volatile bit flag_200ms_lcd;
+
 #endif

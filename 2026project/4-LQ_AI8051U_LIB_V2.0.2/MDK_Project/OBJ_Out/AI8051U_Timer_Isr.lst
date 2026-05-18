@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  10/05/26  15:47:07  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  18/05/26  19:09:51  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Timer_Isr
@@ -18,7 +18,7 @@ stmt  level    source
     6          #include "include.h"
     7          #include "inductance.h"
     8          #include "motor.h"
-    9          
+    9          #include "init.h"
    10          //========================================================================
    11          // 函数: Timer0_ISR_Handler
    12          // 描述: Timer0中断函数.
@@ -66,7 +66,7 @@ stmt  level    source
    54          //========================================================================
    55          void Timer3_ISR_Handler (void) interrupt TMR3_VECTOR    //进中断时已经清除标志
    56          {
-C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  10/05/26  15:47:07  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  18/05/26  19:09:51  PAGE 2   
 
    57   1        // TODO: 在此处添加用户代码
    58   1      //  LED_Ctrl(LED0,RVS);
@@ -96,11 +96,12 @@ stmt  level    source
    82          void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR    //进中断时已经清除标志
    83          {
    84   1        // TODO: 在此处添加用户代码
-   85   1      //  LED_Ctrl(LED0,RVS);
-   86   1      //    LED_Ctrl(Beep0,RVS);
-   87   1      }
-   88          
+   85   1        //flag_200ms_lcd = 1;
+   86   1      //  LED_Ctrl(LED0,RVS);
+   87   1      //    LED_Ctrl(Beep0,RVS);
+   88   1      }
    89          
+   90          
 
 
 Module Information          Static   Overlayable

@@ -13,7 +13,7 @@ int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
  */
 void Chassis_Init(void)
 {
-    chassis.target_speed = 500;       // 初始化目标速度为0
+    chassis.target_speed = 500;       // 初始化目标速度为50%
     chassis.current_deviation = 0;  // 初始化当前偏差为0
     chassis.left_speed = 0;         // 初始化左轮速度为0
     chassis.right_speed = 0;        // 初始化右轮速度为0
@@ -82,17 +82,18 @@ void Chassis_Control(void)
     // 2. 获取方向环PID控制器句柄和偏航角速度环PID句柄
     direction_pid = PID_GetController(PID_DIRECTION);
     
-    // 3. 计算PID输出
-    if (direction_pid != NULL) 
-		{
-				// 1. 获取当前的循迹偏差
-				chassis.current_deviation = Calculate_Deviation();
-        // 级联位置/方向PID计算，目标值设为0（即赛道中心）
-        direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
-    } else {
-        // 如果PID未初始化，输出为0
-        direction_output = 0;
-    }
+//    // 3. 计算PID输出
+//    if (direction_pid != NULL) 
+//		{
+//				// 1. 获取当前的循迹偏差
+//				chassis.current_deviation = Calculate_Deviation();
+//        // 级联位置/方向PID计算，目标值设为0（即赛道中心）
+//        direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
+//    } else {
+//        // 如果PID未初始化，输出为0
+//        direction_output = 0;
+//    }
+		direction_output = 0;
     //读取当前的偏航角速度
 		actual_yaw_rate = Get_Yaw_Rate();
     // 4. 差速分配

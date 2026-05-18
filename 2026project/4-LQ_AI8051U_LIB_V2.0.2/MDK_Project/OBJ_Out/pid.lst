@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  pid                                                                10/05/26  15:10:37  PAGE 1   
+C251 COMPILER V5.60.0,  pid                                                                18/05/26  19:09:52  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE pid
@@ -19,128 +19,139 @@ stmt  level    source
     7          static const float pid_param_table[PID_GROUPS][6] = 
     8          {
     9              //左轮速度环 增量式PI
-   10              {0.0f, 3.5f, 0.0f, 3000,-3000,PID_INCREMENT},
+   10              {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},
    11              //右轮速度环 增量式PI
-   12              {0.0f, 3.5f, 0.0f, 3000,-3000,PID_INCREMENT},
+   12              {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},
    13              //方向环 位置式PD
    14              {0.65f, 0.0f, 1.88f, 1200,-1200, PID_POSITION}
    15          };
    16          
-   17          // 初始化所有PID结构体
-   18          void PID_AllInit(void)
-   19          {
-   20   1          int i;
-   21   1          for(i=0; i<PID_GROUPS; i++)
-   22   1          {
-   23   2              PID_Init(&pid_array[i],
-   24   2                  pid_param_table[i][0],
-   25   2                  pid_param_table[i][1],
-   26   2                  pid_param_table[i][2],
-   27   2                  pid_param_table[i][3],
-   28   2                  pid_param_table[i][4],
-   29   2                  (PID_Mode)((int)pid_param_table[i][5])
-   30   2              );
-   31   2          }
-   32   1      }
-   33          
-   34          // PID初始化，支持位置式和增量式
-   35          void PID_Init(PID_TypeDef *pid, float Kp, float Ki, float Kd, float out_max, float out_min,PID_Mode mode)
-   36          {
-   37   1          pid->Kp = Kp;
-   38   1          pid->Ki = Ki;
-   39   1          pid->Kd = Kd;
-   40   1          pid->prev_error = 0;
-   41   1          pid->prev_prev_error = 0;
-   42   1          pid->integral = 0;
-   43   1          pid->output_max = out_max;
-   44   1          pid->output_min = out_min;
-   45   1          pid->output = 0;
-   46   1          pid->mode = mode;
-   47   1      }
-   48          
-   49          // PID计算函数（通过索引调用）
-   50          int16 PID_Calculate_ByIndex(PID_Index index, int16 current, int16 target)
-   51          {
-   52   1          if (index >= 0 && index < PID_GROUPS) {
-   53   2              PID_TypeDef *pid = &pid_array[index];
-   54   2              if (pid->mode == PID_POSITION) {
-   55   3                  return PID_CascadePosition(pid, current, target);
-   56   3              } else {
-C251 COMPILER V5.60.0,  pid                                                                10/05/26  15:10:37  PAGE 2   
+   17          void PID_SetKp(PID_Index index, float Kp) {
+   18   1          if(index >= 0 && index < PID_GROUPS) pid_array[index].Kp = Kp;
+   19   1      }
+   20          void PID_SetKi(PID_Index index, float Ki) {
+   21   1          if(index >= 0 && index < PID_GROUPS) pid_array[index].Ki = Ki;
+   22   1      }
+   23          void PID_SetKd(PID_Index index, float Kd) {
+   24   1          if(index >= 0 && index < PID_GROUPS) pid_array[index].Kd = Kd;
+   25   1      }
+   26          
+   27          // 初始化所有PID结构体
+   28          void PID_AllInit(void)
+   29          {
+   30   1          int i;
+   31   1          for(i=0; i<PID_GROUPS; i++)
+   32   1          {
+   33   2              PID_Init(&pid_array[i],
+   34   2                  pid_param_table[i][0],
+   35   2                  pid_param_table[i][1],
+   36   2                  pid_param_table[i][2],
+   37   2                  pid_param_table[i][3],
+   38   2                  pid_param_table[i][4],
+   39   2                  (PID_Mode)((int)pid_param_table[i][5])
+   40   2              );
+   41   2          }
+   42   1      }
+   43          
+   44          // PID初始化，支持位置式和增量式
+   45          void PID_Init(PID_TypeDef *pid, float Kp, float Ki, float Kd, float out_max, float out_min,PID_Mode mode)
+   46          {
+   47   1          pid->Kp = Kp;
+   48   1          pid->Ki = Ki;
+   49   1          pid->Kd = Kd;
+   50   1          pid->prev_error = 0;
+   51   1          pid->prev_prev_error = 0;
+   52   1          pid->integral = 0;
+   53   1          pid->output_max = out_max;
+   54   1          pid->output_min = out_min;
+   55   1          pid->output = 0;
+   56   1          pid->mode = mode;
+C251 COMPILER V5.60.0,  pid                                                                18/05/26  19:09:52  PAGE 2   
 
-   57   3                  return PID_CascadeIncrement(pid, current, target);
-   58   3              }
-   59   2          }
-   60   1          return 0;
-   61   1      }
-   62          
-   63          // 串级控制 - 位置式PID
-   64          int16 PID_CascadePosition(PID_TypeDef *pid, int16 current, int16 target)
-   65          {
-   66   1          float error, derivative, output;
-   67   1          error = (float)target - (float)current;
-   68   1          
-   69   1          // 积分项
-   70   1          pid->integral += error;
-   71   1          
-   72   1          // 微分项
-   73   1          derivative = error - pid->prev_error;
-   74   1          
-   75   1          // PID计算
-   76   1          output = pid->Kp * error + pid->Ki * pid->integral + pid->Kd * derivative;
-   77   1          
-   78   1          // 输出限幅
-   79   1          if(output > pid->output_max) output = pid->output_max;
-   80   1          if(output < pid->output_min) output = pid->output_min;
+   57   1      }
+   58          
+   59          // PID计算函数（通过索引调用）
+   60          int16 PID_Calculate_ByIndex(PID_Index index, int16 current, int16 target)
+   61          {
+   62   1          if (index >= 0 && index < PID_GROUPS) {
+   63   2              PID_TypeDef *pid = &pid_array[index];
+   64   2              if (pid->mode == PID_POSITION) {
+   65   3                  return PID_CascadePosition(pid, current, target);
+   66   3              } else {
+   67   3                  return PID_CascadeIncrement(pid, current, target);
+   68   3              }
+   69   2          }
+   70   1          return 0;
+   71   1      }
+   72          
+   73          // 串级控制 - 位置式PID
+   74          int16 PID_CascadePosition(PID_TypeDef *pid, int16 current, int16 target)
+   75          {
+   76   1          float error, derivative, output;
+   77   1          error = (float)target - (float)current;
+   78   1          
+   79   1          // 积分项
+   80   1          pid->integral += error;
    81   1          
-   82   1          // 更新历史误差
-   83   1          pid->prev_prev_error = pid->prev_error;
-   84   1          pid->prev_error = error;
-   85   1          
-   86   1          return (int16)output;
-   87   1      }
-   88          
-   89          // 串级控制 - 增量式PID
-   90          int16 PID_CascadeIncrement(PID_TypeDef *pid, int16 current, int16 target)
-   91          {
-   92   1          float error, delta, output;
-   93   1          error = (float)target - (float)current;
-   94   1          
-   95   1          // 增量计算
-   96   1          delta = pid->Kp * (error - pid->prev_error)
-   97   1                      + pid->Ki * error
-   98   1                      + pid->Kd * (error - 2 * pid->prev_error + pid->prev_prev_error);
-   99   1          
-  100   1          // 更新输出
-  101   1          output = pid->output + delta;
-  102   1          pid->output = output;
-  103   1          
-  104   1          // 输出限幅
-  105   1          if(output > pid->output_max) output = pid->output_max;
-  106   1          if(output < pid->output_min) output = pid->output_min;
-  107   1          
-  108   1          // 更新历史误差
-  109   1          pid->prev_prev_error = pid->prev_error;
-  110   1          pid->prev_error = error;
-  111   1          
-  112   1          return (int16)output;
-  113   1      }
-  114          
-  115          // 获取特定PID控制器的只读指针
-  116          const PID_TypeDef* PID_GetController(PID_Index index)
-  117          {
-  118   1          if (index >= 0 && index < PID_GROUPS) {
-  119   2              return &pid_array[index];
-  120   2          }
-  121   1          return NULL;
-  122   1      }
-C251 COMPILER V5.60.0,  pid                                                                10/05/26  15:10:37  PAGE 3   
+   82   1          // 微分项
+   83   1          derivative = error - pid->prev_error;
+   84   1          
+   85   1          // PID计算
+   86   1          output = pid->Kp * error + pid->Ki * pid->integral + pid->Kd * derivative;
+   87   1          
+   88   1          // 输出限幅
+   89   1          if(output > pid->output_max) output = pid->output_max;
+   90   1          if(output < pid->output_min) output = pid->output_min;
+   91   1          
+   92   1          // 更新历史误差
+   93   1          pid->prev_prev_error = pid->prev_error;
+   94   1          pid->prev_error = error;
+   95   1          
+   96   1          return (int16)output;
+   97   1      }
+   98          
+   99          // 串级控制 - 增量式PID
+  100          int16 PID_CascadeIncrement(PID_TypeDef *pid, int16 current, int16 target)
+  101          {
+  102   1          float error, delta, output;
+  103   1          error = (float)target - (float)current;
+  104   1          
+  105   1          // 增量计算
+  106   1          delta = pid->Kp * (error - pid->prev_error)
+  107   1                      + pid->Ki * error
+  108   1                      + pid->Kd * (error - 2 * pid->prev_error + pid->prev_prev_error);
+  109   1          
+  110   1          // 更新输出
+  111   1          output = pid->output + delta;
+  112   1        
+  113   1          // 输出限幅
+  114   1          if(output > pid->output_max) output = pid->output_max;
+  115   1          if(output < pid->output_min) output = pid->output_min;
+  116   1          pid->output = output;
+  117   1          
+  118   1          
+  119   1          // 更新历史误差
+  120   1          pid->prev_prev_error = pid->prev_error;
+  121   1          pid->prev_error = error;
+  122   1          
+C251 COMPILER V5.60.0,  pid                                                                18/05/26  19:09:52  PAGE 3   
 
+  123   1          return (int16)output;
+  124   1      }
+  125          
+  126          // 获取特定PID控制器的只读指针
+  127          const PID_TypeDef* PID_GetController(PID_Index index)
+  128          {
+  129   1          if (index >= 0 && index < PID_GROUPS) {
+  130   2              return &pid_array[index];
+  131   2          }
+  132   1          return NULL;
+  133   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       779     ------
+  code size            =       890     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------

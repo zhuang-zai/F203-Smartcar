@@ -17,20 +17,30 @@ QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
 
 #include "include.h"
 #include "init.h"
+#include "motor.h"
+
+volatile bit flag_200ms_lcd = 0;
 
 void main(void)
 {
+//	int vofa_timer = 0;
     System_Init();  /* 系统初始化 必须保留 */
     Global_IRQ_Enable(); // 使能全局中断
     GPIO_LED_Init();
     
     User_Init(); // 统一初始化所有外设和模块
-		
     while (1)
     {
-			//BLmotor_Ctrl_w1(1200);
-			LED_Ctrl(LED0, RVS);
+			//BLmotor_Ctrl_w1(1200)
 			Lcd_Display();
+			/*vofa 用于速度环PID调参*/
+//			vofa_timer++;
+//			if(vofa_timer >= 2)
+//			{
+//				vofa_timer = 0;
+//				printf("%d,%d,%d\n", vofa_target_speed, vofa_current_speed, vofa_out_pwm);
+//			}
+			LED_Ctrl(LED0, RVS);
     }
 }
 

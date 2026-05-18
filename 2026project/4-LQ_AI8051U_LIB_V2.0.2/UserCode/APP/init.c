@@ -21,9 +21,12 @@ void User_Init(void)
     // 2. LCD初始化
     IPS_LCD_Init();
     LCD_CLS(u16_BLACK);
+		//编码器初始化 将 Timer3 和 Timer4 配置为外部脉冲计数模式
+    Timer_EncInit(Timer3 | Timer4);
     // 3. 定时器初始化 
-    TIM_Init_ms(Timer0, 1);
-    TIM_Init_ms(Timer1, 2);
+    TIM_Init_ms(Timer0, 1);  //电感采集
+    TIM_Init_ms(Timer1, 2);  //控制算法
+		//TIM_Init_ms(Timer11,200);  //显示屏
     // 4. 电机初始化
     Motor_Init(Motor_FREQ);
     // 5. 陀螺仪初始化（可选）
