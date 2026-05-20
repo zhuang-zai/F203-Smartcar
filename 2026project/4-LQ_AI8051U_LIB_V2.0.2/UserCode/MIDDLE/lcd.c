@@ -28,7 +28,7 @@ void Lcd_Display(void)
 		sprintf(txt, "eleV:%04d  Dout:%04d", Calculate_Deviation(),direction_output);
     LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
 		/*偏航角*/
-		sprintf(txt, "yawrate:%04d",actual_yaw_rate);
+		sprintf(txt, "yawrate:%5d stop:%d",actual_yaw_rate,stop_flag);
 		LCD_ShowStr_16(0, 4, txt, u16_RED_IPS, u16_BLACK);
 		/*左右目标速度*/
 		sprintf(txt,"LTS:%d  RTS:%d",chassis.left_speed,chassis.right_speed);

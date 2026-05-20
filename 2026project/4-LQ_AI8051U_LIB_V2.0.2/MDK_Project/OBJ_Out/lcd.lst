@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  lcd                                                                18/05/26  19:09:52  PAGE 1   
+C251 COMPILER V5.60.0,  lcd                                                                20/05/26  21:32:50  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE lcd
@@ -40,7 +40,7 @@ stmt  level    source
    28   1          sprintf(txt, "eleV:%04d  Dout:%04d", Calculate_Deviation(),direction_output);
    29   1          LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
    30   1          /*偏航角*/
-   31   1          sprintf(txt, "yawrate:%04d",actual_yaw_rate);
+   31   1          sprintf(txt, "yawrate:%5d stop:%d",actual_yaw_rate,stop_flag);
    32   1          LCD_ShowStr_16(0, 4, txt, u16_RED_IPS, u16_BLACK);
    33   1          /*左右目标速度*/
    34   1          sprintf(txt,"LTS:%d  RTS:%d",chassis.left_speed,chassis.right_speed);
@@ -55,7 +55,7 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       445     ------
+  code size            =       453     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -67,12 +67,12 @@ Module Information          Static   Overlayable
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
-C251 COMPILER V5.60.0,  lcd                                                                18/05/26  19:09:52  PAGE 2   
+C251 COMPILER V5.60.0,  lcd                                                                20/05/26  21:32:50  PAGE 2   
 
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =       122     ------
+  hconst size          =       129     ------
 End of Module Information.
 
 

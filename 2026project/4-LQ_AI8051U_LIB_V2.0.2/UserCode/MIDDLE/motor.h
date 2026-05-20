@@ -13,6 +13,7 @@ extern int16 right_pwm;
 extern int16 vofa_target_speed;
 extern int16 vofa_current_speed;
 extern int16 vofa_out_pwm;
+extern int16 stop_flag;
 void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed);
 
 #endif
