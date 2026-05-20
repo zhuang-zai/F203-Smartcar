@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  18/05/26  19:09:51  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  19/05/26  18:02:32  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Timer_Isr
@@ -66,7 +66,7 @@ stmt  level    source
    54          //========================================================================
    55          void Timer3_ISR_Handler (void) interrupt TMR3_VECTOR    //进中断时已经清除标志
    56          {
-C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  18/05/26  19:09:51  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  19/05/26  18:02:32  PAGE 2   
 
    57   1        // TODO: 在此处添加用户代码
    58   1      //  LED_Ctrl(LED0,RVS);
