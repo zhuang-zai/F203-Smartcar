@@ -11,7 +11,7 @@ static const float pid_param_table[PID_GROUPS][6] =
     //右轮速度环 增量式PI
     {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},
     //方向环 位置式PD
-    {0.9f, 0.0f, 5.5f, 500,-500, PID_POSITION}  //基础速度100时对应0.9,0.0 ,5.0
+    {0.9f, 0.0f, 5.0f, 500,-500, PID_POSITION}  //基础速度100时对应0.9,0.0 ,5.0
 																								//
 };
 

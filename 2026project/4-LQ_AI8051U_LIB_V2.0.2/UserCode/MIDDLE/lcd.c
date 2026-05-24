@@ -17,7 +17,7 @@ void Lcd_Display(void)
     sprintf(txt, "L1:%03d L2:%03d", inductance_values[0],inductance_values[1]);
     LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
     
-    sprintf(txt, "M:%03d ", inductance_values[2]);
+		sprintf(txt, "M:%03d battery:%05d", inductance_values[2],current_adc);
     LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
     
     sprintf(txt, "R1:%03d R2:%03d", inductance_values[3],inductance_values[4]);

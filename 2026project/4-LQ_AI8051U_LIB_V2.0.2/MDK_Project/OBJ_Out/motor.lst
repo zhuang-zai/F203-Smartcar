@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  motor                                                              20/05/26  00:02:29  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              24/05/26  21:57:37  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
@@ -66,7 +66,7 @@ stmt  level    source
    52   1      //    right_pwm = (int16)(right_pwm * 0.8f + right_pwm_last * 0.2f);
    53   1      //    left_pwm_last = left_pwm;
    54   1      //    right_pwm_last = right_pwm;
-C251 COMPILER V5.60.0,  motor                                                              20/05/26  00:02:29  PAGE 2   
+C251 COMPILER V5.60.0,  motor                                                              24/05/26  21:57:37  PAGE 2   
 
    55   1          
    56   1          left_pwm = left_pwm > max_forward_pwm ? max_forward_pwm : left_pwm;
