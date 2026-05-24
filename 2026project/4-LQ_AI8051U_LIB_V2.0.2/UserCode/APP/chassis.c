@@ -4,9 +4,18 @@
 #include "LQ_Encoder.h"
 #include "LQ_LSM6DSR_Hard.h"
 
+// 设定单节 3.3V (总压 9.9V) 的极限死亡线阈值
+#define BAT_SAFE_ADC_THRESHOLD  2240
+
 Chassis_TypeDef chassis;
 int16 direction_output;          // 内环输出：最终给车轮的差速修正量
 int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
+int16 current_adc;
+
+// 定义在文件顶部或全局
+float INNER_COEF = 1.2f; // 内轮减速系数 (建议范围: 1.0 ~ 1.5)
+float OUTER_COEF = 0.4f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
+
 /**
  * @brief 底盘初始化
  * 初始化底盘结构体中的速度和目标偏差变量
@@ -17,6 +26,36 @@ void Chassis_Init(void)
     chassis.current_deviation = 0;  // 初始化当前偏差为0
     chassis.left_speed = 0;         // 初始化左轮速度为0
     chassis.right_speed = 0;        // 初始化右轮速度为0
+}
+
+/**
+ * @brief 电池低压保护监控任务
+ * 建议放在 2ms 的 Timer1 中断中执行
+ */
+void Battery_Protection_Task(void)
+{
+    static uint16 low_vol_timer = 0;
+    
+    // 1. 直接读取原始 ADC 值 (无需消耗算力转换成浮点电压)
+    current_adc = Get_ADCResult(ADC_CH9_P01);
+    
+    // 2. 检测是否低于警戒线
+    if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
+    {
+        low_vol_timer++;
+        
+        // 3. 时间滤波（防抖）：2ms * 500 = 1秒
+        // 防止电机瞬间加速抽血导致的误判
+        if (low_vol_timer >= 500) 
+        {
+            stop_flag = 1;  // 触发全局急停
+        }
+    }
+    else 
+    {
+        // 电压弹回安全线以上，清零计时器
+        low_vol_timer = 0;
+    }
 }
 
 /**
@@ -63,8 +102,22 @@ int Calculate_Deviation(void)
     // 计算归一化偏差值
     float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
 	
-		if(eleAdd < 20.0) stop_flag = 1;
-		else stop_flag = 0;
+		static uint16 off_track_timer = 0;   // 丢线持续时间计数器
+	
+		if(eleAdd < 20.0)
+		{
+			off_track_timer++;
+			if(off_track_timer >= 250)
+			{
+				stop_flag = 1;
+			}
+			
+		}
+		else
+		{
+			off_track_timer = 0;
+			stop_flag = 0;
+		}
     
     // 限幅处理：将偏差值限制在 -100 到 100 之间
     if(eleValue > 100.0f) eleValue = 100.0f;
@@ -81,29 +134,37 @@ int Calculate_Deviation(void)
 void Chassis_Control(void)
 {
     const PID_TypeDef *direction_pid; //外环：赛道偏差PID  
-	
-    // 2. 获取方向环PID控制器句柄和偏航角速度环PID句柄
+		int16 abs_dir;  //方向环输出绝对值
+    //获取方向环PID控制器句柄和偏航角速度环PID句柄
     direction_pid = PID_GetController(PID_DIRECTION);
-    
-    // 3. 计算PID输出
-    if (direction_pid != NULL) 
-		{
-				// 1. 获取当前的循迹偏差
-				chassis.current_deviation = Calculate_Deviation();
-        // 级联位置/方向PID计算，目标值设为0（即赛道中心）
-        direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
-    } else {
-        // 如果PID未初始化，输出为0
-        direction_output = 0;
-    }
+		//电池保护
+		Battery_Protection_Task();
+  
+		// 获取当前的循迹偏差
+		chassis.current_deviation = Calculate_Deviation();
+    // 级联位置/方向PID计算，目标值设为0（即赛道中心）
+    direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
 //		direction_output = 0;
     //读取当前的偏航角速度
 		actual_yaw_rate = Get_Yaw_Rate();
+		
+		abs_dir = direction_output > 0 ? direction_output : -direction_output; // 取绝对值
     // 4. 差速分配
-    // 左轮速度 = 基础速度 + 转向修正
-    chassis.left_speed = chassis.target_speed + direction_output;
+		if(direction_output < 0) //左转
+		{
+		// 左轮速度 = 基础速度 + 转向修正
+    chassis.left_speed = chassis.target_speed - (int16)(abs_dir * INNER_COEF);
     // 右轮速度 = 基础速度 - 转向修正
-    chassis.right_speed = chassis.target_speed - direction_output;
+    chassis.right_speed = chassis.target_speed + (int16)(abs_dir * OUTER_COEF);
+		}
+		else  //右转
+		{
+		// 左轮速度 = 基础速度 + 转向修正
+		chassis.left_speed = chassis.target_speed + (int16)(abs_dir * OUTER_COEF);
+    // 右轮速度 = 基础速度 - 转向修正
+    chassis.right_speed = chassis.target_speed - (int16)(abs_dir * INNER_COEF);
+		}
+    
     if(stop_flag) Motor_Control(0,0);
     // 5. 执行电机控制
 		else Motor_Control(chassis.left_speed, chassis.right_speed);

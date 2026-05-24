@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  lcd                                                                20/05/26  21:32:50  PAGE 1   
+C251 COMPILER V5.60.0,  lcd                                                                24/05/26  21:57:57  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE lcd
@@ -29,7 +29,7 @@ stmt  level    source
    17   1          sprintf(txt, "L1:%03d L2:%03d", inductance_values[0],inductance_values[1]);
    18   1          LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
    19   1          
-   20   1          sprintf(txt, "M:%03d ", inductance_values[2]);
+   20   1          sprintf(txt, "M:%03d battery:%05d", inductance_values[2],current_adc);
    21   1          LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
    22   1          
    23   1          sprintf(txt, "R1:%03d R2:%03d", inductance_values[3],inductance_values[4]);
@@ -55,7 +55,7 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       453     ------
+  code size            =       461     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -67,12 +67,12 @@ Module Information          Static   Overlayable
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
-C251 COMPILER V5.60.0,  lcd                                                                20/05/26  21:32:50  PAGE 2   
+C251 COMPILER V5.60.0,  lcd                                                                24/05/26  21:57:57  PAGE 2   
 
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =       129     ------
+  hconst size          =       141     ------
 End of Module Information.
 
 

@@ -27,12 +27,13 @@ void ADC_Init(void)
     ADC_InitTypeDef ADC_InitStructure; // 结构定义
 
 //    ADC_GPIO_Init(ADC_CH8_P00); // ADC 端口IO配置，要初始化的ADC通道和管脚，详见ADC_CHx_Pin
-    ADC_GPIO_Init(ADC_CH10_P02); //  mini驱控一体板的 电源ADC检测，
+    ADC_GPIO_Init(ADC_CH9_P01); //  mini驱控一体板的 电源ADC检测，
     ADC_GPIO_Init(ADC_CH0_P10);
     ADC_GPIO_Init(ADC_CH1_P11);
     ADC_GPIO_Init(ADC_CH2_P12);
     ADC_GPIO_Init(ADC_CH3_P13);
     ADC_GPIO_Init(ADC_CH4_P14);
+	  ADC_GPIO_Init(ADC_CH5_P15);
 
     // ADC配置
     ADC_InitStructure.ADC_SMPduty = 31;                    // ADC 模拟信号采样时间控制, 0~31（注意： SMPDUTY 一定不能设置小于 10）

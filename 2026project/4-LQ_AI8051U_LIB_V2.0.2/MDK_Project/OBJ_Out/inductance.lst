@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  inductance                                                         18/05/26  19:09:51  PAGE 1   
+C251 COMPILER V5.60.0,  inductance                                                         24/05/26  21:57:37  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE inductance
@@ -67,7 +67,7 @@ Module Information          Static   Overlayable
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-C251 COMPILER V5.60.0,  inductance                                                         18/05/26  19:09:51  PAGE 2   
+C251 COMPILER V5.60.0,  inductance                                                         24/05/26  21:57:37  PAGE 2   
 
   edata size           =        10         16
   bit size             =    ------     ------

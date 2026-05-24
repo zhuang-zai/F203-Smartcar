@@ -21,4 +21,5 @@ int Calculate_Deviation(void);  // 差比和算法计算偏离值
 extern Chassis_TypeDef chassis;
 extern int16 direction_output;
 extern int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
+extern int current_adc;
 #endif
