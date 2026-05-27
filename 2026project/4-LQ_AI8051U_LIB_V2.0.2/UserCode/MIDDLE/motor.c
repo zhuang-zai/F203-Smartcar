@@ -9,7 +9,7 @@ int16 vofa_target_speed = 0;
 int16 vofa_current_speed = 0;
 int16 vofa_out_pwm = 0;
 
-int16 stop_flag = 0;
+int16 stop_flag = 1;
 
 /*pwm输出限幅*/
 int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
@@ -69,7 +69,7 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
 	/*
 	当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
 	*/
-	Motor_Ctrl(right_pwm, left_pwm); //输出需要自己确保正确
+	Motor_Ctrl(-right_pwm, -left_pwm); //输出需要自己确保正确
 	//printf("%d,%d,%d\n", Left_Target_Speed, _encoder_L, left_pwm);
 	
 	vofa_target_speed = Left_Target_Speed;

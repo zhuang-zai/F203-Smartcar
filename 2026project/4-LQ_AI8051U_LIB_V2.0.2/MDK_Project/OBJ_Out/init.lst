@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  init                                                               24/05/26  21:57:38  PAGE 1   
+C251 COMPILER V5.60.0,  init                                                               26/05/26  21:00:38  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE init
@@ -53,13 +53,50 @@ stmt  level    source
    40   1          PID_AllInit();
    41   1          //底盘初始化
    42   1          Chassis_Init();
-   43   1          delay_ms(100);
-   44   1      }
+   43   1          left_pwm = 0;
+   44   1          right_pwm = 0;
+   45   1      }
+   46          
+   47          /**
+   48           * @brief 按键发车等待函数 (V2.0 安全倒计时版)
+   49           * @note 必须按下并松开 GO 按键，随后延时 1 秒才会发车
+   50           */
+   51          void Wait_For_Start(void)
+   52          {
+   53   1          // 初始化 P2_0 为上拉输入模式
+   54   1          gpio_init_pin(P2_0, GPIO_Mode_IPU);
+   55   1          
+C251 COMPILER V5.60.0,  init                                                               26/05/26  21:00:38  PAGE 2   
+
+   56   1          // 等待按键按下
+   57   1          while (gpio_read_pin(P2_0) == 1);
+   58   1          
+   59   1          // 按下消抖
+   60   1          delay_ms(20); 
+   61   1          
+   62   1          // 确认按下
+   63   1          if (gpio_read_pin(P2_0) == 0)
+   64   1          {
+   65   2              // 等待按键松开（核心防刮手逻辑：你不松手，它绝对不走）
+   66   2              while (gpio_read_pin(P2_0) == 0); 
+   67   2              
+   68   2              // 松手消抖
+   69   2              delay_ms(20);
+   70   2              
+   71   2              LED_Ctrl(LED0, ON); 
+   72   2              delay_ms(500);
+   73   2              
+   74   2              LED_Ctrl(LED0, OFF);
+   75   2              delay_ms(500);
+   76   2              
+   77   2              stop_flag = 0;
+   78   2          }
+   79   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =        70     ------
+  code size            =       175     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -67,8 +104,6 @@ Module Information          Static   Overlayable
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
   edata size           =    ------     ------
-C251 COMPILER V5.60.0,  init                                                               24/05/26  21:57:38  PAGE 2   
-
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------

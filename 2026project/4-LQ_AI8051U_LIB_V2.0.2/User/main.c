@@ -27,12 +27,13 @@ void main(void)
     System_Init();  /* 系统初始化 必须保留 */
     Global_IRQ_Enable(); // 使能全局中断
     GPIO_LED_Init();
-    
+    Wait_For_Start();
     User_Init(); // 统一初始化所有外设和模块
     while (1)
     {
 			Lcd_Display();
-			//BLmotor_Ctrl_w1(1200);
+			if(!stop_flag) BLmotor_Ctrl_w1(1200);
+			else BLmotor_Ctrl_w1(900);
 			/*vofa 用于速度环PID调参*/
 //			vofa_timer++;
 //			if(vofa_timer >= 2)

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  chassis                                                            24/05/26  22:48:37  PAGE 1   
+C251 COMPILER V5.60.0,  chassis                                                            27/05/26  13:36:34  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE chassis
@@ -26,7 +26,7 @@ stmt  level    source
    14          
    15          // 定义在文件顶部或全局
    16          float INNER_COEF = 1.2f; // 内轮减速系数 (建议范围: 1.0 ~ 1.5)
-   17          float OUTER_COEF = 0.4f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
+   17          float OUTER_COEF = 0.3f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
    18          
    19          /**
    20           * @brief 底盘初始化
@@ -47,166 +47,168 @@ stmt  level    source
    35          void Battery_Protection_Task(void)
    36          {
    37   1          static uint16 low_vol_timer = 0;
-   38   1          
-   39   1          // 1. 直接读取原始 ADC 值 (无需消耗算力转换成浮点电压)
-   40   1          current_adc = Get_ADCResult(ADC_CH9_P01);
-   41   1          
-   42   1          // 2. 检测是否低于警戒线
-   43   1          if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
-   44   1          {
-   45   2              low_vol_timer++;
-   46   2              
-   47   2              // 3. 时间滤波（防抖）：2ms * 500 = 1秒
-   48   2              // 防止电机瞬间加速抽血导致的误判
-   49   2              if (low_vol_timer >= 500) 
-   50   2              {
-   51   3                  stop_flag = 1;  // 触发全局急停
-   52   3              }
-   53   2          }
-   54   1          else 
-   55   1          {
-   56   2              // 电压弹回安全线以上，清零计时器
-C251 COMPILER V5.60.0,  chassis                                                            24/05/26  22:48:37  PAGE 2   
+   38   1        if(stop_flag == 1) return;
+   39   1          
+   40   1          // 1. 直接读取原始 ADC 值 (无需消耗算力转换成浮点电压)
+   41   1          current_adc = Get_ADCResult(ADC_CH9_P01);
+   42   1          
+   43   1          // 2. 检测是否低于警戒线
+   44   1          if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
+   45   1          {
+   46   2              low_vol_timer++;
+   47   2              
+   48   2              // 3. 时间滤波（防抖）：2ms * 500 = 1秒
+   49   2              // 防止电机瞬间加速抽血导致的误判
+   50   2              if (low_vol_timer >= 500) 
+   51   2              {
+   52   3                  stop_flag = 1;  // 触发全局急停
+   53   3              }
+   54   2          }
+   55   1          else 
+   56   1          {
+C251 COMPILER V5.60.0,  chassis                                                            27/05/26  13:36:34  PAGE 2   
 
-   57   2              low_vol_timer = 0;
-   58   2          }
-   59   1      }
-   60          
-   61          /**
-   62           * @brief 获取陀螺仪Z轴角速度 (偏航角速度)
-   63           * @return int16 Z轴原始角速度数据
-   64           */
-   65          int16 Get_Yaw_Rate(void)
-   66          {
-   67   1          int16 ax, ay, az, gx, gy, gz;
-   68   1          
-   69   1          // 调用底层函数读取6轴数据
-   70   1          // 注意：传入的是变量的地址(&)，底层函数会把读到的值放进这些变量里
-   71   1      #ifdef HARDWARE_SPI
-   72   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
-   73   1      #elif defined HARDWARE_IIC
+   57   2              // 电压弹回安全线以上，清零计时器
+   58   2              low_vol_timer = 0;
+   59   2          }
+   60   1      }
+   61          
+   62          /**
+   63           * @brief 获取陀螺仪Z轴角速度 (偏航角速度)
+   64           * @return int16 Z轴原始角速度数据
+   65           */
+   66          int16 Get_Yaw_Rate(void)
+   67          {
+   68   1          int16 ax, ay, az, gx, gy, gz;
+   69   1          
+   70   1          // 调用底层函数读取6轴数据
+   71   1          // 注意：传入的是变量的地址(&)，底层函数会把读到的值放进这些变量里
+   72   1      #ifdef HARDWARE_SPI
+   73   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+   74   1      #elif defined HARDWARE_IIC
                    LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
                #else
                    // 如果都没有定义，默认给0防止报错，请检查你的工程宏定义
                    gz = 0; 
                #endif
-   79   1      
-   80   1          // 我们只需要 Z轴的角速度 (Gyro Z)
-   81   1          return gz; 
-   82   1      }
-   83          
-   84          /**
-   85           * @brief 计算循迹偏差
-   86           * 使用差比和算法计算车辆偏离中心线的程度
-   87           * 公式：( (左感+左感) - (右感+右感) ) / (总电感 + 补偿值) * 100
-   88           * @return int 归一化后的偏差值，范围 -100 到 100
-   89           */
-   90          int Calculate_Deviation(void) 
-   91          {
-   92   1          // 获取电感ADC数组指针 (假设顺序为: 左外, 左内, 中, 右内, 右外)
-   93   1          int* adc_values = GetInductance();
-   94   1          
-   95   1          // 计算左右两侧电感值的差值 (分子)，反映偏向哪一侧
-   96   1          int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
-   97   1          
-   98   1          // 计算所有电感值的总和 (分母)，+10是为了防止分母为0导致除零错误
-   99   1          // 使用“差比和”可以消除由于速度变化导致的磁场强度整体变化影响
-  100   1          int eleAdd = adc_values[0] + adc_values[1] + adc_values[2] + adc_values[3] + adc_values[4] + 10;
-  101   1        
-  102   1          // 计算归一化偏差值
-  103   1          float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
-  104   1        
-  105   1          static uint16 off_track_timer = 0;   // 丢线持续时间计数器
-  106   1        
-  107   1          if(eleAdd < 20.0)
-  108   1          {
-  109   2            off_track_timer++;
-  110   2            if(off_track_timer >= 250)
-  111   2            {
-  112   3              stop_flag = 1;
-  113   3            }
-  114   2            
-  115   2          }
-  116   1          else
-  117   1          {
-  118   2            off_track_timer = 0;
-  119   2            stop_flag = 0;
-  120   2          }
-  121   1          
-  122   1          // 限幅处理：将偏差值限制在 -100 到 100 之间
-C251 COMPILER V5.60.0,  chassis                                                            24/05/26  22:48:37  PAGE 3   
+   80   1      
+   81   1          // 我们只需要 Z轴的角速度 (Gyro Z)
+   82   1          return gz; 
+   83   1      }
+   84          
+   85          /**
+   86           * @brief 计算循迹偏差
+   87           * 使用差比和算法计算车辆偏离中心线的程度
+   88           * 公式：( (左感+左感) - (右感+右感) ) / (总电感 + 补偿值) * 100
+   89           * @return int 归一化后的偏差值，范围 -100 到 100
+   90           */
+   91          int Calculate_Deviation(void) 
+   92          {
+   93   1          // 获取电感ADC数组指针 (假设顺序为: 左外, 左内, 中, 右内, 右外)
+   94   1          int* adc_values = GetInductance();
+   95   1          
+   96   1          // 计算左右两侧电感值的差值 (分子)，反映偏向哪一侧
+   97   1          int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
+   98   1          
+   99   1          // 计算所有电感值的总和 (分母)，+10是为了防止分母为0导致除零错误
+  100   1          // 使用“差比和”可以消除由于速度变化导致的磁场强度整体变化影响
+  101   1          int eleAdd = adc_values[0] + adc_values[1] + adc_values[2] + adc_values[3] + adc_values[4] + 10;
+  102   1        
+  103   1          // 计算归一化偏差值
+  104   1          float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
+  105   1        
+  106   1          static uint16 off_track_timer = 0;   // 丢线持续时间计数器
+  107   1          if(stop_flag == 1) return 0;
+  108   1        
+  109   1          if(eleAdd < 20.0)
+  110   1          {
+  111   2            off_track_timer++;
+  112   2            if(off_track_timer >= 250) stop_flag = 1;
+  113   2          }
+  114   1          else
+  115   1          {
+  116   2            off_track_timer = 0;
+  117   2          }
+  118   1          
+  119   1          // 限幅处理：将偏差值限制在 -100 到 100 之间
+  120   1          if(eleValue > 100.0f) eleValue = 100.0f;
+  121   1          else if(eleValue < -100.0f) eleValue = -100.0f;
+  122   1      
+C251 COMPILER V5.60.0,  chassis                                                            27/05/26  13:36:34  PAGE 3   
 
-  123   1          if(eleValue > 100.0f) eleValue = 100.0f;
-  124   1          else if(eleValue < -100.0f) eleValue = -100.0f;
-  125   1      
-  126   1          // 转换为整型返回给控制层
-  127   1          return (int)(eleValue);
-  128   1      }
-  129          
-  130          /**
-  131           * @brief 底盘闭环控制
-  132           * 获取偏差并输入方向PID，计算差速输出
-  133           */
-  134          void Chassis_Control(void)
-  135          {
-  136   1          const PID_TypeDef *direction_pid; //外环：赛道偏差PID  
-  137   1          int16 abs_dir;  //方向环输出绝对值
-  138   1          //获取方向环PID控制器句柄和偏航角速度环PID句柄
-  139   1          direction_pid = PID_GetController(PID_DIRECTION);
-  140   1          //电池保护
-  141   1          Battery_Protection_Task();
-  142   1        
-  143   1          // 获取当前的循迹偏差
-  144   1          chassis.current_deviation = Calculate_Deviation();
-  145   1          // 级联位置/方向PID计算，目标值设为0（即赛道中心）
-  146   1          direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
-  147   1      //    direction_output = 0;
-  148   1          //读取当前的偏航角速度
-  149   1          actual_yaw_rate = Get_Yaw_Rate();
-  150   1          
-  151   1          abs_dir = direction_output > 0 ? direction_output : -direction_output; // 取绝对值
-  152   1          // 4. 差速分配
-  153   1          if(direction_output < 0) //左转
-  154   1          {
-  155   2          // 左轮速度 = 基础速度 + 转向修正
-  156   2          chassis.left_speed = chassis.target_speed - (int16)(abs_dir * INNER_COEF);
-  157   2          // 右轮速度 = 基础速度 - 转向修正
-  158   2          chassis.right_speed = chassis.target_speed + (int16)(abs_dir * OUTER_COEF);
-  159   2          }
-  160   1          else  //右转
-  161   1          {
-  162   2          // 左轮速度 = 基础速度 + 转向修正
-  163   2          chassis.left_speed = chassis.target_speed + (int16)(abs_dir * OUTER_COEF);
-  164   2          // 右轮速度 = 基础速度 - 转向修正
-  165   2          chassis.right_speed = chassis.target_speed - (int16)(abs_dir * INNER_COEF);
-  166   2          }
-  167   1          
-  168   1          if(stop_flag) Motor_Control(0,0);
-  169   1          // 5. 执行电机控制
-  170   1          else Motor_Control(chassis.left_speed, chassis.right_speed);
-  171   1      }
+  123   1          // 转换为整型返回给控制层
+  124   1          return (int)(eleValue);
+  125   1      }
+  126          
+  127          /**
+  128           * @brief 底盘闭环控制
+  129           * 获取偏差并输入方向PID，计算差速输出
+  130           */
+  131          void Chassis_Control(void)
+  132          {
+  133   1          const PID_TypeDef *direction_pid; //外环：赛道偏差PID  
+  134   1          int16 abs_dir;  //方向环输出绝对值
+  135   1          static uint8 outer_loop_timer = 0;
+  136   1          //获取方向环PID控制器句柄和偏航角速度环PID句柄
+  137   1          direction_pid = PID_GetController(PID_DIRECTION);
+  138   1          //电池保护
+  139   1          Battery_Protection_Task();
+  140   1        
+  141   1          outer_loop_timer++;
+  142   1          if(outer_loop_timer >= 3) 
+  143   1          {
+  144   2              outer_loop_timer = 0;
+  145   2              
+  146   2              chassis.current_deviation = Calculate_Deviation();
+  147   2              // 外环算出力矩，更新 direction_output
+  148   2              direction_output = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0
+             -);
+  149   2          }
+  150   1      //    direction_output = 0;
+  151   1          //读取当前的偏航角速度
+  152   1          actual_yaw_rate = Get_Yaw_Rate();
+  153   1          
+  154   1          abs_dir = direction_output > 0 ? direction_output : -direction_output; // 取绝对值
+  155   1          //差速分配
+  156   1          if(direction_output < 0) //左转
+  157   1          {
+  158   2          // 左轮速度 = 基础速度 - 转向修正
+  159   2          chassis.left_speed = chassis.target_speed - (int16)(abs_dir * INNER_COEF);
+  160   2          // 右轮速度 = 基础速度 + 转向修正
+  161   2          chassis.right_speed = chassis.target_speed + (int16)(abs_dir * OUTER_COEF);
+  162   2          }
+  163   1          else  //右转
+  164   1          {
+  165   2          // 左轮速度 = 基础速度 + 转向修正
+  166   2          chassis.left_speed = chassis.target_speed + (int16)(abs_dir * OUTER_COEF);
+  167   2          // 右轮速度 = 基础速度 - 转向修正
+  168   2          chassis.right_speed = chassis.target_speed - (int16)(abs_dir * INNER_COEF);
+  169   2          }
+  170   1          //执行电机控制
+  171   1          Motor_Control(chassis.left_speed, chassis.right_speed);
+  172   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       516     ------
+  code size            =       553     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =        26         12
+  edata size           =        27         12
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
+C251 COMPILER V5.60.0,  chassis                                                            27/05/26  13:36:34  PAGE 4   
+
   far data size        =    ------     ------
   huge data size       =    ------     ------
-C251 COMPILER V5.60.0,  chassis                                                            24/05/26  22:48:37  PAGE 4   
-
   const size           =    ------     ------
-  hconst size          =        28     ------
+  hconst size          =        33     ------
 End of Module Information.
 
 

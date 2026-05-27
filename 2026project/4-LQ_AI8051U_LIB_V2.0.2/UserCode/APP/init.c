@@ -40,5 +40,40 @@ void User_Init(void)
     PID_AllInit();
     //底盘初始化
     Chassis_Init();
-    delay_ms(100);
+		left_pwm = 0;
+    right_pwm = 0;
+}
+
+/**
+ * @brief 按键发车等待函数 (V2.0 安全倒计时版)
+ * @note 必须按下并松开 GO 按键，随后延时 1 秒才会发车
+ */
+void Wait_For_Start(void)
+{
+    // 初始化 P2_0 为上拉输入模式
+    gpio_init_pin(P2_0, GPIO_Mode_IPU);
+    
+    // 等待按键按下
+    while (gpio_read_pin(P2_0) == 1);
+    
+    // 按下消抖
+    delay_ms(20); 
+    
+    // 确认按下
+    if (gpio_read_pin(P2_0) == 0)
+    {
+        // 等待按键松开（核心防刮手逻辑：你不松手，它绝对不走）
+        while (gpio_read_pin(P2_0) == 0); 
+        
+        // 松手消抖
+        delay_ms(20);
+        
+        LED_Ctrl(LED0, ON); 
+        delay_ms(500);
+        
+        LED_Ctrl(LED0, OFF);
+        delay_ms(500);
+        
+        stop_flag = 0;
+    }
 }
