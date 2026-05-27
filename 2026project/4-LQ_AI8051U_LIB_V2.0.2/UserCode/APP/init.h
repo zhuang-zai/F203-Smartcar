@@ -8,7 +8,7 @@
  * 包含: ADC, LCD, Timer, Motor, PID, Chassis等
  */
 void User_Init(void);
-
+void Wait_For_Start(void);
 extern volatile bit flag_200ms_lcd;
 
 #endif

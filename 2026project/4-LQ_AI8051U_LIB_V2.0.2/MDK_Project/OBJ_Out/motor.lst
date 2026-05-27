@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  motor                                                              24/05/26  21:57:37  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              26/05/26  17:58:54  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
@@ -21,7 +21,7 @@ stmt  level    source
     9          int16 vofa_current_speed = 0;
    10          int16 vofa_out_pwm = 0;
    11          
-   12          int16 stop_flag = 0;
+   12          int16 stop_flag = 1;
    13          
    14          /*pwm输出限幅*/
    15          int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
@@ -66,7 +66,7 @@ stmt  level    source
    52   1      //    right_pwm = (int16)(right_pwm * 0.8f + right_pwm_last * 0.2f);
    53   1      //    left_pwm_last = left_pwm;
    54   1      //    right_pwm_last = right_pwm;
-C251 COMPILER V5.60.0,  motor                                                              24/05/26  21:57:37  PAGE 2   
+C251 COMPILER V5.60.0,  motor                                                              26/05/26  17:58:54  PAGE 2   
 
    55   1          
    56   1          left_pwm = left_pwm > max_forward_pwm ? max_forward_pwm : left_pwm;
@@ -85,7 +85,7 @@ stmt  level    source
    69   1        /*
    70   1        当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
    71   1        */
-   72   1        Motor_Ctrl(right_pwm, left_pwm); //输出需要自己确保正确
+   72   1        Motor_Ctrl(-right_pwm, -left_pwm); //输出需要自己确保正确
    73   1        //printf("%d,%d,%d\n", Left_Target_Speed, _encoder_L, left_pwm);
    74   1        
    75   1        vofa_target_speed = Left_Target_Speed;
@@ -96,7 +96,7 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       223     ------
+  code size            =       227     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
