@@ -18,6 +18,7 @@ QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
 #include "include.h"
 #include "init.h"
 #include "motor.h"
+#include "lcd.h"
 
 volatile bit flag_200ms_lcd = 0;
 
@@ -27,13 +28,18 @@ void main(void)
     System_Init();  /* 系统初始化 必须保留 */
     Global_IRQ_Enable(); // 使能全局中断
     GPIO_LED_Init();
-    Wait_For_Start();
     User_Init(); // 统一初始化所有外设和模块
+		Wait_For_Start();
     while (1)
     {
-			Lcd_Display();
-			if(!stop_flag) BLmotor_Ctrl_w1(1200);
-			else BLmotor_Ctrl_w1(900);
+			Emergency_Stop_Task();
+			Fan_Smooth_Task();
+			if (flag_200ms_lcd == 1)
+        {
+            flag_200ms_lcd = 0;
+            Lcd_Display();
+            Key_Tuning_Task(); 
+        }
 			/*vofa 用于速度环PID调参*/
 //			vofa_timer++;
 //			if(vofa_timer >= 2)

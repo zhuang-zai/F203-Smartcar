@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  motor                                                              26/05/26  17:58:54  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              29/05/26  00:29:44  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
@@ -22,88 +22,130 @@ stmt  level    source
    10          int16 vofa_out_pwm = 0;
    11          
    12          int16 stop_flag = 1;
-   13          
-   14          /*pwm输出限幅*/
-   15          int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
-   16          int16 max_reverse_pwm = (int16)(-3200 * 0.4) ; // 反转限制在约 -40% (刹车力度够用就行)
-   17          /**
-   18           * @brief 电机速度控制函数：输入目标速度，读取当前速度，通过PID计算占据比�
+   13          // 负压风扇全局控制变量
+   14          int16 target_fan_pwm;  // 期望的负压PWM (目标值)
+   15          int16 current_fan_pwm; // 当前正在输出的PWM (现值)
+   16          
+   17          /*pwm输出限幅*/
+   18          int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
+   19          int16 max_reverse_pwm = (int16)(-3200 * 0.4) ; // 反转限制在约 -40% (刹车力度够用就行)
+   20          /**
+   21           * @brief 电机速度控制函数：输入目标速度，读取当前速度，通过PID计算占据比�
              -�控制电机转速
-   19           * @param Left_Target_Speed 左轮目标速度 Right_Target_Speed 右轮目标速度
-   20           * @param 无返回值，但可能会出错
-   21           */
-   22          void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
-   23          {
-   24   1      //    static uint8 Motor_stop_Time = 0; // 堵转计时器
-   25   1      //    static int16 left_pwm_last = 0;   // 记录上一次的 PWM (用于滤波)
-   26   1      //    static int16 right_pwm_last = 0;
-   27   1          _encoder_L = -1 * Read_Encoder(1);//读取编码器数值(真实速度) ,左编码器前进为负值因
+   22           * @param Left_Target_Speed 左轮目标速度 Right_Target_Speed 右轮目标速度
+   23           * @param 无返回值，但可能会出错
+   24           */
+   25          void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
+   26          {
+   27   1      //    static uint8 Motor_stop_Time = 0; // 堵转计时器
+   28   1      //    static int16 left_pwm_last = 0;   // 记录上一次的 PWM (用于滤波)
+   29   1      //    static int16 right_pwm_last = 0;
+   30   1          _encoder_L = -1 * Read_Encoder(1);//读取编码器数值(真实速度) ,左编码器前进为负值因
              -此前面加上负号
-   28   1          _encoder_R = Read_Encoder(2);//读取编码器数值(真实速度)
-   29   1        
-   30   1          /*堵转检测机制 (撞墙保护)*/
-   31   1      //    if ((Left_Target_Speed != 0 || Right_Target_Speed != 0) && 
-   32   1      //         (abs(_encoder_L) < 5 || abs(_encoder_R) < 5) && 
-   33   1      //         stop_flag == 0)
-   34   1      //    {
-   35   1      //        Motor_stop_Time++;
-   36   1      //        if (Motor_stop_Time >= 50) // 假设2ms周期，50次就是持续100ms堵转
-   37   1      //        {
-   38   1      //            stop_flag = 1;         // 触发急停！
-   39   1      //        }
-   40   1      //    }
-   41   1      //    else 
-   42   1      //    {
-   43   1      //        Motor_stop_Time = 0;       // 恢复正常，清零计数器
-   44   1      //    }
-   45   1      
-   46   1        //速度环占据比，分别用PID_LEFT和PID_RIGHT索引来实现左右轮控制
-   47   1        left_pwm = PID_Calculate_ByIndex(PID_LEFT, _encoder_L, Left_Target_Speed);
-   48   1        right_pwm = PID_Calculate_ByIndex(PID_RIGHT, _encoder_R, Right_Target_Speed);
-   49   1          
-   50   1            /*输出低通滤波  防止电流突变*/
-   51   1      //    left_pwm = (int16)(left_pwm * 0.8f + left_pwm_last * 0.2f);
-   52   1      //    right_pwm = (int16)(right_pwm * 0.8f + right_pwm_last * 0.2f);
-   53   1      //    left_pwm_last = left_pwm;
-   54   1      //    right_pwm_last = right_pwm;
-C251 COMPILER V5.60.0,  motor                                                              26/05/26  17:58:54  PAGE 2   
+   31   1          _encoder_R = Read_Encoder(2);//读取编码器数值(真实速度)
+   32   1        
+   33   1          /*堵转检测机制 (撞墙保护)*/
+   34   1      //    if ((Left_Target_Speed != 0 || Right_Target_Speed != 0) && 
+   35   1      //         (abs(_encoder_L) < 5 || abs(_encoder_R) < 5) && 
+   36   1      //         stop_flag == 0)
+   37   1      //    {
+   38   1      //        Motor_stop_Time++;
+   39   1      //        if (Motor_stop_Time >= 50) // 假设2ms周期，50次就是持续100ms堵转
+   40   1      //        {
+   41   1      //            stop_flag = 1;         // 触发急停！
+   42   1      //        }
+   43   1      //    }
+   44   1      //    else 
+   45   1      //    {
+   46   1      //        Motor_stop_Time = 0;       // 恢复正常，清零计数器
+   47   1      //    }
+   48   1      
+   49   1        //速度环占据比，分别用PID_LEFT和PID_RIGHT索引来实现左右轮控制
+   50   1        left_pwm = PID_Calculate_ByIndex(PID_LEFT, _encoder_L, Left_Target_Speed);
+   51   1        right_pwm = PID_Calculate_ByIndex(PID_RIGHT, _encoder_R, Right_Target_Speed);
+   52   1          
+   53   1            /*输出低通滤波  防止电流突变*/
+   54   1      //    left_pwm = (int16)(left_pwm * 0.8f + left_pwm_last * 0.2f);
+C251 COMPILER V5.60.0,  motor                                                              29/05/26  00:29:44  PAGE 2   
 
-   55   1          
-   56   1          left_pwm = left_pwm > max_forward_pwm ? max_forward_pwm : left_pwm;
-   57   1          left_pwm = left_pwm < max_reverse_pwm ? max_reverse_pwm : left_pwm;
+   55   1      //    right_pwm = (int16)(right_pwm * 0.8f + right_pwm_last * 0.2f);
+   56   1      //    left_pwm_last = left_pwm;
+   57   1      //    right_pwm_last = right_pwm;
    58   1          
-   59   1          right_pwm = right_pwm > max_forward_pwm ? max_forward_pwm : right_pwm;
-   60   1          right_pwm = right_pwm < max_reverse_pwm ? max_reverse_pwm : right_pwm;
+   59   1          left_pwm = left_pwm > max_forward_pwm ? max_forward_pwm : left_pwm;
+   60   1          left_pwm = left_pwm < max_reverse_pwm ? max_reverse_pwm : left_pwm;
    61   1          
-   62   1          
-   63   1          if (stop_flag == 1)
-   64   1          {
-   65   2              left_pwm = 0;
-   66   2              right_pwm = 0;
-   67   2          }
-   68   1        //Motor_Ctrl(600,600);
-   69   1        /*
-   70   1        当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
-   71   1        */
-   72   1        Motor_Ctrl(-right_pwm, -left_pwm); //输出需要自己确保正确
-   73   1        //printf("%d,%d,%d\n", Left_Target_Speed, _encoder_L, left_pwm);
-   74   1        
-   75   1        vofa_target_speed = Left_Target_Speed;
-   76   1        vofa_current_speed = _encoder_L;
-   77   1        vofa_out_pwm = left_pwm;
-   78   1      }
+   62   1          right_pwm = right_pwm > max_forward_pwm ? max_forward_pwm : right_pwm;
+   63   1          right_pwm = right_pwm < max_reverse_pwm ? max_reverse_pwm : right_pwm;
+   64   1          
+   65   1          
+   66   1          if (stop_flag == 1)
+   67   1          {
+   68   2              left_pwm = 0;
+   69   2              right_pwm = 0;
+   70   2          }
+   71   1        //Motor_Ctrl(600,600);
+   72   1        /*
+   73   1        当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
+   74   1        */
+   75   1        Motor_Ctrl(-right_pwm, -left_pwm); //输出需要自己确保正确
+   76   1        //printf("%d,%d,%d\n", Left_Target_Speed, _encoder_L, left_pwm);
+   77   1        
+   78   1        vofa_target_speed = Left_Target_Speed;
+   79   1        vofa_current_speed = _encoder_L;
+   80   1        vofa_out_pwm = left_pwm;
+   81   1      }
+   82          
+   83          
+   84          /**
+   85           * @brief 负压风扇平滑控制后台任务 (软着陆)
+   86           * 放在 main 的 while(1) 中执行
+   87           */
+   88          void Fan_Smooth_Task(void)
+   89          {
+   90   1          static uint16 fan_tick = 0;
+   91   1          
+   92   1          // 1. 根据当前车模状态，下达【期望目标】
+   93   1          if (stop_flag == 1) 
+   94   1          {
+   95   2              target_fan_pwm = 900; // 死机/待机：期望 900
+   96   2          }
+   97   1          
+   98   1          // 2. 利用 while(1) 的循环周期，进行非阻塞【现值追踪】
+   99   1          fan_tick++;
+  100   1          if (fan_tick >= 10) // 决定平滑的速度，数值越大变化越慢
+  101   1          {
+  102   2              fan_tick = 0;
+  103   2              
+  104   2              // 现值 < 期望值：缓加速
+  105   2              if (current_fan_pwm < target_fan_pwm) 
+  106   2              {
+  107   3                  current_fan_pwm += 50; 
+  108   3              }
+  109   2              // 现值 > 期望值：缓减速 (防撞墙着陆)
+  110   2              else if (current_fan_pwm > target_fan_pwm) 
+  111   2              {
+  112   3                  current_fan_pwm -= 50; 
+  113   3              }
+  114   2              
+  115   2              // 3. 永远只用现值来驱动电机
+  116   2              BLmotor_Ctrl_w1(current_fan_pwm);
+  117   2          }
+  118   1      }
 
+
+C251 COMPILER V5.60.0,  motor                                                              29/05/26  00:29:44  PAGE 3   
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       227     ------
+  code size            =       330     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =        20     ------
+  edata size           =        26     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
@@ -111,7 +153,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        36     ------
+  hconst size          =        42     ------
 End of Module Information.
 
 

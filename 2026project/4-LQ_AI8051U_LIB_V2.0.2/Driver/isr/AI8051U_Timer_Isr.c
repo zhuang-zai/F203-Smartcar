@@ -7,6 +7,8 @@
 #include "inductance.h"
 #include "motor.h"
 #include "init.h"
+
+extern volatile bit flag_200ms_lcd;
 //========================================================================
 // 函数: Timer0_ISR_Handler
 // 描述: Timer0中断函数.
@@ -82,6 +84,7 @@ void Timer4_ISR_Handler (void) interrupt TMR4_VECTOR		//进中断时已经清除标志
 void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR		//进中断时已经清除标志
 {
 	// TODO: 在此处添加用户代码
+	flag_200ms_lcd = 1;
 	//flag_200ms_lcd = 1;
 //	LED_Ctrl(LED0,RVS);
 //    LED_Ctrl(Beep0,RVS);

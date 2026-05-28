@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  inductance                                                         24/05/26  21:57:37  PAGE 1   
+C251 COMPILER V5.60.0,  inductance                                                         29/05/26  00:29:44  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE inductance
@@ -14,7 +14,7 @@ stmt  level    source
     2          
     3          // 电磁传感器变量定义
     4          static int ADC_values[5];//L1, L2, M, R1, R2
-    5          
+    5          int L1, L2, M, R1, R2;
     6          /**
     7           * @brief ADC 值归一化
     8           * 将 ADC 值归一化到指定范围
@@ -38,18 +38,18 @@ stmt  level    source
    26          void ScanInductance(void)
    27          {
    28   1          // 原ADC值，调试用
-   29   1          // ADC_values[0] = Get_ADCResult(5);//L1
-   30   1          // ADC_values[1] = Get_ADCResult(1);//L2
-   31   1          // ADC_values[2] = Get_ADCResult(2);//M
-   32   1          // ADC_values[3] = Get_ADCResult(3);//R1
-   33   1          // ADC_values[4] = Get_ADCResult(4);//R2
+   29   1           L1 = Get_ADCResult(5);//L1
+   30   1           L2 = Get_ADCResult(1);//L2
+   31   1           M = Get_ADCResult(2);//M
+   32   1           R1 = Get_ADCResult(3);//R1
+   33   1           R2 = Get_ADCResult(4);//R2
    34   1      
    35   1          //归一化后的ADC值
-   36   1          ADC_values[0] = _adcNormalize(Get_ADCResult(5), 0, 2100);//L1
-   37   1          ADC_values[1] = _adcNormalize(Get_ADCResult(1), 0, 2000);//L2
-   38   1          ADC_values[2] = _adcNormalize(Get_ADCResult(2), 0, 2400);//M
-   39   1          ADC_values[3] = _adcNormalize(Get_ADCResult(3), 0, 2100);//R1
-   40   1          ADC_values[4] = _adcNormalize(Get_ADCResult(4), 0, 2200);//R2
+   36   1          ADC_values[0] = _adcNormalize(L1, 110, 2500);//L1
+   37   1          ADC_values[1] = _adcNormalize(L2, 150, 2300);//L2
+   38   1          ADC_values[2] = _adcNormalize(M, 0, 2200);//M
+   39   1          ADC_values[3] = _adcNormalize(R1, 0, 2000);//R1
+   40   1          ADC_values[4] = _adcNormalize(R2, 0, 2400);//R2
    41   1      }
    42          
    43          int* GetInductance()
@@ -60,16 +60,16 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       342     ------
+  code size            =       394     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-C251 COMPILER V5.60.0,  inductance                                                         24/05/26  21:57:37  PAGE 2   
+C251 COMPILER V5.60.0,  inductance                                                         29/05/26  00:29:44  PAGE 2   
 
-  edata size           =        10         16
+  edata size           =        20         16
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  lcd                                                                24/05/26  21:57:57  PAGE 1   
+C251 COMPILER V5.60.0,  lcd                                                                29/05/26  01:39:02  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE lcd
@@ -16,63 +16,100 @@ stmt  level    source
     4          #include "motor.h"
     5          char txt[30];
     6          int *inductance_values; // 用于存储电感值的全局变量
-    7          
-    8          /**
-    9           * @brief 显示电磁传感器数据
-   10           * 显示归一化后的五个电感值
-   11           * @param values 电感值数组 [L1, L2, M, R1, R2]
-   12           */
-   13          void Lcd_Display(void)
-   14          {
-   15   1          inductance_values = GetInductance(); // 将只读电感值赋值给局部变量
-   16   1      
-   17   1          sprintf(txt, "L1:%03d L2:%03d", inductance_values[0],inductance_values[1]);
-   18   1          LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
-   19   1          
-   20   1          sprintf(txt, "M:%03d battery:%05d", inductance_values[2],current_adc);
-   21   1          LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
-   22   1          
-   23   1          sprintf(txt, "R1:%03d R2:%03d", inductance_values[3],inductance_values[4]);
-   24   1          LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
-   25   1          
-   26   1          
-   27   1          /*偏差*/
-   28   1          sprintf(txt, "eleV:%04d  Dout:%04d", Calculate_Deviation(),direction_output);
-   29   1          LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
-   30   1          /*偏航角*/
-   31   1          sprintf(txt, "yawrate:%5d stop:%d",actual_yaw_rate,stop_flag);
-   32   1          LCD_ShowStr_16(0, 4, txt, u16_RED_IPS, u16_BLACK);
-   33   1          /*左右目标速度*/
-   34   1          sprintf(txt,"LTS:%d  RTS:%d",chassis.left_speed,chassis.right_speed);
-   35   1          LCD_ShowStr_16(0, 5, txt, u16_RED_IPS, u16_BLACK);
-   36   1          sprintf(txt,"EL:%d  ER:%d",_encoder_L,_encoder_R);
-   37   1          LCD_ShowStr_16(0, 6, txt, u16_RED_IPS, u16_BLACK);
-   38   1          sprintf(txt,"LPWM:%04d RPWM:%04d",left_pwm,right_pwm);
-   39   1          LCD_ShowStr_16(0, 7, txt, u16_RED_IPS, u16_BLACK);
-   40   1      }
-   41          
+    7          uint8 selected_param = 0;
+    8          float tune_step = 0.01f;  // 默认步进值，可以通过左右键改变
+    9          /**
+   10           * @brief 显示电磁传感器数据
+   11           * 显示归一化后的五个电感值
+   12           * @param values 电感值数组 [L1, L2, M, R1, R2]
+   13           */
+   14          void Lcd_Display(void)
+   15          {
+   16   1          const PID_TypeDef *yaw_pid = PID_GetController(3); // 索引 3 是角速度环
+   17   1          inductance_values = GetInductance(); // 将只读电感值赋值给局部变量
+   18   1      
+   19   1      //    sprintf(txt, "L1:%03d L2:%03d", inductance_values[0],inductance_values[1]);
+   20   1      //    LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
+   21   1      //    
+   22   1      //    sprintf(txt, "M:%03d battery:%05d", inductance_values[2],current_adc);
+   23   1      //    LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
+   24   1      //    
+   25   1      //    sprintf(txt, "R1:%03d R2:%03d", inductance_values[3],inductance_values[4]);
+   26   1      //    LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
+   27   1      //    
+   28   1          sprintf(txt,"battery:%05d  ",current_adc);
+   29   1          LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
+   30   1        // 第 1 行：显示 Kp。如果选中了 Kp，前面显示小箭头
+   31   1          if (selected_param == 0)
+   32   1              sprintf(txt, "-> Kp: %4.2f     ", yaw_pid->Kp);
+   33   1          else
+   34   1              sprintf(txt, "   Kp: %4.2f     ", yaw_pid->Kp);
+   35   1          LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
+   36   1          
+   37   1          // 第 2 行：显示 Kd。如果选中了 Kd，前面显示小箭头
+   38   1          if (selected_param == 2) // 为了逻辑清晰，我们用 0 代表 P，2 代表 D
+   39   1              sprintf(txt, "-> Kd: %4.2f     ", yaw_pid->Kd);
+   40   1          else
+   41   1              sprintf(txt, "   Kd: %4.2f     ", yaw_pid->Kd);
+   42   1          LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
+   43   1          /*偏差*/
+   44   1          sprintf(txt, "eleV:%04d  Dout:%04d", Calculate_Deviation(),direction_output);
+   45   1          LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
+   46   1          /*偏航角*/
+   47   1          if (selected_param == 1) 
+   48   1          {
+   49   2              // 选中 1 时，箭头指向 target_yr
+   50   2              sprintf(txt, "-> trg_yr:%4d  yr:%4d ", target_yaw_rate, actual_yaw_rate);
+   51   2          }
+   52   1          else 
+   53   1          {
+   54   2              // 没选中时，隐藏箭头
+   55   2              sprintf(txt, "   trg_yr:%4d  yr:%4d ", target_yaw_rate, actual_yaw_rate);
+   56   2          }
+C251 COMPILER V5.60.0,  lcd                                                                29/05/26  01:39:02  PAGE 2   
+
+   57   1          LCD_ShowStr_16(0, 4, txt, u16_RED_IPS, u16_BLACK);
+   58   1          /*左右目标速度*/
+   59   1          sprintf(txt,"LTS:%d  RTS:%d stop:%d   ",chassis.left_speed,chassis.right_speed,stop_flag);
+   60   1          LCD_ShowStr_16(0, 5, txt, u16_RED_IPS, u16_BLACK);
+   61   1          sprintf(txt,"EL:%d  ER:%d",_encoder_L,_encoder_R);
+   62   1          LCD_ShowStr_16(0, 6, txt, u16_RED_IPS, u16_BLACK);
+   63   1          sprintf(txt,"LPWM:%04d RPWM:%04d",left_pwm,right_pwm);
+   64   1          LCD_ShowStr_16(0, 7, txt, u16_RED_IPS, u16_BLACK);
+   65   1      
+   66   1      /*以下用来测电感值与显示*/
+   67   1      //      sprintf(txt, "L1:%03d %05d  ", inductance_values[0],L1);
+   68   1      //      LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);      
+   69   1      //      sprintf(txt, "L2:%03d %05d  ", inductance_values[1],L2);
+   70   1      //      LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
+   71   1      //      sprintf(txt, "M:%03d %05d   ", inductance_values[2],M);
+   72   1      //      LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
+   73   1      //      sprintf(txt, "R2:%03d %05d   ", inductance_values[4],R2);
+   74   1      //      LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
+   75   1      //      sprintf(txt, "R1:%03d %05d   ", inductance_values[3],R1);
+   76   1      //      LCD_ShowStr_16(0, 4, txt, u16_RED_IPS, u16_BLACK);
+   77   1      }
+   78          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       461     ------
+  code size            =       604     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =        34     ------
+  edata size           =        39     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
-C251 COMPILER V5.60.0,  lcd                                                                24/05/26  21:57:57  PAGE 2   
-
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =       141     ------
+  hconst size          =       226     ------
 End of Module Information.
 
 

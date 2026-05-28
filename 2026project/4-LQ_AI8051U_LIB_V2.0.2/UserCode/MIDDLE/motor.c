@@ -10,6 +10,9 @@ int16 vofa_current_speed = 0;
 int16 vofa_out_pwm = 0;
 
 int16 stop_flag = 1;
+// 负压风扇全局控制变量
+int16 target_fan_pwm;  // 期望的负压PWM (目标值)
+int16 current_fan_pwm; // 当前正在输出的PWM (现值)
 
 /*pwm输出限幅*/
 int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
@@ -75,4 +78,41 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
 	vofa_target_speed = Left_Target_Speed;
   vofa_current_speed = _encoder_L;
   vofa_out_pwm = left_pwm;
+}
+
+
+/**
+ * @brief 负压风扇平滑控制后台任务 (软着陆)
+ * 放在 main 的 while(1) 中执行
+ */
+void Fan_Smooth_Task(void)
+{
+    static uint16 fan_tick = 0;
+    
+    // 1. 根据当前车模状态，下达【期望目标】
+    if (stop_flag == 1) 
+    {
+        target_fan_pwm = 900; // 死机/待机：期望 900
+    }
+    
+    // 2. 利用 while(1) 的循环周期，进行非阻塞【现值追踪】
+    fan_tick++;
+    if (fan_tick >= 10) // 决定平滑的速度，数值越大变化越慢
+    {
+        fan_tick = 0;
+        
+        // 现值 < 期望值：缓加速
+        if (current_fan_pwm < target_fan_pwm) 
+        {
+            current_fan_pwm += 50; 
+        }
+        // 现值 > 期望值：缓减速 (防撞墙着陆)
+        else if (current_fan_pwm > target_fan_pwm) 
+        {
+            current_fan_pwm -= 50; 
+        }
+        
+        // 3. 永远只用现值来驱动电机
+        BLmotor_Ctrl_w1(current_fan_pwm);
+    }
 }
