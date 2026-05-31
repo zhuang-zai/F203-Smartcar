@@ -1,0 +1,103 @@
+C251 COMPILER V5.60.0,  motor                                                              30/05/26  17:38:00  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
+OBJECT MODULE PLACED IN .\OBJ_Out\motor.obj
+COMPILER INVOKED BY: D:\keil5-C251\C251\BIN\C251.EXE ..\UserCode\MIDDLE\motor.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE I
+                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\U
+                    -serCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\motor.lst) TABS(2) OBJECT(.\
+                    -OBJ_Out\motor.obj) 
+
+stmt  level    source
+
+    1          #include "motor.h"
+    2          #include "stdio.h"
+    3          
+    4          // 电机数据全局结构体：包含编码器值、PWM输出、停车标志，集中管理电机状态
+    5          static MotorData motor = {0};
+    6          
+    7          /*pwm输出限幅*/
+    8          // 正转限制在约 85%，防止占空比过大导致失控
+    9          static int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
+   10          // 反转限制在约 -40%，刹车力度够用即可
+   11          static int16 max_reverse_pwm = (int16)(-3200 * 0.4) ; // 反转限制在约 -40% (刹车力度够用就�
+             -�)
+   12          /**
+   13           * @brief 电机速度控制函数：输入目标速度，读取当前速度，通过PID计算占据比�
+             -�控制电机转速
+   14           * @param Left_Target_Speed 左轮目标速度 Right_Target_Speed 右轮目标速度
+   15           * @param 无返回值，但可能会出错
+   16           */
+   17          void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
+   18          {
+   19   1          // stop_flag 为 0 时正常控制，为 1 时停止输出（电感异常时由 Calculate_Deviation �
+             -��发）
+   20   1          if (motor.stop_flag == 0)
+   21   1          {
+   22   2              motor.encoder_L = -1 * Read_Encoder(1);//读取编码器数值(真实速度) ,左编码器前进�
+             -��负值因此前面加上负号
+   23   2              motor.encoder_R = Read_Encoder(2);//读取编码器数值(真实速度)
+   24   2      
+   25   2              //速度环占据比，分别用PID_LEFT和PID_RIGHT索引来实现左右轮控制
+   26   2              motor.left_pwm = PID_Calculate_ByIndex(PID_LEFT, motor.encoder_L, Left_Target_Speed);
+   27   2              motor.right_pwm = PID_Calculate_ByIndex(PID_RIGHT, motor.encoder_R, Right_Target_Speed);
+   28   2                  
+   29   2              // PWM 输出限幅：正向不超过 max_forward_pwm，反向不超过 max_reverse_pwm
+   30   2              motor.left_pwm = motor.left_pwm > max_forward_pwm ? max_forward_pwm : motor.left_pwm;
+   31   2              motor.left_pwm = motor.left_pwm < max_reverse_pwm ? max_reverse_pwm : motor.left_pwm;
+   32   2              
+   33   2              motor.right_pwm = motor.right_pwm > max_forward_pwm ? max_forward_pwm : motor.right_pwm;
+   34   2              motor.right_pwm = motor.right_pwm < max_reverse_pwm ? max_reverse_pwm : motor.right_pwm;
+   35   2          }
+   36   1          else  
+   37   1          {
+   38   2              // 停车状态：PWM 输出清零
+   39   2              motor.left_pwm = 0;
+   40   2              motor.right_pwm = 0;
+   41   2          }
+   42   1        //Motor_Ctrl(600,600);
+   43   1        /*
+   44   1        当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
+   45   1        */
+   46   1        Motor_Ctrl(motor.right_pwm, motor.left_pwm); //输出需要自己确保正确
+   47   1        //printf("%d,%d,%d\n", Left_Target_Speed, motor.encoder_L, motor.left_pwm);
+   48   1      }
+   49          
+   50          // 返回电机数据的只读指针：外部通过 const MotorData* 访问编码器、PWM、stop_flag
+   51          const MotorData* Motor_GetData(void)
+   52          {
+C251 COMPILER V5.60.0,  motor                                                              30/05/26  17:38:00  PAGE 2   
+
+   53   1          return &motor;
+   54   1      }
+   55          
+   56          // 设置停车标志：外部唯一可修改 motor.stop_flag 的接口
+   57          // flag=0 正常运行，flag=1 停止电机输出
+   58          void Motor_SetStopFlag(int16 flag)
+   59          {
+   60   1          motor.stop_flag = flag;
+   61   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       214     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        14     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        26     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

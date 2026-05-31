@@ -1,0 +1,84 @@
+C251 COMPILER V5.60.0,  lcd                                                                30/05/26  17:38:00  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE lcd
+OBJECT MODULE PLACED IN .\OBJ_Out\lcd.obj
+COMPILER INVOKED BY: D:\keil5-C251\C251\BIN\C251.EXE ..\UserCode\MIDDLE\lcd.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\lcd.lst) TABS(2) OBJECT(.\OBJ_
+                    -Out\lcd.obj) 
+
+stmt  level    source
+
+    1          #include "lcd.h"
+    2          #include "inductance.h"
+    3          #include "chassis.h"
+    4          #include "motor.h"
+    5          #include "IMU.h"
+    6          char txt[30];
+    7          int *inductance_values;
+    8          
+    9          void Lcd_Display(void)
+   10          {
+   11   1          // 使用 Motor_GetData() 和 Chassis_GetData() 获取只读数据指针，替代旧的多函数调�
+             -�方式
+   12   1          MotorData *mot = Motor_GetData();
+   13   1          const Chassis_TypeDef *chs = Chassis_GetData();
+   14   1          inductance_values = GetInductance();
+   15   1      
+   16   1          // 显示 5 路归一化电感值
+   17   1          sprintf(txt, "L1:%03d L2:%03d", inductance_values[0],inductance_values[1]);
+   18   1          LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
+   19   1          
+   20   1          sprintf(txt, "M:%03d ", inductance_values[2]);
+   21   1          LCD_ShowStr_16(0, 1, txt, u16_RED_IPS, u16_BLACK);
+   22   1          
+   23   1          sprintf(txt, "R1:%03d R2:%03d", inductance_values[3],inductance_values[4]);
+   24   1          LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
+   25   1          
+   26   1          
+   27   1        // 使用 chs->current_deviation 直接读取已计算的偏差值，避免调用 Calculate_Deviation() 
+             -触发停车副作用
+   28   1        sprintf(txt, "eleV:%04d  Dout:%04d", chs->current_deviation, chs->direction_output);
+   29   1          LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
+   30   1      
+   31   1        // 使用 IMU_GetData() 获取陀螺仪只读指针
+   32   1        sprintf(txt, "yawrate:%5d stop:%d", IMU_GetData()->gyro_z, mot->stop_flag);
+   33   1        LCD_ShowStr_16(0, 4, txt, u16_RED_IPS, u16_BLACK);
+   34   1      
+   35   1        sprintf(txt,"LTS:%d  RTS:%d", chs->left_speed, chs->right_speed);
+   36   1        LCD_ShowStr_16(0, 5, txt, u16_RED_IPS, u16_BLACK);
+   37   1      
+   38   1        sprintf(txt,"EL:%d  ER:%d", mot->encoder_L, mot->encoder_R);
+   39   1        LCD_ShowStr_16(0, 6, txt, u16_RED_IPS, u16_BLACK);
+   40   1      
+   41   1        sprintf(txt,"LPWM:%04d RPWM:%04d", mot->left_pwm, mot->right_pwm);
+   42   1        LCD_ShowStr_16(0, 7, txt, u16_RED_IPS, u16_BLACK);
+   43   1      }
+   44          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       479     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+C251 COMPILER V5.60.0,  lcd                                                                30/05/26  17:38:00  PAGE 2   
+
+  edata size           =        34          4
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =       129     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

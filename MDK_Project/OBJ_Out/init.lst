@@ -1,0 +1,92 @@
+C251 COMPILER V5.60.0,  init                                                               30/05/26  17:38:01  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE init
+OBJECT MODULE PLACED IN .\OBJ_Out\init.obj
+COMPILER INVOKED BY: D:\keil5-C251\C251\BIN\C251.EXE ..\UserCode\APP\init.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDI
+                    -R(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserC
+                    -ode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\init.lst) TABS(2) OBJECT(.\OBJ_O
+                    -ut\init.obj) 
+
+stmt  level    source
+
+    1          #include "init.h"
+    2          #include "lcd.h"
+    3          #include "motor.h"
+    4          #include "chassis.h"
+    5          #include "negative_pressure_fan.h"
+    6          #include "LQ_MotorServo.h"
+    7          #include "LQ_IPSLCD.h"
+    8          #include "LQ_TIMER.h"
+    9          #include "LQ_HI2C_Gyro.h"
+   10          #include "pid.h"
+   11          #include "inductance.h"
+   12          // 新增：包含调试模块头文件，用于串口调参和 VOFA+ 调试
+   13          #include "debug.h"
+   14          
+   15          /**
+   16           * @brief 统一初始化所有外设和模块
+   17           * 包含: ADC, LCD, Timer, Motor, PID, Chassis等
+   18           */
+   19          void User_Init(void)
+   20          {
+   21   1          //LQ写的
+   22   1          // 1. ADC初始化
+   23   1          ADC_Init();
+   24   1          // 2. LCD初始化
+   25   1          IPS_LCD_Init();
+   26   1          LCD_CLS(u16_BLACK);
+   27   1          //编码器初始化 将 Timer3 和 Timer4 配置为外部脉冲计数模式
+   28   1          Timer_EncInit(Timer3 | Timer4);
+   29   1          // 3. 定时器初始化
+   30   1          TIM_Init_ms(Timer0, 1);  //电感采集
+   31   1          TIM_Init_ms(Timer1, 2);  //控制算法
+   32   1          TIM_Init_ms(Timer2, 20); //调试数据发送(50Hz)
+   33   1          //TIM_Init_ms(Timer11,200);  //显示屏
+   34   1          // 4. 电机初始化
+   35   1          Motor_Init(Motor_FREQ);
+   36   1          // 5. 陀螺仪初始化（可选）
+   37   1          // lsm6dsr_init();  //软件陀螺仪初始化
+   38   1          LQ_HARD_SPI_LSM60DSR_Init(); // 硬件陀螺仪初始化
+   39   1          //负压风扇初始化
+   40   1          BLmotor_Init_1(Servo_FREQ); // 频率为50Hz，此处频率需要与舵机频率保持一致,满占空�
+             -��20000
+   41   1          BLmotor_Ctrl_w1(900);
+   42   1          //下面是我自己写的
+   43   1          //PID参数初始化（速度环+方向环）
+   44   1          PID_AllInit();
+   45   1          //底盘初始化
+   46   1          Chassis_Init();
+   47   1          //调试模块初始化
+   48   1          Debug_Init();
+   49   1          //负压风扇
+   50   1          Fan_Init(Servo_FREQ);
+   51   1          Fan_SetSpeed(FAN_MODE_1);
+   52   1          delay_ms(100);
+   53   1      }
+
+
+C251 COMPILER V5.60.0,  init                                                               30/05/26  17:38:01  PAGE 2   
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        96     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

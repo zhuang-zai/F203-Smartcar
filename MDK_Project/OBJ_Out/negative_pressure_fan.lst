@@ -1,0 +1,70 @@
+C251 COMPILER V5.60.0,  negative_pressure_fan                                              30/05/26  17:38:00  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE negative_pressure_fan
+OBJECT MODULE PLACED IN .\OBJ_Out\negative_pressure_fan.obj
+COMPILER INVOKED BY: D:\keil5-C251\C251\BIN\C251.EXE ..\UserCode\MIDDLE\negative_pressure_fan.c XSMALL OA UNSIGNED_CHAR 
+                    -FLOAT64 BROWSE INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;
+                    -..\UserCode;..\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\negative_pre
+                    -ssure_fan.lst) TABS(2) OBJECT(.\OBJ_Out\negative_pressure_fan.obj) 
+
+stmt  level    source
+
+    1          #include "negative_pressure_fan.h"
+    2          #include "LQ_MotorServo.h"
+    3          
+    4          static uint16 g_fan_duty = 0;
+    5          
+    6          void Fan_Init(uint16 freq)
+    7          {
+    8   1          BLmotor_Init_1(freq);
+    9   1      }
+   10          
+   11          void Fan_SetSpeed(uint16 duty)
+   12          {
+   13   1          /* 占空比下限钳位 */
+   14   1          if (duty < FAN_MIN_DUTY) {
+   15   2              duty = FAN_MIN_DUTY;
+   16   2          }
+   17   1          /* 占空比上限钳位 */
+   18   1          if (duty > FAN_MAX_DUTY) {
+   19   2              duty = FAN_MAX_DUTY;
+   20   2          }
+   21   1          g_fan_duty = duty;
+   22   1          BLmotor_Ctrl_w1(duty);
+   23   1      }
+   24          
+   25          uint16 Fan_GetSpeed(void)
+   26          {
+   27   1          return g_fan_duty;
+   28   1      }
+   29          
+   30          void Fan_Stop(void)
+   31          {
+   32   1          g_fan_duty = 0;
+   33   1          BLmotor_Ctrl_w1(0);
+   34   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        50     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         2     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =         6     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

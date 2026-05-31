@@ -1,0 +1,71 @@
+C251 COMPILER V5.60.0,  IMU                                                                30/05/26  17:38:00  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE IMU
+OBJECT MODULE PLACED IN .\OBJ_Out\IMU.obj
+COMPILER INVOKED BY: D:\keil5-C251\C251\BIN\C251.EXE ..\UserCode\MIDDLE\IMU.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\IMU.lst) TABS(2) OBJECT(.\OBJ_
+                    -Out\IMU.obj) 
+
+stmt  level    source
+
+    1          #include "IMU.h"
+    2          #include "LQ_LSM6DSR_Hard.h"
+    3          
+    4          static IMU_Data_TypeDef imu_data;
+    5          
+    6          // 将陀螺仪原始数据变量定义在文件作用域，IMU_GetYawRate() 直接读取缓存值，避�
+             -��重复调用硬件通信
+    7          static int16 ax, ay, az, gx, gy, gz;
+    8          
+    9          IMU_Data_TypeDef* IMU_GetData(void)
+   10          {
+   11   1      #ifdef HARDWARE_SPI
+   12   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+   13   1      #elif defined HARDWARE_IIC
+                   LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
+               #else
+                   ax = ay = az = gx = gy = gz = 0;
+               #endif
+   18   1      
+   19   1          // 将文件作用域变量拷贝到返回结构体
+   20   1          imu_data.acc_x = ax;
+   21   1          imu_data.acc_y = ay;
+   22   1          imu_data.acc_z = az;
+   23   1          imu_data.gyro_x = gx;
+   24   1          imu_data.gyro_y = gy;
+   25   1          imu_data.gyro_z = gz;
+   26   1          
+   27   1          return &imu_data;
+   28   1      }
+   29          
+   30          // 直接读取文件作用域的 gz 缓存值，避免重复调用硬件 SPI/I2C 通信
+   31          int16 IMU_GetYawRate(void)
+   32          {
+   33   1          return gz;
+   34   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       101     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        26     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

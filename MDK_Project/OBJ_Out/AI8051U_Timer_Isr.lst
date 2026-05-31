@@ -1,0 +1,128 @@
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  30/05/26  17:37:58  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Timer_Isr
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Timer_Isr.obj
+COMPILER INVOKED BY: D:\keil5-C251\C251\BIN\C251.EXE ..\Driver\isr\AI8051U_Timer_Isr.c XSMALL OA UNSIGNED_CHAR FLOAT64 B
+                    -ROWSE INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCo
+                    -de;..\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Timer_Isr.lst
+                    -) TABS(2) OBJECT(.\OBJ_Out\AI8051U_Timer_Isr.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_Timer.h"
+    6          #include "include.h"
+    7          #include "inductance.h"
+    8          #include "motor.h"
+    9          #include "init.h"
+   10          // 新增：包含调试模块头文件，用于定时器2发送调试数据
+   11          #include "debug.h"
+   12          //========================================================================
+   13          // : Timer0_ISR_Handler
+   14          // : Timer0жϺ.
+   15          // : none.
+   16          // : none.
+   17          // 汾: V1.0, 2024-11-23
+   18          //========================================================================
+   19          void Timer0_ISR_Handler (void) interrupt TMR0_VECTOR    //жʱѾ־
+   20          {
+   21   1        ScanInductance();
+   22   1      }
+   23          
+   24          //========================================================================
+   25          // : Timer1_ISR_Handler
+   26          // : Timer1жϺ.
+   27          // : none.
+   28          // : none.
+   29          // 汾: V1.0, 2020-09-23
+   30          //========================================================================
+   31          void Timer1_ISR_Handler (void) interrupt TMR1_VECTOR    //жʱѾ־
+   32          {
+   33   1        // 底盘闭环控制：外环方向环 + 内环速度环 PID
+   34   1        Chassis_Control();
+   35   1      }
+   36          
+   37          //========================================================================
+   38          // : Timer2_ISR_Handler
+   39          // : Timer2жϺ.
+   40          // : none.
+   41          // : none.
+   42          // 汾: V1.0, 2020-09-23
+   43          //========================================================================
+   44          void Timer2_ISR_Handler (void) interrupt TMR2_VECTOR    //жʱѾ־
+   45          {
+   46   1        // 每 20ms 通过 UART 发送调试数据帧给 VOFA+ 显示曲线
+   47   1        Debug_SendFrame();
+   48   1      }
+   49          
+   50          //========================================================================
+   51          // : Timer3_ISR_Handler
+   52          // : Timer3жϺ.
+   53          // : none.
+   54          // : none.
+   55          // 汾: V1.0, 2020-09-23
+   56          //========================================================================
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  30/05/26  17:37:58  PAGE 2   
+
+   57          void Timer3_ISR_Handler (void) interrupt TMR3_VECTOR    //жʱѾ־
+   58          {
+   59   1        // TODO: ڴ˴û
+   60   1      //  LED_Ctrl(LED0,RVS);
+   61   1      }
+   62          
+   63          //========================================================================
+   64          // : Timer4_ISR_Handler
+   65          // : Timer4жϺ.
+   66          // : none.
+   67          // : none.
+   68          // 汾: V1.0, 2020-09-23
+   69          //========================================================================
+   70          void Timer4_ISR_Handler (void) interrupt TMR4_VECTOR    //жʱѾ־
+   71          {
+   72   1        // TODO: ڴ˴û
+   73   1      //  LED_Ctrl(LED1,RVS);
+   74   1      }
+   75          
+   76          
+   77          //========================================================================
+   78          // : Timer4_ISR_Handler
+   79          // : Timer4жϺ.
+   80          // : none.
+   81          // : none.
+   82          // 汾: V1.0, 2020-09-23
+   83          //========================================================================
+   84          void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR    //жʱѾ־
+   85          {
+   86   1        // TODO: ڴ˴û
+   87   1        //flag_200ms_lcd = 1;
+   88   1      //  LED_Ctrl(LED0,RVS);
+   89   1      //    LED_Ctrl(Beep0,RVS);
+   90   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       153     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

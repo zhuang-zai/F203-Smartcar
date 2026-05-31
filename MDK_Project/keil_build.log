@@ -1,0 +1,17 @@
+Build target 'AI8051_32bit'
+compiling main.c...
+linking...
+*** WARNING L15: MULTIPLE CALL TO FUNCTION
+    NAME:    LSM6DSR_Read_Data/LQ_LSM6DSR_Hard
+    CALLER1: Timer2_ISR_Handler/AI8051U_Timer_Isr
+    CALLER2: ?C_C51STARTUP?3
+
+*** WARNING L15: MULTIPLE CALL TO FUNCTION
+    NAME:    SPI_Read_NByte/AI8051U_SPI
+    CALLER1: Timer2_ISR_Handler/AI8051U_Timer_Isr
+    CALLER2: ?C_C51STARTUP?3
+
+Program Size: data=11.3 edata+hdata=1884 xdata=384 const=10588 code=22513
+creating hex file from ".\OBJ_Out\LQ_STCAI32_LIB"...
+".\OBJ_Out\LQ_STCAI32_LIB" - 0 Error(s), 2 Warning(s).
+Build Time Elapsed:  00:00:01
