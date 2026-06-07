@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  motor                                                              29/05/26  00:29:44  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              06/06/26  23:17:14  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
@@ -28,7 +28,7 @@ stmt  level    source
    16          
    17          /*pwm输出限幅*/
    18          int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
-   19          int16 max_reverse_pwm = (int16)(-3200 * 0.4) ; // 反转限制在约 -40% (刹车力度够用就行)
+   19          int16 max_reverse_pwm = (int16)(-3200 * 0.8) ; // 反转限制在约 -40% (刹车力度够用就行)
    20          /**
    21           * @brief 电机速度控制函数：输入目标速度，读取当前速度，通过PID计算占据比�
              -�控制电机转速
@@ -66,7 +66,7 @@ stmt  level    source
    52   1          
    53   1            /*输出低通滤波  防止电流突变*/
    54   1      //    left_pwm = (int16)(left_pwm * 0.8f + left_pwm_last * 0.2f);
-C251 COMPILER V5.60.0,  motor                                                              29/05/26  00:29:44  PAGE 2   
+C251 COMPILER V5.60.0,  motor                                                              06/06/26  23:17:14  PAGE 2   
 
    55   1      //    right_pwm = (int16)(right_pwm * 0.8f + right_pwm_last * 0.2f);
    56   1      //    left_pwm_last = left_pwm;
@@ -84,61 +84,66 @@ stmt  level    source
    68   2              left_pwm = 0;
    69   2              right_pwm = 0;
    70   2          }
-   71   1        //Motor_Ctrl(600,600);
-   72   1        /*
-   73   1        当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
-   74   1        */
-   75   1        Motor_Ctrl(-right_pwm, -left_pwm); //输出需要自己确保正确
-   76   1        //printf("%d,%d,%d\n", Left_Target_Speed, _encoder_L, left_pwm);
-   77   1        
-   78   1        vofa_target_speed = Left_Target_Speed;
-   79   1        vofa_current_speed = _encoder_L;
-   80   1        vofa_out_pwm = left_pwm;
-   81   1      }
-   82          
-   83          
-   84          /**
-   85           * @brief 负压风扇平滑控制后台任务 (软着陆)
-   86           * 放在 main 的 while(1) 中执行
-   87           */
-   88          void Fan_Smooth_Task(void)
-   89          {
-   90   1          static uint16 fan_tick = 0;
-   91   1          
-   92   1          // 1. 根据当前车模状态，下达【期望目标】
-   93   1          if (stop_flag == 1) 
-   94   1          {
-   95   2              target_fan_pwm = 900; // 死机/待机：期望 900
-   96   2          }
-   97   1          
-   98   1          // 2. 利用 while(1) 的循环周期，进行非阻塞【现值追踪】
-   99   1          fan_tick++;
-  100   1          if (fan_tick >= 10) // 决定平滑的速度，数值越大变化越慢
-  101   1          {
-  102   2              fan_tick = 0;
-  103   2              
-  104   2              // 现值 < 期望值：缓加速
-  105   2              if (current_fan_pwm < target_fan_pwm) 
-  106   2              {
-  107   3                  current_fan_pwm += 50; 
-  108   3              }
-  109   2              // 现值 > 期望值：缓减速 (防撞墙着陆)
-  110   2              else if (current_fan_pwm > target_fan_pwm) 
+   71   1      //    else 
+   72   1      //    {
+   73   1      //      left_pwm = 1500;
+   74   1      //        right_pwm = 1500;
+   75   1      //    }
+   76   1          Motor_Ctrl(-right_pwm, left_pwm);
+   77   1        /*
+   78   1        当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
+   79   1        */
+   80   1      //  Motor_Ctrl(-right_pwm, left_pwm); //输出需要自己确保正确
+   81   1        //printf("%d,%d,%d,%d,%d\n", chassis.target_speed, _encoder_L,_encoder_R, left_pwm,-right_pwm);
+   82   1        
+   83   1      //  vofa_target_speed = Left_Target_Speed;
+   84   1      //  vofa_current_speed = _encoder_L;
+   85   1      //  vofa_out_pwm = left_pwm;
+   86   1      }
+   87          
+   88          
+   89          /**
+   90           * @brief 负压风扇平滑控制后台任务 (软着陆)
+   91           * 放在 main 的 while(1) 中执行
+   92           */
+   93          void Fan_Smooth_Task(void)
+   94          {
+   95   1          static uint16 fan_tick = 0;
+   96   1          
+   97   1          // 1. 根据当前车模状态，下达【期望目标】
+   98   1          if (stop_flag == 1) 
+   99   1          {
+  100   2              target_fan_pwm = 1000; // 死机/待机：期望 900
+  101   2          }
+  102   1          
+  103   1          // 2. 利用 while(1) 的循环周期，进行非阻塞【现值追踪】
+  104   1          fan_tick++;
+  105   1          if (fan_tick >= 10) // 决定平滑的速度，数值越大变化越慢
+  106   1          {
+  107   2              fan_tick = 0;
+  108   2              
+  109   2              // 现值 < 期望值：缓加速
+  110   2              if (current_fan_pwm < target_fan_pwm) 
   111   2              {
-  112   3                  current_fan_pwm -= 50; 
+  112   3                  current_fan_pwm += 50; 
   113   3              }
-  114   2              
-  115   2              // 3. 永远只用现值来驱动电机
-  116   2              BLmotor_Ctrl_w1(current_fan_pwm);
-  117   2          }
-  118   1      }
+  114   2              // 现值 > 期望值：缓减速 (防撞墙着陆)
+  115   2              else if (current_fan_pwm > target_fan_pwm) 
+  116   2              {
+  117   3                  current_fan_pwm -= 50; 
+  118   3              }
+  119   2              
+  120   2              // 3. 永远只用现值来驱动电机
+C251 COMPILER V5.60.0,  motor                                                              06/06/26  23:17:14  PAGE 3   
 
+  121   2              BLmotor_Ctrl_w1(current_fan_pwm);
+  122   2          }
+  123   1      }
 
-C251 COMPILER V5.60.0,  motor                                                              29/05/26  00:29:44  PAGE 3   
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       330     ------
+  code size            =       308     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------

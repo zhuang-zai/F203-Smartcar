@@ -16,7 +16,7 @@ int16 current_fan_pwm; // 当前正在输出的PWM (现值)
 
 /*pwm输出限幅*/
 int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
-int16 max_reverse_pwm = (int16)(-3200 * 0.4) ; // 反转限制在约 -40% (刹车力度够用就行)
+int16 max_reverse_pwm = (int16)(-3200 * 0.8) ; // 反转限制在约 -40% (刹车力度够用就行)
 /**
  * @brief 电机速度控制函数：输入目标速度，读取当前速度，通过PID计算占据比，控制电机转速
  * @param Left_Target_Speed 左轮目标速度 Right_Target_Speed 右轮目标速度
@@ -68,16 +68,21 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
         left_pwm = 0;
         right_pwm = 0;
     }
-	//Motor_Ctrl(600,600);
+//		else 
+//		{
+//			left_pwm = 1500;
+//        right_pwm = 1500;
+//		}
+		Motor_Ctrl(-right_pwm, left_pwm);
 	/*
 	当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
 	*/
-	Motor_Ctrl(-right_pwm, -left_pwm); //输出需要自己确保正确
-	//printf("%d,%d,%d\n", Left_Target_Speed, _encoder_L, left_pwm);
+//	Motor_Ctrl(-right_pwm, left_pwm); //输出需要自己确保正确
+	//printf("%d,%d,%d,%d,%d\n", chassis.target_speed, _encoder_L,_encoder_R, left_pwm,-right_pwm);
 	
-	vofa_target_speed = Left_Target_Speed;
-  vofa_current_speed = _encoder_L;
-  vofa_out_pwm = left_pwm;
+//	vofa_target_speed = Left_Target_Speed;
+//  vofa_current_speed = _encoder_L;
+//  vofa_out_pwm = left_pwm;
 }
 
 
@@ -92,7 +97,7 @@ void Fan_Smooth_Task(void)
     // 1. 根据当前车模状态，下达【期望目标】
     if (stop_flag == 1) 
     {
-        target_fan_pwm = 900; // 死机/待机：期望 900
+        target_fan_pwm = 1000; // 死机/待机：期望 900
     }
     
     // 2. 利用 while(1) 的循环周期，进行非阻塞【现值追踪】

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  29/05/26  00:29:44  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  06/06/26  23:25:48  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Timer_Isr
@@ -20,7 +20,7 @@ stmt  level    source
     8          #include "motor.h"
     9          #include "init.h"
    10          
-   11          extern volatile bit flag_200ms_lcd;
+   11          extern volatile bit flag_20ms_lcd;
    12          //========================================================================
    13          // 函数: Timer0_ISR_Handler
    14          // 描述: Timer0中断函数.
@@ -66,7 +66,7 @@ stmt  level    source
    54          // 返回: none.
    55          // 版本: V1.0, 2020-09-23
    56          //========================================================================
-C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  29/05/26  00:29:44  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  06/06/26  23:25:48  PAGE 2   
 
    57          void Timer3_ISR_Handler (void) interrupt TMR3_VECTOR    //进中断时已经清除标志
    58          {
@@ -98,8 +98,8 @@ stmt  level    source
    84          void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR    //进中断时已经清除标志
    85          {
    86   1        // TODO: 在此处添加用户代码
-   87   1        flag_200ms_lcd = 1;
-   88   1        //flag_200ms_lcd = 1;
+   87   1        flag_20ms_lcd = 1;
+   88   1        
    89   1      //  LED_Ctrl(LED0,RVS);
    90   1      //    LED_Ctrl(Beep0,RVS);
    91   1      }

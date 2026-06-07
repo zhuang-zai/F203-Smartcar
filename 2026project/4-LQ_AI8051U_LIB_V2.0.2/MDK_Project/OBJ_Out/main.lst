@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               29/05/26  00:33:51  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               07/06/26  01:31:33  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -32,11 +32,11 @@ stmt  level    source
    20          #include "motor.h"
    21          #include "lcd.h"
    22          
-   23          volatile bit flag_200ms_lcd = 0;
+   23          volatile bit flag_20ms_lcd = 0;
    24          
    25          void main(void)
    26          {
-   27   1      //  int vofa_timer = 0;
+   27   1        int vofa_timer = 0;
    28   1          System_Init();  /* 系统初始化 必须保留 */
    29   1          Global_IRQ_Enable(); // 使能全局中断
    30   1          GPIO_LED_Init();
@@ -46,29 +46,35 @@ stmt  level    source
    34   1          {
    35   2            Emergency_Stop_Task();
    36   2            Fan_Smooth_Task();
-   37   2            if (flag_200ms_lcd == 1)
+   37   2            if (flag_20ms_lcd == 1)
    38   2              {
-   39   3                  flag_200ms_lcd = 0;
+   39   3                  flag_20ms_lcd = 0;
    40   3                  Lcd_Display();
    41   3                  Key_Tuning_Task(); 
-   42   3              }
-   43   2            /*vofa 用于速度环PID调参*/
-   44   2      //      vofa_timer++;
-   45   2      //      if(vofa_timer >= 2)
-   46   2      //      {
-   47   2      //        vofa_timer = 0;
-   48   2      //        printf("%d,%d,%d\n", vofa_target_speed, vofa_current_speed, vofa_out_pwm);
-   49   2      //      }
-   50   2            LED_Ctrl(LED0, RVS);
-   51   2          }
-   52   1      }
-   53          
+   42   3                //printf("%d,%d,%d,%d,%d,%d\n",0,chassis.current_deviation,target_yaw_rate,direction_output,left_pwm
+             -,right_pwm);
+   43   3      //          printf("%d,%d,%d\n", chassis.target_speed, _encoder_L,_encoder_R);
+   44   3      //          printf("%d,%d,%d,%d,%d\n", -target_yaw_rate, actual_yaw_rate,direction_output, left_pwm,right_pwm)
+             -;
+   45   3              }
+   46   2            /*vofa 用于速度环PID调参*/
+   47   2      //      vofa_timer++;
+   48   2      //      if(vofa_timer >= 2)
+   49   2      //      {
+   50   2      //        vofa_timer = 0;
+   51   2      //        printf("%d,%d,%d,%d\n",0,chassis.current_deviation,left_pwm,right_pwm);
+   52   2      //        //printf("%d,%d\n", chassis.target_speed, _encoder_L);
+   53   2      //      }
+   54   2            LED_Ctrl(LED0, RVS);
+C251 COMPILER V5.60.0,  main                                                               07/06/26  01:31:33  PAGE 2   
+
+   55   2          }
+   56   1      }
+   57          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-C251 COMPILER V5.60.0,  main                                                               29/05/26  00:33:51  PAGE 2   
-
   code size            =        70     ------
   ecode size           =    ------     ------
   data size            =    ------     ------

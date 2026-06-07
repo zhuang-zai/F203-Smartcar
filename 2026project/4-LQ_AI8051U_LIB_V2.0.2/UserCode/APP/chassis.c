@@ -14,7 +14,7 @@ int16 current_adc;
 int16 target_yaw_rate = 0;
 // 定义在文件顶部或全局
 float INNER_COEF = 1.2f; // 内轮减速系数 (建议范围: 1.0 ~ 1.5)
-float OUTER_COEF = 0.3f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
+float OUTER_COEF = 0.4f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
 
 /**
  * @brief 底盘初始化
@@ -22,7 +22,7 @@ float OUTER_COEF = 0.3f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
  */
 void Chassis_Init(void)
 {
-		chassis.target_speed = 0;       // 初始化目标速度为100   max : 1100
+		chassis.target_speed = 100;       // 初始化目标速度为100   max : 1100
     chassis.current_deviation = 0;  // 初始化当前偏差为0
     chassis.left_speed = 0;         // 初始化左轮速度为0
     chassis.right_speed = 0;        // 初始化右轮速度为0
@@ -106,15 +106,15 @@ int Calculate_Deviation(void)
 		static uint16 off_track_timer = 0;   // 丢线持续时间计数器
 		if(stop_flag == 1) return 0;
 	
-//		if(eleAdd < 20.0)
-//		{
-//			off_track_timer++;
-//			if(off_track_timer >= 250) stop_flag = 1;
-//		}
-//		else
-//		{
-//			off_track_timer = 0;
-//		}
+		if(eleAdd < 20.0)
+		{
+			off_track_timer++;
+			if(off_track_timer >= 250) stop_flag = 1;
+		}
+		else
+		{
+			off_track_timer = 0;
+		}
     
     // 限幅处理：将偏差值限制在 -100 到 100 之间
     if(eleValue > 100.0f) eleValue = 100.0f;
@@ -147,7 +147,7 @@ void Dynamic_Yaw_Test_Task(void)
     time_tick++;
 
     // 3. 设定每个阶段持续的时间：例如 1.5 秒 (750 ticks) 切换一次状态
-    if (time_tick >= 1500) 
+    if (time_tick >= 3000) 
     {
         time_tick = 0;       // 清零计时器
         current_stage++;     // 进入下一个测试阶段
@@ -156,18 +156,18 @@ void Dynamic_Yaw_Test_Task(void)
     // 4. 执行状态机序列
     switch (current_stage)
     {
-        case 0: target_yaw_rate = 5000;  break;  // 阶段0：正转 3000
-        case 1: target_yaw_rate = -5000; break;  // 阶段1：反转 3000
-        case 2: target_yaw_rate = 6000;  break;  // 阶段2：正转 4000
-        case 3: target_yaw_rate = -6000; break;  // 阶段3：反转 4000
-        case 4: target_yaw_rate = 7000;  break;  // 阶段4：正转 5000
-        case 5: target_yaw_rate = -7000; break;  // 阶段5：反转 5000
-        case 6: target_yaw_rate = 8000;  break;  // 阶段6：正转 6000
-        case 7: target_yaw_rate = -8000; break;  // 阶段7：反转 6000
-			case 8: target_yaw_rate = 9000;break;
-			case 9: target_yaw_rate = -9000;break;
-			case 10:target_yaw_rate = 10000;break;
-			case 11:target_yaw_rate = -10000;break;
+        case 0: target_yaw_rate = 500;  break;  // 阶段0：正转 3000
+        case 1: target_yaw_rate = 2500; break;  // 阶段1：反转 3000
+        case 2: target_yaw_rate = 4500;  break;  // 阶段2：正转 4000
+        case 3: target_yaw_rate = 6500; break;  // 阶段3：反转 4000
+        case 4: target_yaw_rate = 8500;  break;  // 阶段4：正转 5000
+//        case 5: target_yaw_rate = 5500; break;  // 阶段5：反转 5000
+//        case 6: target_yaw_rate = 6000;  break;  // 阶段6：正转 6000
+//        case 7: target_yaw_rate = -6000; break;  // 阶段7：反转 6000
+//			case 8: target_yaw_rate = 9000;break;
+//			case 9: target_yaw_rate = -9000;break;
+//			case 10:target_yaw_rate = 10000;break;
+//			case 11:target_yaw_rate = -10000;break;
         default:
             // 测试结束：归零并强行触发停车保护
             target_yaw_rate = 0;
@@ -193,22 +193,22 @@ void Chassis_Control(void)
 		//电池保护
 		Battery_Protection_Task();
 		/*角速度环测试*/
-//		Dynamic_Yaw_Test_Task();
+		//Dynamic_Yaw_Test_Task();
   
-//		outer_loop_timer++;
-//    if(outer_loop_timer >= 3) 
-//    {
-//        outer_loop_timer = 0;
-//        
-//        chassis.current_deviation = Calculate_Deviation();
-//        // 外环算出力矩，更新 direction_output
-//        target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
-//    }
-//		direction_output = 0;
-    //读取当前的偏航角速度
+		outer_loop_timer++;
+    if(outer_loop_timer >= 3) 
+    {
+        outer_loop_timer = 0;
+        
+        chassis.current_deviation = Calculate_Deviation();
+        // 外环算出力矩，更新 direction_output
+        target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
+    }
+//    //读取当前的偏航角速度
 		actual_yaw_rate = Get_Yaw_Rate();
-		
-		direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, target_yaw_rate);
+//		
+		direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -1*target_yaw_rate);
+//			direction_output = 0;
 		
 //		if (direction_output > 0) 
 //    {
@@ -221,7 +221,7 @@ void Chassis_Control(void)
 //        right_coef = INNER_COEF; // 右转时，右轮变内侧
 //    }
 
-    // 如果是负数(右转)：左轮减去(负数*外侧) = 加速；右轮加上(负数*内侧) = 减速
+//    // 如果是负数(右转)：左轮减去(负数*外侧) = 加速；右轮加上(负数*内侧) = 减速
 //    chassis.left_speed  = chassis.target_speed - (int16)(direction_output * left_coef);
 //    chassis.right_speed = chassis.target_speed + (int16)(direction_output * right_coef);
 		

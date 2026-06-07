@@ -57,7 +57,9 @@ u8 UART_Configuration(u8 UARTx, COMx_InitDefine *COMx)
 
 		for(i=0; i<COM_TX1_Lenth; i++)	TX1_Buffer[i] = 0;
 		for(i=0; i<COM_RX1_Lenth; i++)	RX1_Buffer[i] = 0;
-
+		P_SW1 = (P_SW1 & 0x3F) | 0x40; // 把 UART1 映射到 RxD_2(P3.6) 和 TxD_2(P3.7)
+		P3M0 &= ~0xC0; // 1100 0000 对应的最高两位（P3.6, P3.7）清零
+    P3M1 &= ~0xC0;
 		SCON = (SCON & 0x3f) | COMx->UART_Mode;	//模式设置
 		if((COMx->UART_Mode == UART_9bit_BRTx) || (COMx->UART_Mode == UART_8bit_BRTx))	//可变波特率
 		{

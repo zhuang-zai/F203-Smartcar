@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_ADC                                                        04/05/26  16:38:08  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_ADC                                                        30/05/26  19:10:04  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_ADC
@@ -66,7 +66,7 @@ stmt  level    source
    53          // 描述: ADC电源控制程序.
    54          // 参数: pwr: 电源控制,ENABLE或DISABLE.
    55          // 返回: none.
-C251 COMPILER V5.60.0,  AI8051U_ADC                                                        04/05/26  16:38:08  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_ADC                                                        30/05/26  19:10:04  PAGE 2   
 
    56          // 版本: V1.0, 2012-10-22
    57          //========================================================================
@@ -135,7 +135,7 @@ Module Information          Static   Overlayable
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_ADC                                                        04/05/26  16:38:08  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_ADC                                                        30/05/26  19:10:04  PAGE 3   
 
   huge data size       =    ------     ------
   const size           =    ------     ------

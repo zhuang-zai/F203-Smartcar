@@ -29,7 +29,7 @@ void User_Init(void)
     // 3. 定时器初始化 
     TIM_Init_ms(Timer0, 1);  //电感采集
     TIM_Init_ms(Timer1, 2);  //控制算法
-		TIM_Init_ms(Timer11,100);  //显示屏
+		TIM_Init_ms(Timer11,200);  //显示屏
     // 4. 电机初始化
     Motor_Init(Motor_FREQ);
     // 5. 陀螺仪初始化（可选）
@@ -38,7 +38,7 @@ void User_Init(void)
 	
 		//负压风扇初始化
 		BLmotor_Init_1(Servo_FREQ); // 频率为50Hz，此处频率需要与舵机频率保持一致,满占空比20000
-    target_fan_pwm = 1200;
+    target_fan_pwm = 1500;
     current_fan_pwm = 900;
     BLmotor_Ctrl_w1(current_fan_pwm); // 以最低待机转速上电
   
@@ -63,9 +63,9 @@ void Wait_For_Start(void)
     // 等待按键按下
     while (gpio_read_pin(P2_0) == 1)
 		{
-			if (flag_200ms_lcd == 1)
+			if (flag_20ms_lcd == 1)
         {
-            flag_200ms_lcd = 0;
+            flag_20ms_lcd = 0;
             Lcd_Display();
             Key_Tuning_Task(); // 顺便支持发车前调参
         }
@@ -90,9 +90,9 @@ void Wait_For_Start(void)
         // 阻塞式追踪：只要现值还没达到期望值，就继续加
         while(current_fan_pwm < target_fan_pwm) 
         {
-            current_fan_pwm += 20; 
+            current_fan_pwm += 50; 
             BLmotor_Ctrl_w1(current_fan_pwm);
-            delay_ms(10); 
+            delay_ms(500); 
         }
 			
         LED_Ctrl(LED0, ON); 
@@ -139,7 +139,7 @@ void Emergency_Stop_Task(void)
  * @note 放在 while(1) 中轮询
  */
 /**
- * @brief 按键调参后台任务 (包含 P, D, 目标角速度 的动态调节)
+ * @brief 按键调参后台任务 (专攻方向外环 PID)
  */
 void Key_Tuning_Task(void)
 {
@@ -147,50 +147,49 @@ void Key_Tuning_Task(void)
     
     if (rent_key != KEY_NONE)   
     {
-        const PID_TypeDef* yaw_pid = PID_GetController(3);
-        float temp_kp = yaw_pid->Kp;
-        float temp_kd = yaw_pid->Kd;
-        int16 temp_target = target_yaw_rate; // 拿到当前的目标角速度
-
-        // 🌟 智能步进换算：如果是精度微调(0.01)，角速度每次加减 10；如果是粗调(0.02)，角速度加减 50
-        int16 target_step = (tune_step < 0.015f) ? 10 : 50; 
+        // 🌟 修改点 1：获取【方向环】（索引为 2）真实的参数
+        const PID_TypeDef* pid = PID_GetController(3);
+        float temp_kp = pid->Kp;
+        float temp_kd = pid->Kd;
 
         switch (rent_key)
         {
-            case KEY_PRESS:   // 1. 中间按压键：三档切换 (0:Kp -> 1:Target -> 2:Kd -> 回到0)
-                if (selected_param == 0) selected_param = 1;
-                else if (selected_param == 1) selected_param = 2;
+            case KEY_PRESS:   // 1. 中间按压键：在 Kp 和 Kd 之间切换 (0:Kp -> 2:Kd -> 回到0)
+                if (selected_param == 0) selected_param = 2;
                 else selected_param = 0;
                 break;
 
             case KEY_UP:      // 2. 向上键：参数增加
                 if (selected_param == 0)      temp_kp += tune_step;
-                else if (selected_param == 1) temp_target += target_step; // 角速度增加
                 else                          temp_kd += tune_step;
                 break;
 
             case KEY_DOWN:    // 3. 向下键：参数减少
                 if (selected_param == 0)      temp_kp -= tune_step;
-                else if (selected_param == 1) temp_target -= target_step; // 角速度减小 (允许为负数，代表反转)
                 else                          temp_kd -= tune_step;
                 
-                // P和D绝对不能为负数，但 target_yaw_rate 可以为负，所以不限制 temp_target
+                // P和D绝对不能为负数
                 if (temp_kp < 0.0f) temp_kp = 0.0f;
                 if (temp_kd < 0.0f) temp_kd = 0.0f;
                 break;
 
-            case KEY_LEFT:    // 4. 向左键：高精度微调
-                tune_step = 0.01f;
+            case KEY_LEFT:    // 4. 向左键：高精度微调 
+                // 🌟 修改点 2：方向环的 P 通常在 10~50 级别，微调步长给 0.5
+                tune_step = 0.05f;
                 break;
 
             case KEY_RIGHT:   // 5. 向右键：大幅度粗调
-                tune_step = 0.02f;
+                // 🌟 修改点 3：粗调步长给 2.0
+                tune_step = 0.2f;
                 break;
         }
 
-        // 重新刷进 RAM 和全局变量中
-        PID_SetKp(3, temp_kp);
-        PID_SetKd(3, temp_kd);
-        target_yaw_rate = temp_target; 
+        // 重新刷进【方向环】工作 RAM 中
+        PID_SetKp(2, temp_kp);
+        PID_SetKd(2, temp_kd);
+//				PID_SetKp(0, temp_kp);
+//        PID_SetKi(0, temp_ki);
+//				PID_SetKp(1, temp_kp);
+//        PID_SetKi(1, temp_ki);
     }
 }

@@ -20,11 +20,11 @@ QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
 #include "motor.h"
 #include "lcd.h"
 
-volatile bit flag_200ms_lcd = 0;
+volatile bit flag_20ms_lcd = 0;
 
 void main(void)
 {
-//	int vofa_timer = 0;
+	int vofa_timer = 0;
     System_Init();  /* 系统初始化 必须保留 */
     Global_IRQ_Enable(); // 使能全局中断
     GPIO_LED_Init();
@@ -34,18 +34,22 @@ void main(void)
     {
 			Emergency_Stop_Task();
 			Fan_Smooth_Task();
-			if (flag_200ms_lcd == 1)
+			if (flag_20ms_lcd == 1)
         {
-            flag_200ms_lcd = 0;
+            flag_20ms_lcd = 0;
             Lcd_Display();
             Key_Tuning_Task(); 
+					//printf("%d,%d,%d,%d,%d,%d\n",0,chassis.current_deviation,target_yaw_rate,direction_output,left_pwm,right_pwm);
+//					printf("%d,%d,%d\n", chassis.target_speed, _encoder_L,_encoder_R);
+//					printf("%d,%d,%d,%d,%d\n", -target_yaw_rate, actual_yaw_rate,direction_output, left_pwm,right_pwm);
         }
 			/*vofa 用于速度环PID调参*/
 //			vofa_timer++;
 //			if(vofa_timer >= 2)
 //			{
 //				vofa_timer = 0;
-//				printf("%d,%d,%d\n", vofa_target_speed, vofa_current_speed, vofa_out_pwm);
+//				printf("%d,%d,%d,%d\n",0,chassis.current_deviation,left_pwm,right_pwm);
+//				//printf("%d,%d\n", chassis.target_speed, _encoder_L);
 //			}
 			LED_Ctrl(LED0, RVS);
     }

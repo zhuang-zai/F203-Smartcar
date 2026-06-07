@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  pid                                                                29/05/26  02:38:18  PAGE 1   
+C251 COMPILER V5.60.0,  pid                                                                07/06/26  01:38:04  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE pid
@@ -19,12 +19,12 @@ stmt  level    source
     7          static const float pid_param_table[PID_GROUPS][6] = 
     8          {
     9              //左轮速度环 增量式PI
-   10              {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},  
+   10              {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},     // 1.2   0.2
    11              //右轮速度环 增量式PI
-   12              {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},
+   12              {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},
    13              //方向环 位置式PD
-   14              {1.0f, 0.0f, 1.0f, 500,-500, PID_POSITION},  //基础速度100时对应0.9,0.0 ,5.0   
-   15              {0.4f, 0.0f, 0.04f, 700, -700, PID_POSITION} // Kp先给个0.5试试
+   14              {1000.0f, 0.0f, 0.0f, 8000,-8000, PID_POSITION},  // P = 74.0， D = 30.0f
+   15              {0.1f, 0.0f, 0.01f, 500, -500, PID_POSITION} // Kp先给个0.5试试    P0.75   D0.5
    16          };
    17          
    18          void PID_SetKp(PID_Index index, float Kp) {
@@ -66,7 +66,7 @@ stmt  level    source
    54   1          pid->output_max = out_max;
    55   1          pid->output_min = out_min;
    56   1          pid->output = 0;
-C251 COMPILER V5.60.0,  pid                                                                29/05/26  02:38:18  PAGE 2   
+C251 COMPILER V5.60.0,  pid                                                                07/06/26  01:38:04  PAGE 2   
 
    57   1          pid->mode = mode;
    58   1      }
@@ -134,7 +134,7 @@ stmt  level    source
   120   1          // 更新历史误差
   121   1          pid->prev_prev_error = pid->prev_error;
   122   1          pid->prev_error = error;
-C251 COMPILER V5.60.0,  pid                                                                29/05/26  02:38:18  PAGE 3   
+C251 COMPILER V5.60.0,  pid                                                                07/06/26  01:38:04  PAGE 3   
 
   123   1          
   124   1          return (int16)output;

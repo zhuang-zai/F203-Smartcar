@@ -7,12 +7,12 @@ static PID_TypeDef pid_array[PID_GROUPS];
 static const float pid_param_table[PID_GROUPS][6] = 
 {
     //左轮速度环 增量式PI
-    {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},  
+    {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},     // 1.2   0.2
     //右轮速度环 增量式PI
-    {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},
+    {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},
     //方向环 位置式PD
-    {1.0f, 0.0f, 1.0f, 500,-500, PID_POSITION},  //基础速度100时对应0.9,0.0 ,5.0		
-		{0.4f, 0.0f, 0.04f, 700, -700, PID_POSITION} // Kp先给个0.5试试
+    {1000.0f, 0.0f, 0.0f, 8000,-8000, PID_POSITION},  // P = 74.0， D = 30.0f
+		{0.1f, 0.0f, 0.01f, 500, -500, PID_POSITION} // Kp先给个0.5试试    P0.75   D0.5
 };
 
 void PID_SetKp(PID_Index index, float Kp) {
