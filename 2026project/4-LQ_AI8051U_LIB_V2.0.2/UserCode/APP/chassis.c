@@ -12,9 +12,6 @@ int16 direction_output;          // 内环输出：最终给车轮的差速修�
 int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
 int16 current_adc;
 int16 target_yaw_rate = 0;
-// 定义在文件顶部或全局
-float INNER_COEF = 1.2f; // 内轮减速系数 (建议范围: 1.0 ~ 1.5)
-float OUTER_COEF = 0.4f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
 
 /**
  * @brief 底盘初始化
@@ -22,7 +19,7 @@ float OUTER_COEF = 0.4f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
  */
 void Chassis_Init(void)
 {
-		chassis.target_speed = 100;       // 初始化目标速度为100   max : 1100
+		chassis.target_speed = 350;       // 初始化目标速度为100   max : 1100
     chassis.current_deviation = 0;  // 初始化当前偏差为0
     chassis.left_speed = 0;         // 初始化左轮速度为0
     chassis.right_speed = 0;        // 初始化右轮速度为0
@@ -147,7 +144,7 @@ void Dynamic_Yaw_Test_Task(void)
     time_tick++;
 
     // 3. 设定每个阶段持续的时间：例如 1.5 秒 (750 ticks) 切换一次状态
-    if (time_tick >= 3000) 
+    if (time_tick >= 2500) 
     {
         time_tick = 0;       // 清零计时器
         current_stage++;     // 进入下一个测试阶段
@@ -156,11 +153,11 @@ void Dynamic_Yaw_Test_Task(void)
     // 4. 执行状态机序列
     switch (current_stage)
     {
-        case 0: target_yaw_rate = 500;  break;  // 阶段0：正转 3000
-        case 1: target_yaw_rate = 2500; break;  // 阶段1：反转 3000
-        case 2: target_yaw_rate = 4500;  break;  // 阶段2：正转 4000
-        case 3: target_yaw_rate = 6500; break;  // 阶段3：反转 4000
-        case 4: target_yaw_rate = 8500;  break;  // 阶段4：正转 5000
+        case 0: target_yaw_rate = 4000;  break;  // 阶段0：正转 3000
+        case 1: target_yaw_rate = -4000; break;  // 阶段1：反转 3000
+        case 2: target_yaw_rate = 7000;  break;  // 阶段2：正转 4000
+       case 3: target_yaw_rate = -7000; break;  // 阶段3：反转 4000
+//        case 4: target_yaw_rate = 8500;  break;  // 阶段4：正转 5000
 //        case 5: target_yaw_rate = 5500; break;  // 阶段5：反转 5000
 //        case 6: target_yaw_rate = 6000;  break;  // 阶段6：正转 6000
 //        case 7: target_yaw_rate = -6000; break;  // 阶段7：反转 6000
@@ -185,15 +182,14 @@ void Chassis_Control(void)
     const PID_TypeDef *direction_pid; //外环：赛道偏差PID  
 		const PID_TypeDef *yaw_rate_pid;  // 内环：角速度PID (输出最终差速)
 		static uint8 outer_loop_timer = 0;
-		float left_coef;
-    float right_coef;
+		float k = 0;
     //获取方向环PID控制器句柄和偏航角速度环PID句柄
     direction_pid = PID_GetController(PID_DIRECTION);
 		yaw_rate_pid = PID_GetController(PID_YAW_RATE); // 新增！获取第4组PID
 		//电池保护
 		Battery_Protection_Task();
 		/*角速度环测试*/
-		//Dynamic_Yaw_Test_Task();
+//		Dynamic_Yaw_Test_Task();
   
 		outer_loop_timer++;
     if(outer_loop_timer >= 3) 
@@ -204,29 +200,35 @@ void Chassis_Control(void)
         // 外环算出力矩，更新 direction_output
         target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
     }
-//    //读取当前的偏航角速度
+    //读取当前的偏航角速度
 		actual_yaw_rate = Get_Yaw_Rate();
-//		
-		direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -1*target_yaw_rate);
+		
+		direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -target_yaw_rate);
 //			direction_output = 0;
 		
-//		if (direction_output > 0) 
-//    {
-//        left_coef  = INNER_COEF; // 左转时，左轮是内侧
-//        right_coef = OUTER_COEF; // 左转时，右轮是外侧
-//    } 
-//    else 
-//    {
-//        left_coef  = OUTER_COEF; // 右转时，左轮变外侧
-//        right_coef = INNER_COEF; // 右转时，右轮变内侧
-//    }
 
-//    // 如果是负数(右转)：左轮减去(负数*外侧) = 加速；右轮加上(负数*内侧) = 减速
-//    chassis.left_speed  = chassis.target_speed - (int16)(direction_output * left_coef);
-//    chassis.right_speed = chassis.target_speed + (int16)(direction_output * right_coef);
-		
-		chassis.left_speed  = chassis.target_speed - direction_output;
-    chassis.right_speed = chassis.target_speed + direction_output;
+		k = direction_output * 0.01;
+		if(k >= 0)
+		{
+			k = k > 0.65 ? 0.65 : k;
+		}
+		else
+		{
+			k = k < -0.65 ? -0.65 : k;
+		}
+		if(k >= 0)
+		{
+			chassis.left_speed  = chassis.target_speed * (1 - k);
+			chassis.right_speed = chassis.target_speed * (1 + k * 0.2);
+		}
+		else
+		{
+			k *= -1;
+			chassis.left_speed  = chassis.target_speed * (1 + k * 0.2);
+			chassis.right_speed = chassis.target_speed * (1 - k);
+		}
+//		chassis.left_speed  = chassis.target_speed - direction_output;
+//    chassis.right_speed = chassis.target_speed + direction_output;
     //执行电机控制
 		Motor_Control(chassis.left_speed, chassis.right_speed);
 }

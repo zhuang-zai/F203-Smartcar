@@ -11,8 +11,8 @@ static const float pid_param_table[PID_GROUPS][6] =
     //右轮速度环 增量式PI
     {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},
     //方向环 位置式PD
-    {1000.0f, 0.0f, 0.0f, 8000,-8000, PID_POSITION},  // P = 74.0， D = 30.0f
-		{0.1f, 0.0f, 0.01f, 500, -500, PID_POSITION} // Kp先给个0.5试试    P0.75   D0.5
+    {400.0f, 0.0f, 120.0f, 8000,-8000, PID_POSITION},  // P = 74.0， D = 30.0f
+		{0.07f, 0.0f, 0.007f, 100, -100, PID_POSITION} // Kp先给个0.5试试    P0.75   D0.5
 };
 
 void PID_SetKp(PID_Index index, float Kp) {

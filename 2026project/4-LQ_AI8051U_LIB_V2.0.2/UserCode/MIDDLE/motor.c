@@ -17,6 +17,41 @@ int16 current_fan_pwm; // 当前正在输出的PWM (现值)
 /*pwm输出限幅*/
 int16 max_forward_pwm = (int16)(3200 * 0.8);  // 正转限制在约 85%
 int16 max_reverse_pwm = (int16)(-3200 * 0.8) ; // 反转限制在约 -40% (刹车力度够用就行)
+
+void Motor_Overload_Protection_Task(int16 lpwm, int16 rpwm)
+{
+    static uint16 overload_timer = 0;
+    
+    // 动态计算 90% 限幅阈值：2560 * 0.9 = 2304
+    int16 threshold = (int16)(max_forward_pwm * 0.9f); 
+
+    // 如果车子本身就是急停状态，重置计数器并退出
+    if (stop_flag == 1)
+    {
+        overload_timer = 0;
+        return;
+    }
+
+    // 检查左轮【或】右轮的绝对值是否触及了 90% 的死亡红线
+    if (abs(lpwm) >= 2000 || abs(rpwm) >= 2000)
+    {
+        overload_timer++;
+        
+        // ⏱️ 时间滤波计算：2ms * 500次 = 1000ms = 1秒
+        // 允许高速过弯时瞬间满载拉满，但绝对不允许持续憋满 1 秒！
+        // (如果你觉得 1 秒太长，可以改成 250次，对应 500ms)
+        if (overload_timer >= 500) 
+        {
+            stop_flag = 1; // 🚨 触发全局急停，切断动力！
+        }
+    }
+    else
+    {
+        // 只要有一瞬间脱离了高负载（比如过完弯了），计时器立刻清零，防止误判
+        overload_timer = 0; 
+    }
+}
+
 /**
  * @brief 电机速度控制函数：输入目标速度，读取当前速度，通过PID计算占据比，控制电机转速
  * @param Left_Target_Speed 左轮目标速度 Right_Target_Speed 右轮目标速度
@@ -63,6 +98,8 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
     right_pwm = right_pwm < max_reverse_pwm ? max_reverse_pwm : right_pwm;
 		
 		
+		Motor_Overload_Protection_Task(left_pwm, right_pwm);
+		
 		if (stop_flag == 1)
     {
         left_pwm = 0;
@@ -73,7 +110,7 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
 //			left_pwm = 1500;
 //        right_pwm = 1500;
 //		}
-		Motor_Ctrl(-right_pwm, left_pwm);
+		Motor_Ctrl(right_pwm, -left_pwm);
 	/*
 	当3000占空比时对应编码器输出为1100，则认为左右轮最大转速为1100
 	*/

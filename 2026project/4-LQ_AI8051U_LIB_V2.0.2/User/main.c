@@ -40,8 +40,12 @@ void main(void)
             Lcd_Display();
             Key_Tuning_Task(); 
 					//printf("%d,%d,%d,%d,%d,%d\n",0,chassis.current_deviation,target_yaw_rate,direction_output,left_pwm,right_pwm);
-//					printf("%d,%d,%d\n", chassis.target_speed, _encoder_L,_encoder_R);
-//					printf("%d,%d,%d,%d,%d\n", -target_yaw_rate, actual_yaw_rate,direction_output, left_pwm,right_pwm);
+					//printf("%d,%d\n", current_adc,stop_flag);
+//					printf("%d,%d,%d,%d,%d,%d,%d,%d,%d\n", chassis.left_speed,chassis.right_speed ,direction_output,_encoder_L,_encoder_R,left_pwm,right_pwm,current_adc,stop_flag);
+					printf("%d,%d,%d,%d,%d,%d,%d,%d,%d\n", target_yaw_rate,actual_yaw_rate ,direction_output,_encoder_L,_encoder_R,left_pwm,right_pwm,current_adc,stop_flag);
+
+//					  printf("%d,%d,%d,%d,%d\n",chassis.target_speed,_encoder_L,_encoder_R,left_pwm,right_pwm);
+					
         }
 			/*vofa 用于速度环PID调参*/
 //			vofa_timer++;

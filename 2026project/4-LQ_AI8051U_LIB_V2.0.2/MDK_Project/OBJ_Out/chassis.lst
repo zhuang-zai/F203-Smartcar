@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  chassis                                                            07/06/26  01:38:04  PAGE 1   
+C251 COMPILER V5.60.0,  chassis                                                            12/06/26  17:44:15  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE chassis
@@ -24,258 +24,256 @@ stmt  level    source
    12          int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
    13          int16 current_adc;
    14          int16 target_yaw_rate = 0;
-   15          // 定义在文件顶部或全局
-   16          float INNER_COEF = 1.2f; // 内轮减速系数 (建议范围: 1.0 ~ 1.5)
-   17          float OUTER_COEF = 0.4f; // 外轮增速系数 (建议范围: 0.1 ~ 0.4)
-   18          
-   19          /**
-   20           * @brief 底盘初始化
-   21           * 初始化底盘结构体中的速度和目标偏差变量
-   22           */
-   23          void Chassis_Init(void)
-   24          {
-   25   1          chassis.target_speed = 100;       // 初始化目标速度为100   max : 1100
-   26   1          chassis.current_deviation = 0;  // 初始化当前偏差为0
-   27   1          chassis.left_speed = 0;         // 初始化左轮速度为0
-   28   1          chassis.right_speed = 0;        // 初始化右轮速度为0
-   29   1      }
-   30          
-   31          /**
-   32           * @brief 电池低压保护监控任务
-   33           * 建议放在 2ms 的 Timer1 中断中执行
-   34           */
-   35          void Battery_Protection_Task(void)
-   36          {
-   37   1          static uint16 low_vol_timer = 0;
+   15          
+   16          /**
+   17           * @brief 底盘初始化
+   18           * 初始化底盘结构体中的速度和目标偏差变量
+   19           */
+   20          void Chassis_Init(void)
+   21          {
+   22   1          chassis.target_speed = 350;       // 初始化目标速度为100   max : 1100
+   23   1          chassis.current_deviation = 0;  // 初始化当前偏差为0
+   24   1          chassis.left_speed = 0;         // 初始化左轮速度为0
+   25   1          chassis.right_speed = 0;        // 初始化右轮速度为0
+   26   1      }
+   27          
+   28          /**
+   29           * @brief 电池低压保护监控任务
+   30           * 建议放在 2ms 的 Timer1 中断中执行
+   31           */
+   32          void Battery_Protection_Task(void)
+   33          {
+   34   1          static uint16 low_vol_timer = 0;
+   35   1          
+   36   1          // 1. 直接读取原始 ADC 值 (无需消耗算力转换成浮点电压)
+   37   1          current_adc = Get_ADCResult(ADC_CH9_P01);
    38   1          
-   39   1          // 1. 直接读取原始 ADC 值 (无需消耗算力转换成浮点电压)
-   40   1          current_adc = Get_ADCResult(ADC_CH9_P01);
-   41   1          
-   42   1          if(stop_flag == 1) return;
-   43   1          // 2. 检测是否低于警戒线
-   44   1          if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
-   45   1          {
-   46   2              low_vol_timer++;
-   47   2              
-   48   2              // 3. 时间滤波（防抖）：2ms * 500 = 1秒
-   49   2              // 防止电机瞬间加速抽血导致的误判
-   50   2              if (low_vol_timer >= 500) 
-   51   2              {
-   52   3                  stop_flag = 1;  // 触发全局急停
-   53   3              }
-   54   2          }
-   55   1          else 
-   56   1          {
-C251 COMPILER V5.60.0,  chassis                                                            07/06/26  01:38:04  PAGE 2   
+   39   1          if(stop_flag == 1) return;
+   40   1          // 2. 检测是否低于警戒线
+   41   1          if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
+   42   1          {
+   43   2              low_vol_timer++;
+   44   2              
+   45   2              // 3. 时间滤波（防抖）：2ms * 500 = 1秒
+   46   2              // 防止电机瞬间加速抽血导致的误判
+   47   2              if (low_vol_timer >= 500) 
+   48   2              {
+   49   3                  stop_flag = 1;  // 触发全局急停
+   50   3              }
+   51   2          }
+   52   1          else 
+   53   1          {
+   54   2              // 电压弹回安全线以上，清零计时器
+   55   2              low_vol_timer = 0;
+   56   2          }
+C251 COMPILER V5.60.0,  chassis                                                            12/06/26  17:44:15  PAGE 2   
 
-   57   2              // 电压弹回安全线以上，清零计时器
-   58   2              low_vol_timer = 0;
-   59   2          }
-   60   1      }
-   61          
-   62          /**
-   63           * @brief 获取陀螺仪Z轴角速度 (偏航角速度)
-   64           * @return int16 Z轴原始角速度数据
-   65           */
-   66          int16 Get_Yaw_Rate(void)
-   67          {
-   68   1          int16 ax, ay, az, gx, gy, gz;
-   69   1          
-   70   1          // 调用底层函数读取6轴数据
-   71   1          // 注意：传入的是变量的地址(&)，底层函数会把读到的值放进这些变量里
-   72   1      #ifdef HARDWARE_SPI
-   73   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
-   74   1      #elif defined HARDWARE_IIC
+   57   1      }
+   58          
+   59          /**
+   60           * @brief 获取陀螺仪Z轴角速度 (偏航角速度)
+   61           * @return int16 Z轴原始角速度数据
+   62           */
+   63          int16 Get_Yaw_Rate(void)
+   64          {
+   65   1          int16 ax, ay, az, gx, gy, gz;
+   66   1          
+   67   1          // 调用底层函数读取6轴数据
+   68   1          // 注意：传入的是变量的地址(&)，底层函数会把读到的值放进这些变量里
+   69   1      #ifdef HARDWARE_SPI
+   70   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+   71   1      #elif defined HARDWARE_IIC
                    LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
                #else
                    // 如果都没有定义，默认给0防止报错，请检查你的工程宏定义
                    gz = 0; 
                #endif
-   80   1      
-   81   1          // 我们只需要 Z轴的角速度 (Gyro Z)
-   82   1          return gz; 
-   83   1      }
-   84          
-   85          /**
-   86           * @brief 计算循迹偏差
-   87           * 使用差比和算法计算车辆偏离中心线的程度
-   88           * 公式：( (左感+左感) - (右感+右感) ) / (总电感 + 补偿值) * 100
-   89           * @return int 归一化后的偏差值，范围 -100 到 100
-   90           */
-   91          int Calculate_Deviation(void) 
-   92          {
-   93   1          // 获取电感ADC数组指针 (假设顺序为: 左外, 左内, 中, 右内, 右外)
-   94   1          int* adc_values = GetInductance();
+   77   1      
+   78   1          // 我们只需要 Z轴的角速度 (Gyro Z)
+   79   1          return gz; 
+   80   1      }
+   81          
+   82          /**
+   83           * @brief 计算循迹偏差
+   84           * 使用差比和算法计算车辆偏离中心线的程度
+   85           * 公式：( (左感+左感) - (右感+右感) ) / (总电感 + 补偿值) * 100
+   86           * @return int 归一化后的偏差值，范围 -100 到 100
+   87           */
+   88          int Calculate_Deviation(void) 
+   89          {
+   90   1          // 获取电感ADC数组指针 (假设顺序为: 左外, 左内, 中, 右内, 右外)
+   91   1          int* adc_values = GetInductance();
+   92   1          
+   93   1          // 计算左右两侧电感值的差值 (分子)，反映偏向哪一侧
+   94   1          int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
    95   1          
-   96   1          // 计算左右两侧电感值的差值 (分子)，反映偏向哪一侧
-   97   1          int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
-   98   1          
-   99   1          // 计算所有电感值的总和 (分母)，+10是为了防止分母为0导致除零错误
-  100   1          // 使用“差比和”可以消除由于速度变化导致的磁场强度整体变化影响
-  101   1          int eleAdd = adc_values[0] + adc_values[1] + adc_values[2] + adc_values[3] + adc_values[4] + 10;
+   96   1          // 计算所有电感值的总和 (分母)，+10是为了防止分母为0导致除零错误
+   97   1          // 使用“差比和”可以消除由于速度变化导致的磁场强度整体变化影响
+   98   1          int eleAdd = adc_values[0] + adc_values[1] + adc_values[2] + adc_values[3] + adc_values[4] + 10;
+   99   1        
+  100   1          // 计算归一化偏差值
+  101   1          float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
   102   1        
-  103   1          // 计算归一化偏差值
-  104   1          float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
+  103   1          static uint16 off_track_timer = 0;   // 丢线持续时间计数器
+  104   1          if(stop_flag == 1) return 0;
   105   1        
-  106   1          static uint16 off_track_timer = 0;   // 丢线持续时间计数器
-  107   1          if(stop_flag == 1) return 0;
-  108   1        
-  109   1          if(eleAdd < 20.0)
-  110   1          {
-  111   2            off_track_timer++;
-  112   2            if(off_track_timer >= 250) stop_flag = 1;
-  113   2          }
-  114   1          else
-  115   1          {
-  116   2            off_track_timer = 0;
-  117   2          }
-  118   1          
-  119   1          // 限幅处理：将偏差值限制在 -100 到 100 之间
-  120   1          if(eleValue > 100.0f) eleValue = 100.0f;
-  121   1          else if(eleValue < -100.0f) eleValue = -100.0f;
-  122   1      
-C251 COMPILER V5.60.0,  chassis                                                            07/06/26  01:38:04  PAGE 3   
+  106   1          if(eleAdd < 20.0)
+  107   1          {
+  108   2            off_track_timer++;
+  109   2            if(off_track_timer >= 250) stop_flag = 1;
+  110   2          }
+  111   1          else
+  112   1          {
+  113   2            off_track_timer = 0;
+  114   2          }
+  115   1          
+  116   1          // 限幅处理：将偏差值限制在 -100 到 100 之间
+  117   1          if(eleValue > 100.0f) eleValue = 100.0f;
+  118   1          else if(eleValue < -100.0f) eleValue = -100.0f;
+  119   1      
+  120   1          // 转换为整型返回给控制层
+  121   1          return (int)(eleValue);
+  122   1      }
+C251 COMPILER V5.60.0,  chassis                                                            12/06/26  17:44:15  PAGE 3   
 
-  123   1          // 转换为整型返回给控制层
-  124   1          return (int)(eleValue);
-  125   1      }
-  126          
-  127          
-  128          /**
-  129           * @brief 动态角速度阶跃测试序列 (状态机)
-  130           * @note 依赖 Timer1 的 2ms 周期。500次 tick = 1秒。
-  131           */
-  132          void Dynamic_Yaw_Test_Task(void)
-  133          {
-  134   1          static uint16 time_tick = 0;   // 时间计数器
-  135   1          static uint8 current_stage = 0; // 当前所处的测试阶段
-  136   1      
-  137   1          // 1. 如果车子处于急停/未发车状态，重置测试进度
-  138   1          if (stop_flag == 1) 
-  139   1          {
-  140   2              time_tick = 0;
-  141   2              current_stage = 0;
-  142   2              target_yaw_rate = 0;
-  143   2              return;
-  144   2          }
+  123          
+  124          
+  125          /**
+  126           * @brief 动态角速度阶跃测试序列 (状态机)
+  127           * @note 依赖 Timer1 的 2ms 周期。500次 tick = 1秒。
+  128           */
+  129          void Dynamic_Yaw_Test_Task(void)
+  130          {
+  131   1          static uint16 time_tick = 0;   // 时间计数器
+  132   1          static uint8 current_stage = 0; // 当前所处的测试阶段
+  133   1      
+  134   1          // 1. 如果车子处于急停/未发车状态，重置测试进度
+  135   1          if (stop_flag == 1) 
+  136   1          {
+  137   2              time_tick = 0;
+  138   2              current_stage = 0;
+  139   2              target_yaw_rate = 0;
+  140   2              return;
+  141   2          }
+  142   1      
+  143   1          // 2. 车子启动后，开始计时 (2ms 进一次)
+  144   1          time_tick++;
   145   1      
-  146   1          // 2. 车子启动后，开始计时 (2ms 进一次)
-  147   1          time_tick++;
-  148   1      
-  149   1          // 3. 设定每个阶段持续的时间：例如 1.5 秒 (750 ticks) 切换一次状态
-  150   1          if (time_tick >= 3000) 
-  151   1          {
-  152   2              time_tick = 0;       // 清零计时器
-  153   2              current_stage++;     // 进入下一个测试阶段
-  154   2          }
-  155   1      
-  156   1          // 4. 执行状态机序列
-  157   1          switch (current_stage)
-  158   1          {
-  159   2              case 0: target_yaw_rate = 500;  break;  // 阶段0：正转 3000
-  160   2              case 1: target_yaw_rate = 2500; break;  // 阶段1：反转 3000
-  161   2              case 2: target_yaw_rate = 4500;  break;  // 阶段2：正转 4000
-  162   2              case 3: target_yaw_rate = 6500; break;  // 阶段3：反转 4000
-  163   2              case 4: target_yaw_rate = 8500;  break;  // 阶段4：正转 5000
-  164   2      //        case 5: target_yaw_rate = 5500; break;  // 阶段5：反转 5000
-  165   2      //        case 6: target_yaw_rate = 6000;  break;  // 阶段6：正转 6000
-  166   2      //        case 7: target_yaw_rate = -6000; break;  // 阶段7：反转 6000
-  167   2      //      case 8: target_yaw_rate = 9000;break;
-  168   2      //      case 9: target_yaw_rate = -9000;break;
-  169   2      //      case 10:target_yaw_rate = 10000;break;
-  170   2      //      case 11:target_yaw_rate = -10000;break;
-  171   2              default:
-  172   2                  // 测试结束：归零并强行触发停车保护
-  173   2                  target_yaw_rate = 0;
-  174   2                  stop_flag = 1; 
-  175   2                  break;
-  176   2          }
-  177   1      }
-  178          
-  179          /**
-  180           * @brief 底盘闭环控制
-  181           * 获取偏差并输入方向PID，计算差速输出
-  182           */
-  183          void Chassis_Control(void)
-  184          {
-  185   1          const PID_TypeDef *direction_pid; //外环：赛道偏差PID  
-  186   1          const PID_TypeDef *yaw_rate_pid;  // 内环：角速度PID (输出最终差速)
-  187   1          static uint8 outer_loop_timer = 0;
-  188   1          float left_coef;
-C251 COMPILER V5.60.0,  chassis                                                            07/06/26  01:38:04  PAGE 4   
+  146   1          // 3. 设定每个阶段持续的时间：例如 1.5 秒 (750 ticks) 切换一次状态
+  147   1          if (time_tick >= 2500) 
+  148   1          {
+  149   2              time_tick = 0;       // 清零计时器
+  150   2              current_stage++;     // 进入下一个测试阶段
+  151   2          }
+  152   1      
+  153   1          // 4. 执行状态机序列
+  154   1          switch (current_stage)
+  155   1          {
+  156   2              case 0: target_yaw_rate = 4000;  break;  // 阶段0：正转 3000
+  157   2              case 1: target_yaw_rate = -4000; break;  // 阶段1：反转 3000
+  158   2              case 2: target_yaw_rate = 7000;  break;  // 阶段2：正转 4000
+  159   2             case 3: target_yaw_rate = -7000; break;  // 阶段3：反转 4000
+  160   2      //        case 4: target_yaw_rate = 8500;  break;  // 阶段4：正转 5000
+  161   2      //        case 5: target_yaw_rate = 5500; break;  // 阶段5：反转 5000
+  162   2      //        case 6: target_yaw_rate = 6000;  break;  // 阶段6：正转 6000
+  163   2      //        case 7: target_yaw_rate = -6000; break;  // 阶段7：反转 6000
+  164   2      //      case 8: target_yaw_rate = 9000;break;
+  165   2      //      case 9: target_yaw_rate = -9000;break;
+  166   2      //      case 10:target_yaw_rate = 10000;break;
+  167   2      //      case 11:target_yaw_rate = -10000;break;
+  168   2              default:
+  169   2                  // 测试结束：归零并强行触发停车保护
+  170   2                  target_yaw_rate = 0;
+  171   2                  stop_flag = 1; 
+  172   2                  break;
+  173   2          }
+  174   1      }
+  175          
+  176          /**
+  177           * @brief 底盘闭环控制
+  178           * 获取偏差并输入方向PID，计算差速输出
+  179           */
+  180          void Chassis_Control(void)
+  181          {
+  182   1          const PID_TypeDef *direction_pid; //外环：赛道偏差PID  
+  183   1          const PID_TypeDef *yaw_rate_pid;  // 内环：角速度PID (输出最终差速)
+  184   1          static uint8 outer_loop_timer = 0;
+  185   1          float k = 0;
+  186   1          //获取方向环PID控制器句柄和偏航角速度环PID句柄
+  187   1          direction_pid = PID_GetController(PID_DIRECTION);
+  188   1          yaw_rate_pid = PID_GetController(PID_YAW_RATE); // 新增！获取第4组PID
+C251 COMPILER V5.60.0,  chassis                                                            12/06/26  17:44:15  PAGE 4   
 
-  189   1          float right_coef;
-  190   1          //获取方向环PID控制器句柄和偏航角速度环PID句柄
-  191   1          direction_pid = PID_GetController(PID_DIRECTION);
-  192   1          yaw_rate_pid = PID_GetController(PID_YAW_RATE); // 新增！获取第4组PID
-  193   1          //电池保护
-  194   1          Battery_Protection_Task();
-  195   1          /*角速度环测试*/
-  196   1          //Dynamic_Yaw_Test_Task();
-  197   1        
-  198   1          outer_loop_timer++;
-  199   1          if(outer_loop_timer >= 3) 
-  200   1          {
-  201   2              outer_loop_timer = 0;
-  202   2              
-  203   2              chassis.current_deviation = Calculate_Deviation();
-  204   2              // 外环算出力矩，更新 direction_output
-  205   2              target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0)
+  189   1          //电池保护
+  190   1          Battery_Protection_Task();
+  191   1          /*角速度环测试*/
+  192   1      //    Dynamic_Yaw_Test_Task();
+  193   1        
+  194   1          outer_loop_timer++;
+  195   1          if(outer_loop_timer >= 3) 
+  196   1          {
+  197   2              outer_loop_timer = 0;
+  198   2              
+  199   2              chassis.current_deviation = Calculate_Deviation();
+  200   2              // 外环算出力矩，更新 direction_output
+  201   2              target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0)
              -;
-  206   2          }
-  207   1      //    //读取当前的偏航角速度
-  208   1          actual_yaw_rate = Get_Yaw_Rate();
-  209   1      //    
-  210   1          direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -1*target_yaw_rate
-             -);
-  211   1      //      direction_output = 0;
-  212   1          
-  213   1      //    if (direction_output > 0) 
-  214   1      //    {
-  215   1      //        left_coef  = INNER_COEF; // 左转时，左轮是内侧
-  216   1      //        right_coef = OUTER_COEF; // 左转时，右轮是外侧
-  217   1      //    } 
-  218   1      //    else 
-  219   1      //    {
-  220   1      //        left_coef  = OUTER_COEF; // 右转时，左轮变外侧
-  221   1      //        right_coef = INNER_COEF; // 右转时，右轮变内侧
-  222   1      //    }
-  223   1      
-  224   1      //    // 如果是负数(右转)：左轮减去(负数*外侧) = 加速；右轮加上(负数*内侧) = �
-             -��速
-  225   1      //    chassis.left_speed  = chassis.target_speed - (int16)(direction_output * left_coef);
-  226   1      //    chassis.right_speed = chassis.target_speed + (int16)(direction_output * right_coef);
-  227   1          
-  228   1          chassis.left_speed  = chassis.target_speed - direction_output;
-  229   1          chassis.right_speed = chassis.target_speed + direction_output;
-  230   1          //执行电机控制
-  231   1          Motor_Control(chassis.left_speed, chassis.right_speed);
-  232   1      }
-*** WARNING C47 IN LINE 188 OF ..\UserCode\APP\chassis.c: 'left_coef': unreferenced local variable
-*** WARNING C47 IN LINE 189 OF ..\UserCode\APP\chassis.c: 'right_coef': unreferenced local variable
+  202   2          }
+  203   1          //读取当前的偏航角速度
+  204   1          actual_yaw_rate = Get_Yaw_Rate();
+  205   1          
+  206   1          direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -target_yaw_rate);
+  207   1      //      direction_output = 0;
+  208   1          
+  209   1      
+  210   1          k = direction_output * 0.01;
+  211   1          if(k >= 0)
+  212   1          {
+  213   2            k = k > 0.65 ? 0.65 : k;
+  214   2          }
+  215   1          else
+  216   1          {
+  217   2            k = k < -0.65 ? -0.65 : k;
+  218   2          }
+  219   1          if(k >= 0)
+  220   1          {
+  221   2            chassis.left_speed  = chassis.target_speed * (1 - k);
+  222   2            chassis.right_speed = chassis.target_speed * (1 + k * 0.2);
+  223   2          }
+  224   1          else
+  225   1          {
+  226   2            k *= -1;
+  227   2            chassis.left_speed  = chassis.target_speed * (1 + k * 0.2);
+  228   2            chassis.right_speed = chassis.target_speed * (1 - k);
+  229   2          }
+  230   1      //    chassis.left_speed  = chassis.target_speed - direction_output;
+  231   1      //    chassis.right_speed = chassis.target_speed + direction_output;
+  232   1          //执行电机控制
+  233   1          Motor_Control(chassis.left_speed, chassis.right_speed);
+  234   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       615     ------
+  code size            =       935     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =        32         16
+  edata size           =        24         16
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
   huge data size       =    ------     ------
-C251 COMPILER V5.60.0,  chassis                                                            07/06/26  01:38:04  PAGE 5   
-
   const size           =    ------     ------
-  hconst size          =        50     ------
+  hconst size          =        34     ------
+C251 COMPILER V5.60.0,  chassis                                                            12/06/26  17:44:15  PAGE 5   
+
 End of Module Information.
 
 
-C251 COMPILATION COMPLETE.  2 WARNING(S),  0 ERROR(S)
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

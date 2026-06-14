@@ -38,7 +38,7 @@ void User_Init(void)
 	
 		//负压风扇初始化
 		BLmotor_Init_1(Servo_FREQ); // 频率为50Hz，此处频率需要与舵机频率保持一致,满占空比20000
-    target_fan_pwm = 1500;
+    target_fan_pwm = 1700;
     current_fan_pwm = 900;
     BLmotor_Ctrl_w1(current_fan_pwm); // 以最低待机转速上电
   
@@ -148,7 +148,7 @@ void Key_Tuning_Task(void)
     if (rent_key != KEY_NONE)   
     {
         // 🌟 修改点 1：获取【方向环】（索引为 2）真实的参数
-        const PID_TypeDef* pid = PID_GetController(3);
+        const PID_TypeDef* pid = PID_GetController(2);
         float temp_kp = pid->Kp;
         float temp_kd = pid->Kd;
 
@@ -175,18 +175,18 @@ void Key_Tuning_Task(void)
 
             case KEY_LEFT:    // 4. 向左键：高精度微调 
                 // 🌟 修改点 2：方向环的 P 通常在 10~50 级别，微调步长给 0.5
-                tune_step = 0.05f;
+                tune_step = 1.0f;
                 break;
 
             case KEY_RIGHT:   // 5. 向右键：大幅度粗调
                 // 🌟 修改点 3：粗调步长给 2.0
-                tune_step = 0.2f;
+                tune_step = 10.0f;
                 break;
         }
 
         // 重新刷进【方向环】工作 RAM 中
-        PID_SetKp(2, temp_kp);
-        PID_SetKd(2, temp_kd);
+        PID_SetKp(3, temp_kp);
+        PID_SetKd(3, temp_kd);
 //				PID_SetKp(0, temp_kp);
 //        PID_SetKi(0, temp_ki);
 //				PID_SetKp(1, temp_kp);

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  lcd                                                                07/06/26  01:19:23  PAGE 1   
+C251 COMPILER V5.60.0,  lcd                                                                12/06/26  17:06:27  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE lcd
@@ -17,7 +17,7 @@ stmt  level    source
     5          char txt[30];
     6          int *inductance_values; // 用于存储电感值的全局变量
     7          uint8 selected_param = 0;
-    8          float tune_step = 0.1f;  // 默认步进值，可以通过左右键改变
+    8          float tune_step = 5.0f;  // 默认步进值，可以通过左右键改变
     9          /**
    10           * @brief 显示电磁传感器数据
    11           * 显示归一化后的五个电感值
@@ -26,8 +26,8 @@ stmt  level    source
    14          void Lcd_Display(void)
    15          {
    16   1          const PID_TypeDef *dir_pid = PID_GetController(2);
-   17   1        const PID_TypeDef *v_pid = PID_GetController(1);
-   18   1        const PID_TypeDef *pid = PID_GetController(3);
+   17   1          const PID_TypeDef *v_pid = PID_GetController(1);
+   18   1          const PID_TypeDef *pid = PID_GetController(3);
    19   1          inductance_values = GetInductance(); // 将只读电感值赋值给局部变量
    20   1      
    21   1          sprintf(txt, "L1:%03d %03d M:%03d  ", inductance_values[0],inductance_values[1],inductance_values[2]);
@@ -40,16 +40,16 @@ stmt  level    source
    28   1      //    LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
    29   1        // 第 1 行：显示 Kp。如果选中了 Kp，前面显示小箭头
    30   1          if (selected_param == 0)
-   31   1            sprintf(txt, "-> Kp: %4.2f  Tspeed:%d ", pid->Kp,chassis.target_speed);
+   31   1            sprintf(txt, "-> Kp: %4.3f  Tspeed:%d ", dir_pid->Kp,chassis.target_speed);
    32   1          else
-   33   1              sprintf(txt, "   Kp: %4.2f  Tspeed:%d ", pid->Kp,chassis.target_speed);
+   33   1              sprintf(txt, "   Kp: %4.3f  Tspeed:%d ",dir_pid->Kp,chassis.target_speed);
    34   1          LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
    35   1          
    36   1          // 第 2 行：显示 Kd。如果选中了 Kd，前面显示小箭头
    37   1          if (selected_param == 2) // 为了逻辑清晰，我们用 0 代表 P，2 代表 D
-   38   1              sprintf(txt, "-> Ki: %4.3f yr:%4d ", pid->Kd, actual_yaw_rate);
+   38   1              sprintf(txt, "-> Kd: %4.3f yr:%4d ", dir_pid->Kd, actual_yaw_rate);
    39   1          else
-   40   1              sprintf(txt, "   Ki: %4.3f yr:%4d    ", pid->Kd, actual_yaw_rate);
+   40   1              sprintf(txt, "   Kd: %4.3f yr:%4d    ", dir_pid->Kd, actual_yaw_rate);
    41   1          LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
    42   1          /*偏差*/
    43   1          sprintf(txt, "Dev:%d Tyaw:%d Dout:%d   ", chassis.current_deviation,target_yaw_rate,direction_output);
@@ -66,7 +66,7 @@ stmt  level    source
    54   1      //        sprintf(txt, "   trg_yr:%4d  yr:%4d ", target_yaw_rate, actual_yaw_rate);
    55   1      //    }
    56   1      //    LCD_ShowStr_16(0, 5, txt, u16_RED_IPS, u16_BLACK);
-C251 COMPILER V5.60.0,  lcd                                                                07/06/26  01:19:23  PAGE 2   
+C251 COMPILER V5.60.0,  lcd                                                                12/06/26  17:06:27  PAGE 2   
 
    57   1          /*左右目标速度*/
    58   1          sprintf(txt,"LTS:%d RTS:%d stop:%d   ",chassis.left_speed,chassis.right_speed,stop_flag);

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  init                                                               06/06/26  23:51:59  PAGE 1   
+C251 COMPILER V5.60.0,  init                                                               12/06/26  17:06:28  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE init
@@ -51,7 +51,7 @@ stmt  level    source
    39   1          //负压风扇初始化
    40   1          BLmotor_Init_1(Servo_FREQ); // 频率为50Hz，此处频率需要与舵机频率保持一致,满占空�
              -��20000
-   41   1          target_fan_pwm = 1500;
+   41   1          target_fan_pwm = 1700;
    42   1          current_fan_pwm = 900;
    43   1          BLmotor_Ctrl_w1(current_fan_pwm); // 以最低待机转速上电
    44   1        
@@ -66,7 +66,7 @@ stmt  level    source
    53          
    54          /**
    55           * @brief 按键发车等待函数 (V2.0 安全倒计时版)
-C251 COMPILER V5.60.0,  init                                                               06/06/26  23:51:59  PAGE 2   
+C251 COMPILER V5.60.0,  init                                                               12/06/26  17:06:28  PAGE 2   
 
    56           * @note 必须按下并松开 GO 按键，随后延时 1 秒才会发车
    57           */
@@ -134,7 +134,7 @@ stmt  level    source
   119   1          if (gpio_read_pin(P2_0) == 0)
   120   1          {
   121   2      //        key_press_cnt++;
-C251 COMPILER V5.60.0,  init                                                               06/06/26  23:51:59  PAGE 3   
+C251 COMPILER V5.60.0,  init                                                               12/06/26  17:06:28  PAGE 3   
 
   122   2      //        
   123   2      //        // 连续检测到按下大约 10 次 (相当于滤除了极短的震动或静电干扰)
@@ -166,7 +166,7 @@ stmt  level    source
   148   1          if (rent_key != KEY_NONE)   
   149   1          {
   150   2              // 🌟 修改点 1：获取【方向环】（索引为 2）真实的参数
-  151   2              const PID_TypeDef* pid = PID_GetController(3);
+  151   2              const PID_TypeDef* pid = PID_GetController(2);
   152   2              float temp_kp = pid->Kp;
   153   2              float temp_kd = pid->Kd;
   154   2      
@@ -194,20 +194,20 @@ stmt  level    source
   175   3      
   176   3                  case KEY_LEFT:    // 4. 向左键：高精度微调 
   177   3                      // 🌟 修改点 2：方向环的 P 通常在 10~50 级别，微调步长给 0.5
-  178   3                      tune_step = 0.05f;
+  178   3                      tune_step = 1.0f;
   179   3                      break;
   180   3      
   181   3                  case KEY_RIGHT:   // 5. 向右键：大幅度粗调
   182   3                      // 🌟 修改点 3：粗调步长给 2.0
-  183   3                      tune_step = 0.2f;
+  183   3                      tune_step = 10.0f;
   184   3                      break;
   185   3              }
-C251 COMPILER V5.60.0,  init                                                               06/06/26  23:51:59  PAGE 4   
+C251 COMPILER V5.60.0,  init                                                               12/06/26  17:06:28  PAGE 4   
 
   186   2      
   187   2              // 重新刷进【方向环】工作 RAM 中
-  188   2              PID_SetKp(2, temp_kp);
-  189   2              PID_SetKd(2, temp_kd);
+  188   2              PID_SetKp(3, temp_kp);
+  189   2              PID_SetKd(3, temp_kd);
   190   2      //        PID_SetKp(0, temp_kp);
   191   2      //        PID_SetKi(0, temp_ki);
   192   2      //        PID_SetKp(1, temp_kp);
@@ -218,7 +218,7 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       530     ------
+  code size            =       526     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------

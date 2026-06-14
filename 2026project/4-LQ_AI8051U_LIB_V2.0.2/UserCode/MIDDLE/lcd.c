@@ -5,7 +5,7 @@
 char txt[30];
 int *inductance_values; // 用于存储电感值的全局变量
 uint8 selected_param = 0;
-float tune_step = 0.1f;  // 默认步进值，可以通过左右键改变
+float tune_step = 5.0f;  // 默认步进值，可以通过左右键改变
 /**
  * @brief 显示电磁传感器数据
  * 显示归一化后的五个电感值
@@ -14,8 +14,8 @@ float tune_step = 0.1f;  // 默认步进值，可以通过左右键改变
 void Lcd_Display(void)
 {
 		const PID_TypeDef *dir_pid = PID_GetController(2);
-	const PID_TypeDef *v_pid = PID_GetController(1);
-	const PID_TypeDef *pid = PID_GetController(3);
+		const PID_TypeDef *v_pid = PID_GetController(1);
+		const PID_TypeDef *pid = PID_GetController(3);
     inductance_values = GetInductance(); // 将只读电感值赋值给局部变量
 
 	  sprintf(txt, "L1:%03d %03d M:%03d  ", inductance_values[0],inductance_values[1],inductance_values[2]);
@@ -28,16 +28,16 @@ void Lcd_Display(void)
 //		LCD_ShowStr_16(0, 0, txt, u16_RED_IPS, u16_BLACK);
 	// 第 1 行：显示 Kp。如果选中了 Kp，前面显示小箭头
     if (selected_param == 0)
-			sprintf(txt, "-> Kp: %4.2f  Tspeed:%d ", pid->Kp,chassis.target_speed);
+			sprintf(txt, "-> Kp: %4.3f  Tspeed:%d ", dir_pid->Kp,chassis.target_speed);
     else
-        sprintf(txt, "   Kp: %4.2f  Tspeed:%d ", pid->Kp,chassis.target_speed);
+        sprintf(txt, "   Kp: %4.3f  Tspeed:%d ",dir_pid->Kp,chassis.target_speed);
     LCD_ShowStr_16(0, 2, txt, u16_RED_IPS, u16_BLACK);
     
     // 第 2 行：显示 Kd。如果选中了 Kd，前面显示小箭头
     if (selected_param == 2) // 为了逻辑清晰，我们用 0 代表 P，2 代表 D
-        sprintf(txt, "-> Ki: %4.3f yr:%4d ", pid->Kd, actual_yaw_rate);
+        sprintf(txt, "-> Kd: %4.3f yr:%4d ", dir_pid->Kd, actual_yaw_rate);
     else
-        sprintf(txt, "   Ki: %4.3f yr:%4d    ", pid->Kd, actual_yaw_rate);
+        sprintf(txt, "   Kd: %4.3f yr:%4d    ", dir_pid->Kd, actual_yaw_rate);
     LCD_ShowStr_16(0, 3, txt, u16_RED_IPS, u16_BLACK);
 		/*偏差*/
 		sprintf(txt, "Dev:%d Tyaw:%d Dout:%d   ", chassis.current_deviation,target_yaw_rate,direction_output);
