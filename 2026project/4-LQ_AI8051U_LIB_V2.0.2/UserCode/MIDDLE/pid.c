@@ -1,17 +1,18 @@
 #include "pid.h"
 
-#define PID_GROUPS 3 // 可根据需要调整组数
+#define PID_GROUPS 4 // 可根据需要调整组数
 static PID_TypeDef pid_array[PID_GROUPS];
 
 // PID参数数组，按顺序：Kp, Ki, Kd, out_max, out_min,mode
 static const float pid_param_table[PID_GROUPS][6] = 
 {
     //左轮速度环 增量式PI
-    {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},  
+    {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},     // 1.2   0.2
     //右轮速度环 增量式PI
-    {1.2f, 0.2f, 0.0f, 1500,-1500,PID_INCREMENT},
+    {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},
     //方向环 位置式PD
-    {1.0f, 0.0f, 1.0f, 500,-500, PID_POSITION}  //基础速度100时对应0.9,0.0 ,5.0																				
+    {400.0f, 0.0f, 120.0f, 8000,-8000, PID_POSITION},  // P = 74.0， D = 30.0f
+		{0.07f, 0.0f, 0.007f, 100, -100, PID_POSITION} // Kp先给个0.5试试    P0.75   D0.5
 };
 
 void PID_SetKp(PID_Index index, float Kp) {

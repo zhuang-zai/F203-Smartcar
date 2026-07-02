@@ -12,5 +12,6 @@
  * @param values 电感值数组 [L1, L2, M, R1, R2]
  */
 void Lcd_Display(void);
-
+extern uint8 selected_param;
+extern float tune_step;
 #endif

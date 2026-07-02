@@ -9,5 +9,5 @@
 
 void ScanInductance(void);
 int* GetInductance(void);
-
+extern int L1, L2, M, R1, R2;
 #endif

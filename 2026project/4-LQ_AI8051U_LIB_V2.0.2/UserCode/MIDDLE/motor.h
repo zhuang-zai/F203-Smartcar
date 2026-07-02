@@ -14,6 +14,16 @@ extern int16 vofa_target_speed;
 extern int16 vofa_current_speed;
 extern int16 vofa_out_pwm;
 extern int16 stop_flag;
-void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed);
+extern double car_distance;
+extern int set_distance_calculation;
+extern double global_distance;
 
+// 负压风扇全局控制变量
+extern target_fan_pwm ;
+extern int16 current_fan_pwm ; 
+void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed);
+void Fan_Smooth_Task(void);
+void Clear_Car_Distance(void);
+void Car_Distance_Calculate(void);
+void Clear_Global_Distance(void);
 #endif

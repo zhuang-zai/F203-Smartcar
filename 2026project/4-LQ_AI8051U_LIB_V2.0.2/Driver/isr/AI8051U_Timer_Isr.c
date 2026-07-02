@@ -7,6 +7,8 @@
 #include "inductance.h"
 #include "motor.h"
 #include "init.h"
+
+extern volatile bit flag_20ms_lcd;
 //========================================================================
 // 函数: Timer0_ISR_Handler
 // 描述: Timer0中断函数.
@@ -42,6 +44,7 @@ void Timer1_ISR_Handler (void) interrupt TMR1_VECTOR		//进中断时已经清除标志
 void Timer2_ISR_Handler (void) interrupt TMR2_VECTOR		//进中断时已经清除标志
 {
 	// TODO: 在此处添加用户代码
+//	Roundabout_Detect_Task();
 //	LED_Ctrl(LED0,RVS);
 }
 
@@ -82,7 +85,27 @@ void Timer4_ISR_Handler (void) interrupt TMR4_VECTOR		//进中断时已经清除标志
 void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR		//进中断时已经清除标志
 {
 	// TODO: 在此处添加用户代码
-	//flag_200ms_lcd = 1;
+	// ?? 软件分频计数器，用于生成 200ms 的 LCD 刷新节拍
+    static uint8 lcd_timer_cnt = 0; 
+    static uint8 vofa_timer_cnt = 0; // ?? 新增：VOFA 专属计数器
+    // 1. 每次进中断 (每隔 3ms) 必定执行一次苯环检测
+    Roundabout_Detect_Task(); 
+    
+    // 2. 软件计数分频
+    lcd_timer_cnt++;
+    if (lcd_timer_cnt >= 50) // 40次 * 3ms = 200ms
+    {
+        lcd_timer_cnt = 0;   // 清零计数器
+        flag_20ms_lcd = 1;   // 置位 LCD 刷新标志 (你的主循环 while(1) 里会检测到并刷新屏幕)
+    }
+		
+		vofa_timer_cnt++;
+    if (vofa_timer_cnt >= 1)
+    {
+        vofa_timer_cnt = 0;
+        flag_20ms_vofa = 1;
+    }
+	
 //	LED_Ctrl(LED0,RVS);
 //    LED_Ctrl(Beep0,RVS);
 }

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_TIMER                                                           24/05/26  21:57:32  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           21/06/26  23:15:52  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_TIMER
@@ -66,7 +66,7 @@ stmt  level    source
    54   4              TIMx_InitStructure.TIM_ClkSource = tim_clockT;        //指定时钟源,     指定时钟源为12T模式,TIM_CLO
              -CK_Ext外部时钟
    55   4              TIMx_InitStructure.TIM_ClkOut    = DISABLE;       //是否输出高速脉冲, ENABLE或DISABLE
-C251 COMPILER V5.60.0,  LQ_TIMER                                                           24/05/26  21:57:32  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           21/06/26  23:15:52  PAGE 2   
 
    56   4              TIMx_InitStructure.TIM_Value     = Period;              //初值,装载值
    57   4              TIMx_InitStructure.TIM_PS        = freq_ps;           //8位预分频器(n+1), 0~255
@@ -134,7 +134,7 @@ stmt  level    source
   118   3           default:
   119   3              /*  */
   120   3              break;
-C251 COMPILER V5.60.0,  LQ_TIMER                                                           24/05/26  21:57:32  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           21/06/26  23:15:52  PAGE 3   
 
   121   3          }
   122   2      

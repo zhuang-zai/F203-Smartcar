@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_I2C                                                        04/05/26  16:38:10  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_I2C                                                        21/06/26  23:16:00  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_I2C
@@ -66,7 +66,7 @@ stmt  level    source
    54          //========================================================================
    55          // 函数: void Wait (void)
    56          // 描述: 等待主机模式I2C控制器执行完成I2CMSCR.
-C251 COMPILER V5.60.0,  AI8051U_I2C                                                        04/05/26  16:38:10  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_I2C                                                        21/06/26  23:16:00  PAGE 2   
 
    57          // 参数: none.
    58          // 返回: none.
@@ -134,7 +134,7 @@ stmt  level    source
   120   1      }
   121          
   122          //========================================================================
-C251 COMPILER V5.60.0,  AI8051U_I2C                                                        04/05/26  16:38:10  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_I2C                                                        21/06/26  23:16:00  PAGE 3   
 
   123          // 函数: void SendACK (void)
   124          // 描述: I2C发送ACK函数.
@@ -202,7 +202,7 @@ stmt  level    source
   185          {
   186   1        Start();      // 发送起始命令
   187   1        SendData(dev_addr); // 发送设备地址+写命令
-C251 COMPILER V5.60.0,  AI8051U_I2C                                                        04/05/26  16:38:10  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_I2C                                                        21/06/26  23:16:00  PAGE 4   
 
   188   1        RecvACK();
   189   1        SendData(mem_addr); // 发送存储地址
