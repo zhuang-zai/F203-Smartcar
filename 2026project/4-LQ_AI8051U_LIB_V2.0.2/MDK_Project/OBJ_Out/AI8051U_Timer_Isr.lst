@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  06/06/26  23:25:48  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  22/06/26  14:42:22  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Timer_Isr
@@ -56,67 +56,89 @@ stmt  level    source
    44          void Timer2_ISR_Handler (void) interrupt TMR2_VECTOR    //进中断时已经清除标志
    45          {
    46   1        // TODO: 在此处添加用户代码
-   47   1      //  LED_Ctrl(LED0,RVS);
-   48   1      }
-   49          
-   50          //========================================================================
-   51          // 函数: Timer3_ISR_Handler
-   52          // 描述: Timer3中断函数.
-   53          // 参数: none.
-   54          // 返回: none.
-   55          // 版本: V1.0, 2020-09-23
-   56          //========================================================================
-C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  06/06/26  23:25:48  PAGE 2   
+   47   1      //  Roundabout_Detect_Task();
+   48   1      //  LED_Ctrl(LED0,RVS);
+   49   1      }
+   50          
+   51          //========================================================================
+   52          // 函数: Timer3_ISR_Handler
+   53          // 描述: Timer3中断函数.
+   54          // 参数: none.
+   55          // 返回: none.
+   56          // 版本: V1.0, 2020-09-23
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  22/06/26  14:42:22  PAGE 2   
 
-   57          void Timer3_ISR_Handler (void) interrupt TMR3_VECTOR    //进中断时已经清除标志
-   58          {
-   59   1        // TODO: 在此处添加用户代码
-   60   1      //  LED_Ctrl(LED0,RVS);
-   61   1      }
-   62          
-   63          //========================================================================
-   64          // 函数: Timer4_ISR_Handler
-   65          // 描述: Timer4中断函数.
-   66          // 参数: none.
-   67          // 返回: none.
-   68          // 版本: V1.0, 2020-09-23
-   69          //========================================================================
-   70          void Timer4_ISR_Handler (void) interrupt TMR4_VECTOR    //进中断时已经清除标志
-   71          {
-   72   1        // TODO: 在此处添加用户代码
-   73   1      //  LED_Ctrl(LED1,RVS);
-   74   1      }
-   75          
+   57          //========================================================================
+   58          void Timer3_ISR_Handler (void) interrupt TMR3_VECTOR    //进中断时已经清除标志
+   59          {
+   60   1        // TODO: 在此处添加用户代码
+   61   1      //  LED_Ctrl(LED0,RVS);
+   62   1      }
+   63          
+   64          //========================================================================
+   65          // 函数: Timer4_ISR_Handler
+   66          // 描述: Timer4中断函数.
+   67          // 参数: none.
+   68          // 返回: none.
+   69          // 版本: V1.0, 2020-09-23
+   70          //========================================================================
+   71          void Timer4_ISR_Handler (void) interrupt TMR4_VECTOR    //进中断时已经清除标志
+   72          {
+   73   1        // TODO: 在此处添加用户代码
+   74   1      //  LED_Ctrl(LED1,RVS);
+   75   1      }
    76          
-   77          //========================================================================
-   78          // 函数: Timer4_ISR_Handler
-   79          // 描述: Timer4中断函数.
-   80          // 参数: none.
-   81          // 返回: none.
-   82          // 版本: V1.0, 2020-09-23
-   83          //========================================================================
-   84          void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR    //进中断时已经清除标志
-   85          {
-   86   1        // TODO: 在此处添加用户代码
-   87   1        flag_20ms_lcd = 1;
-   88   1        
-   89   1      //  LED_Ctrl(LED0,RVS);
-   90   1      //    LED_Ctrl(Beep0,RVS);
-   91   1      }
-   92          
-   93          
+   77          
+   78          //========================================================================
+   79          // 函数: Timer4_ISR_Handler
+   80          // 描述: Timer4中断函数.
+   81          // 参数: none.
+   82          // 返回: none.
+   83          // 版本: V1.0, 2020-09-23
+   84          //========================================================================
+   85          void Timer11_ISR_Handler (void) interrupt TMR11_VECTOR    //进中断时已经清除标志
+   86          {
+   87   1        // TODO: 在此处添加用户代码
+   88   1        // ?? 软件分频计数器，用于生成 200ms 的 LCD 刷新节拍
+   89   1          static uint8 lcd_timer_cnt = 0; 
+   90   1          static uint8 vofa_timer_cnt = 0; // ?? 新增：VOFA 专属计数器
+   91   1          // 1. 每次进中断 (每隔 3ms) 必定执行一次苯环检测
+   92   1          Roundabout_Detect_Task(); 
+   93   1          
+   94   1          // 2. 软件计数分频
+   95   1          lcd_timer_cnt++;
+   96   1          if (lcd_timer_cnt >= 50) // 40次 * 3ms = 200ms
+   97   1          {
+   98   2              lcd_timer_cnt = 0;   // 清零计数器
+   99   2              flag_20ms_lcd = 1;   // 置位 LCD 刷新标志 (你的主循环 while(1) 里会检测到并刷新屏幕)
+  100   2          }
+  101   1          
+  102   1          vofa_timer_cnt++;
+  103   1          if (vofa_timer_cnt >= 1)
+  104   1          {
+  105   2              vofa_timer_cnt = 0;
+  106   2              flag_20ms_vofa = 1;
+  107   2          }
+  108   1        
+  109   1      //  LED_Ctrl(LED0,RVS);
+  110   1      //    LED_Ctrl(Beep0,RVS);
+  111   1      }
+  112          
+  113          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       112     ------
+  code size            =       209     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
+C251 COMPILER V5.60.0,  AI8051U_Timer_Isr                                                  22/06/26  14:42:22  PAGE 3   
+
   xdata-const size     =    ------     ------
-  edata size           =    ------     ------
+  edata size           =         2     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
@@ -124,7 +146,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =    ------     ------
+  hconst size          =        10     ------
 End of Module Information.
 
 

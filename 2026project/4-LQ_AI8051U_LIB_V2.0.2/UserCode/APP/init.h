@@ -12,5 +12,5 @@ void Wait_For_Start(void);
 void Emergency_Stop_Task(void);
 void Key_Tuning_Task(void);
 extern volatile bit flag_20ms_lcd;
-
+extern volatile bit flag_20ms_vofa;
 #endif

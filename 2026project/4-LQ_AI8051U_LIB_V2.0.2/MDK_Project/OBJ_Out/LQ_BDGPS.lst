@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  LQ_BDGPS                                                           01/06/26  00:32:10  PAGE 1   
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_BDGPS
@@ -66,7 +66,7 @@ stmt  level    source
    54   1        if (*str == '.')
    55   1        {
    56   2          str++;
-C251 COMPILER V5.60.0,  LQ_BDGPS                                                           01/06/26  00:32:10  PAGE 2   
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 2   
 
    57   2          while (isdigit(*str))
    58   2          {
@@ -134,7 +134,7 @@ stmt  level    source
   120   4            }
   121   3            else  //检测到逗号，返回逗号的位置
   122   3            {
-C251 COMPILER V5.60.0,  LQ_BDGPS                                                           01/06/26  00:32:10  PAGE 3   
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 3   
 
   123   4              subString++;    //位置加1（定位到逗号的后一位）
   124   4              if ((subStringNext = strchr(subString, ',')) != NULL)//定位下一个逗号的位置
@@ -202,7 +202,7 @@ stmt  level    source
   176   1      #if 1
   177   1        //判断纬度值中是否有‘.'有:说明有数据 例如：3946.99715  变化范围在后六位中�
              -��化，最后一位不稳定可舍去。取值为3946和99715
-C251 COMPILER V5.60.0,  LQ_BDGPS                                                           01/06/26  00:32:10  PAGE 4   
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 4   
 
   178   1        if((strstr(Save_Data.latitude, ".")) != NULL)
   179   1        {
@@ -270,7 +270,7 @@ stmt  level    source
   235   1              *Lon = gJ/100.0;
   236   1          if(gJ == 0.0)
   237   1              return 0;
-C251 COMPILER V5.60.0,  LQ_BDGPS                                                           01/06/26  00:32:10  PAGE 5   
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 5   
 
   238   1          else
   239   1              *Lat = gW/100.0;

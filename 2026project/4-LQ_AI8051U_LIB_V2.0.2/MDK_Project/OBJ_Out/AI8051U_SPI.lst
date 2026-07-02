@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_SPI                                                        30/05/26  19:10:06  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        21/06/26  23:16:01  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_SPI
@@ -66,7 +66,7 @@ stmt  level    source
    53   2              SPITOCR &= ~0x80;   //从机接收超时功能禁止
    54   2          }
    55   1      
-C251 COMPILER V5.60.0,  AI8051U_SPI                                                        30/05/26  19:10:06  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        21/06/26  23:16:01  PAGE 2   
 
    56   1          if(SPIx->TimeOutINTEnable == ENABLE) SPITOCR |= 0x40;   //从机接收超时中断使能
    57   1          else                                 SPITOCR &= ~0x40;  //从机接收超时中断禁止
@@ -134,7 +134,7 @@ stmt  level    source
   119          // 版本: V1.0, 2020-09-14
   120          //========================================================================
   121          u8 SPI_ReadByte(void)
-C251 COMPILER V5.60.0,  AI8051U_SPI                                                        30/05/26  19:10:06  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        21/06/26  23:16:01  PAGE 3   
 
   122          {
   123   1          SPDAT = 0xff;
@@ -203,7 +203,7 @@ Module Information          Static   Overlayable
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_SPI                                                        30/05/26  19:10:06  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        21/06/26  23:16:01  PAGE 4   
 
   pdata size           =    ------     ------
   xdata size           =    ------     ------

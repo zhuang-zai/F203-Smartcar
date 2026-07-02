@@ -29,7 +29,7 @@ void User_Init(void)
     // 3. 定时器初始化 
     TIM_Init_ms(Timer0, 1);  //电感采集
     TIM_Init_ms(Timer1, 2);  //控制算法
-		TIM_Init_ms(Timer11,200);  //显示屏
+		TIM_Init_ms(Timer11,3);  //显示屏
     // 4. 电机初始化
     Motor_Init(Motor_FREQ);
     // 5. 陀螺仪初始化（可选）
@@ -38,7 +38,7 @@ void User_Init(void)
 	
 		//负压风扇初始化
 		BLmotor_Init_1(Servo_FREQ); // 频率为50Hz，此处频率需要与舵机频率保持一致,满占空比20000
-    target_fan_pwm = 1700;
+    target_fan_pwm = 1800;  //1750
     current_fan_pwm = 900;
     BLmotor_Ctrl_w1(current_fan_pwm); // 以最低待机转速上电
   

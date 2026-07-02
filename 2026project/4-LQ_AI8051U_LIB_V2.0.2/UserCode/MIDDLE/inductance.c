@@ -69,8 +69,8 @@ void ScanInductance(void)
     ADC_values[0] = _adcNormalize(L1, 50, 2500);//L1
     ADC_values[1] = _adcNormalize(L2, 50, 2500);//L2
     ADC_values[2] = _adcNormalize(M, 0, 2500);//M
-    ADC_values[3] = _adcNormalize(R1, 50, 2500);//R1
-    ADC_values[4] = _adcNormalize(R2, 50, 2500);//R2
+    ADC_values[3] = _adcNormalize(R1, 20, 2500);//R1
+    ADC_values[4] = _adcNormalize(R2, 100, 2500);//R2
 }
 
 int* GetInductance()

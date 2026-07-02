@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  inductance                                                         04/06/26  22:00:47  PAGE 1   
+C251 COMPILER V5.60.0,  inductance                                                         21/06/26  23:16:01  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE inductance
@@ -66,7 +66,7 @@ stmt  level    source
    54          {
    55   1          // 原ADC值，调试用
    56   1           L1 = Get_ADCResult(5);//L1
-C251 COMPILER V5.60.0,  inductance                                                         04/06/26  22:00:47  PAGE 2   
+C251 COMPILER V5.60.0,  inductance                                                         21/06/26  23:16:01  PAGE 2   
 
    57   1           L2 = Get_ADCResult(1);//L2
    58   1           M = Get_ADCResult(2);//M
@@ -83,8 +83,8 @@ stmt  level    source
    69   1          ADC_values[0] = _adcNormalize(L1, 50, 2500);//L1
    70   1          ADC_values[1] = _adcNormalize(L2, 50, 2500);//L2
    71   1          ADC_values[2] = _adcNormalize(M, 0, 2500);//M
-   72   1          ADC_values[3] = _adcNormalize(R1, 50, 2500);//R1
-   73   1          ADC_values[4] = _adcNormalize(R2, 50, 2500);//R2
+   72   1          ADC_values[3] = _adcNormalize(R1, 20, 2500);//R1
+   73   1          ADC_values[4] = _adcNormalize(R2, 100, 2500);//R2
    74   1      }
    75          
    76          int* GetInductance()

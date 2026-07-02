@@ -1,5 +1,7 @@
 #include "motor.h"
 #include "stdio.h"
+
+#define ONE_LOOP 2150000
 int16 _encoder_L;
 int16 _encoder_R;
 int16 left_pwm;
@@ -17,6 +19,32 @@ int16 current_fan_pwm; // å½“å‰æ­£åœ¨è¾“å‡ºçš„PWM (ç°å€¼)
 /*pwmè¾“å‡ºé™å¹…*/
 int16 max_forward_pwm = (int16)(3200 * 0.8);  // æ­£è½¬é™åˆ¶åœ¨çº¦ 85%
 int16 max_reverse_pwm = (int16)(-3200 * 0.8) ; // åè½¬é™åˆ¶åœ¨çº¦ -40% (åˆ¹è½¦åŠ›åº¦å¤Ÿç”¨å°±è¡Œ)
+double car_distance = 0.0f;    // ³µÁ¾ĞĞÊ»µÄÀÛ¼ÆÀï³Ì
+double global_distance = 0.0f; // ?? ĞÂÔöÈ«¾ÖÀï³Ì£º´Ó·¢³µ¿ªÊ¼È«³ÌÀÛ¼Ó£¬ÓÃÓÚ»®¶¨ÈüµÀÇøÓò
+int set_distance_calculation = 0;
+
+// Àï³ÌÇåÁãº¯Êı£¨»·µºÑ°ÕÒÈë¿ÚÊ±ĞèÒªÓÃµ½£©
+void Clear_Car_Distance(void)
+{
+    car_distance = 0.0f;
+}
+// ?? ĞÂÔö£ºÈ«¾ÖÀï³ÌÇåÁã£¨ÅÜÍêÒ»È¦£¬»Øµ½ÆğµãÊ±µ÷ÓÃ£©
+void Clear_Global_Distance(void)
+{
+    global_distance = 0.0f;
+}
+void Car_Distance_Calculate(void)
+{
+	double step_dist = (double)(_encoder_L + _encoder_R) / 2.0f;
+    
+    // 1. È«¾ÖÀï³Ì£ºÖ»Òª³µÔÚÅÜ£¬ÓÀÔ¶¶¼ÔÚÀÛ¼Ó£¡²»ÊÜÈÎºÎ±êÖ¾Î»ÏŞÖÆ£¡
+    global_distance += step_dist;
+		if(global_distance > ONE_LOOP) global_distance = 0.0f;
+	if(set_distance_calculation)
+	{
+		car_distance += step_dist;
+	}
+}
 
 void Motor_Overload_Protection_Task(int16 lpwm, int16 rpwm)
 {
@@ -64,7 +92,7 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
 //    static int16 right_pwm_last = 0;
 		_encoder_L = -1 * Read_Encoder(1);//è¯»å–ç¼–ç å™¨æ•°å€¼(çœŸå®é€Ÿåº¦) ,å·¦ç¼–ç å™¨å‰è¿›ä¸ºè´Ÿå€¼å› æ­¤å‰é¢åŠ ä¸Šè´Ÿå·
 		_encoder_R = Read_Encoder(2);//è¯»å–ç¼–ç å™¨æ•°å€¼(çœŸå®é€Ÿåº¦)
-	
+		Car_Distance_Calculate();
 		/*å µè½¬æ£€æµ‹æœºåˆ¶ (æ’å¢™ä¿æŠ¤)*/
 //		if ((Left_Target_Speed != 0 || Right_Target_Speed != 0) && 
 //         (abs(_encoder_L) < 5 || abs(_encoder_R) < 5) && 
@@ -98,13 +126,15 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
     right_pwm = right_pwm < max_reverse_pwm ? max_reverse_pwm : right_pwm;
 		
 		
-		Motor_Overload_Protection_Task(left_pwm, right_pwm);
+//		Motor_Overload_Protection_Task(left_pwm, right_pwm);
 		
 		if (stop_flag == 1)
     {
         left_pwm = 0;
         right_pwm = 0;
     }
+//		left_pwm = 0;
+//    right_pwm = 0;
 //		else 
 //		{
 //			left_pwm = 1500;
@@ -139,7 +169,7 @@ void Fan_Smooth_Task(void)
     
     // 2. åˆ©ç”¨ while(1) çš„å¾ªç¯å‘¨æœŸï¼Œè¿›è¡Œéé˜»å¡ã€ç°å€¼è¿½è¸ªã€‘
     fan_tick++;
-    if (fan_tick >= 10) // å†³å®šå¹³æ»‘çš„é€Ÿåº¦ï¼Œæ•°å€¼è¶Šå¤§å˜åŒ–è¶Šæ…¢
+    if (fan_tick >= 5) // å†³å®šå¹³æ»‘çš„é€Ÿåº¦ï¼Œæ•°å€¼è¶Šå¤§å˜åŒ–è¶Šæ…¢
     {
         fan_tick = 0;
         

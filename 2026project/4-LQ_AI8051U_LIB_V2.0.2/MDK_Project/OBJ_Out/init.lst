@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  init                                                               12/06/26  17:06:28  PAGE 1   
+C251 COMPILER V5.60.0,  init                                                               22/06/26  14:42:23  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE init
@@ -41,7 +41,7 @@ stmt  level    source
    29   1          // 3. 定时器初始化 
    30   1          TIM_Init_ms(Timer0, 1);  //电感采集
    31   1          TIM_Init_ms(Timer1, 2);  //控制算法
-   32   1          TIM_Init_ms(Timer11,200);  //显示屏
+   32   1          TIM_Init_ms(Timer11,3);  //显示屏
    33   1          // 4. 电机初始化
    34   1          Motor_Init(Motor_FREQ);
    35   1          // 5. 陀螺仪初始化（可选）
@@ -51,7 +51,7 @@ stmt  level    source
    39   1          //负压风扇初始化
    40   1          BLmotor_Init_1(Servo_FREQ); // 频率为50Hz，此处频率需要与舵机频率保持一致,满占空�
              -��20000
-   41   1          target_fan_pwm = 1700;
+   41   1          target_fan_pwm = 1800;  //1750
    42   1          current_fan_pwm = 900;
    43   1          BLmotor_Ctrl_w1(current_fan_pwm); // 以最低待机转速上电
    44   1        
@@ -66,7 +66,7 @@ stmt  level    source
    53          
    54          /**
    55           * @brief 按键发车等待函数 (V2.0 安全倒计时版)
-C251 COMPILER V5.60.0,  init                                                               12/06/26  17:06:28  PAGE 2   
+C251 COMPILER V5.60.0,  init                                                               22/06/26  14:42:23  PAGE 2   
 
    56           * @note 必须按下并松开 GO 按键，随后延时 1 秒才会发车
    57           */
@@ -134,7 +134,7 @@ stmt  level    source
   119   1          if (gpio_read_pin(P2_0) == 0)
   120   1          {
   121   2      //        key_press_cnt++;
-C251 COMPILER V5.60.0,  init                                                               12/06/26  17:06:28  PAGE 3   
+C251 COMPILER V5.60.0,  init                                                               22/06/26  14:42:23  PAGE 3   
 
   122   2      //        
   123   2      //        // 连续检测到按下大约 10 次 (相当于滤除了极短的震动或静电干扰)
@@ -202,7 +202,7 @@ stmt  level    source
   183   3                      tune_step = 10.0f;
   184   3                      break;
   185   3              }
-C251 COMPILER V5.60.0,  init                                                               12/06/26  17:06:28  PAGE 4   
+C251 COMPILER V5.60.0,  init                                                               22/06/26  14:42:23  PAGE 4   
 
   186   2      
   187   2              // 重新刷进【方向环】工作 RAM 中

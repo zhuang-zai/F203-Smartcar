@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  pid                                                                12/06/26  17:00:12  PAGE 1   
+C251 COMPILER V5.60.0,  pid                                                                21/06/26  23:16:03  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE pid
@@ -66,7 +66,7 @@ stmt  level    source
    54   1          pid->output_max = out_max;
    55   1          pid->output_min = out_min;
    56   1          pid->output = 0;
-C251 COMPILER V5.60.0,  pid                                                                12/06/26  17:00:12  PAGE 2   
+C251 COMPILER V5.60.0,  pid                                                                21/06/26  23:16:03  PAGE 2   
 
    57   1          pid->mode = mode;
    58   1      }
@@ -134,7 +134,7 @@ stmt  level    source
   120   1          // 更新历史误差
   121   1          pid->prev_prev_error = pid->prev_error;
   122   1          pid->prev_error = error;
-C251 COMPILER V5.60.0,  pid                                                                12/06/26  17:00:12  PAGE 3   
+C251 COMPILER V5.60.0,  pid                                                                21/06/26  23:16:03  PAGE 3   
 
   123   1          
   124   1          return (int16)output;
