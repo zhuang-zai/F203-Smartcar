@@ -1,7 +1,7 @@
 #include "motor.h"
 #include "stdio.h"
 
-#define ONE_LOOP 2150000
+#define ONE_LOOP 1320000  //ËÙ¶ÈÎª250Ê±  Àï³ÌÎª1730000    Îª300Ê±   Àï³ÌÎª1800000   400Ê±   1870000
 int16 _encoder_L;
 int16 _encoder_R;
 int16 left_pwm;
@@ -12,13 +12,13 @@ int16 vofa_current_speed = 0;
 int16 vofa_out_pwm = 0;
 
 int16 stop_flag = 1;
-// è´Ÿå‹é£æ‰‡å…¨å±€æ§åˆ¶å˜é‡
-int16 target_fan_pwm;  // æœŸæœ›çš„è´Ÿå‹PWM (ç›®æ ‡å€¼)
-int16 current_fan_pwm; // å½“å‰æ­£åœ¨è¾“å‡ºçš„PWM (ç°å€¼)
+// ¸ºÑ¹·çÉÈÈ«¾Ö¿ØÖÆ±äÁ¿
+int16 target_fan_pwm;  // ÆÚÍûµÄ¸ºÑ¹PWM (Ä¿±êÖµ)
+int16 current_fan_pwm; // µ±Ç°ÕıÔÚÊä³öµÄPWM (ÏÖÖµ)
 
-/*pwmè¾“å‡ºé™å¹…*/
-int16 max_forward_pwm = (int16)(3200 * 0.8);  // æ­£è½¬é™åˆ¶åœ¨çº¦ 85%
-int16 max_reverse_pwm = (int16)(-3200 * 0.8) ; // åè½¬é™åˆ¶åœ¨çº¦ -40% (åˆ¹è½¦åŠ›åº¦å¤Ÿç”¨å°±è¡Œ)
+/*pwmÊä³öÏŞ·ù*/
+int16 max_forward_pwm = (int16)(3200 * 0.9375);  // Õı×ªÏŞÖÆÔÚÔ¼ 85%
+int16 max_reverse_pwm = (int16)(-3200 * 0.9375) ; // ·´×ªÏŞÖÆÔÚÔ¼ -40% (É²³µÁ¦¶È¹»ÓÃ¾ÍĞĞ)
 double car_distance = 0.0f;    // ³µÁ¾ĞĞÊ»µÄÀÛ¼ÆÀï³Ì
 double global_distance = 0.0f; // ?? ĞÂÔöÈ«¾ÖÀï³Ì£º´Ó·¢³µ¿ªÊ¼È«³ÌÀÛ¼Ó£¬ÓÃÓÚ»®¶¨ÈüµÀÇøÓò
 int set_distance_calculation = 0;
@@ -50,70 +50,70 @@ void Motor_Overload_Protection_Task(int16 lpwm, int16 rpwm)
 {
     static uint16 overload_timer = 0;
     
-    // åŠ¨æ€è®¡ç®— 90% é™å¹…é˜ˆå€¼ï¼š2560 * 0.9 = 2304
+    // ¶¯Ì¬¼ÆËã 90% ÏŞ·ùãĞÖµ£º2560 * 0.9 = 2304
     int16 threshold = (int16)(max_forward_pwm * 0.9f); 
 
-    // å¦‚æœè½¦å­æœ¬èº«å°±æ˜¯æ€¥åœçŠ¶æ€ï¼Œé‡ç½®è®¡æ•°å™¨å¹¶é€€å‡º
+    // Èç¹û³µ×Ó±¾Éí¾ÍÊÇ¼±Í£×´Ì¬£¬ÖØÖÃ¼ÆÊıÆ÷²¢ÍË³ö
     if (stop_flag == 1)
     {
         overload_timer = 0;
         return;
     }
 
-    // æ£€æŸ¥å·¦è½®ã€æˆ–ã€‘å³è½®çš„ç»å¯¹å€¼æ˜¯å¦è§¦åŠäº† 90% çš„æ­»äº¡çº¢çº¿
+    // ¼ì²é×óÂÖ¡¾»ò¡¿ÓÒÂÖµÄ¾ø¶ÔÖµÊÇ·ñ´¥¼°ÁË 90% µÄËÀÍöºìÏß
     if (abs(lpwm) >= 2000 || abs(rpwm) >= 2000)
     {
         overload_timer++;
         
-        // â±ï¸ æ—¶é—´æ»¤æ³¢è®¡ç®—ï¼š2ms * 500æ¬¡ = 1000ms = 1ç§’
-        // å…è®¸é«˜é€Ÿè¿‡å¼¯æ—¶ç¬é—´æ»¡è½½æ‹‰æ»¡ï¼Œä½†ç»å¯¹ä¸å…è®¸æŒç»­æ†‹æ»¡ 1 ç§’ï¼
-        // (å¦‚æœä½ è§‰å¾— 1 ç§’å¤ªé•¿ï¼Œå¯ä»¥æ”¹æˆ 250æ¬¡ï¼Œå¯¹åº” 500ms)
+        // ? Ê±¼äÂË²¨¼ÆËã£º2ms * 500´Î = 1000ms = 1Ãë
+        // ÔÊĞí¸ßËÙ¹ıÍäÊ±Ë²¼äÂúÔØÀ­Âú£¬µ«¾ø¶Ô²»ÔÊĞí³ÖĞø±ïÂú 1 Ãë£¡
+        // (Èç¹ûÄã¾õµÃ 1 ÃëÌ«³¤£¬¿ÉÒÔ¸Ä³É 250´Î£¬¶ÔÓ¦ 500ms)
         if (overload_timer >= 500) 
         {
-            stop_flag = 1; // ğŸš¨ è§¦å‘å…¨å±€æ€¥åœï¼Œåˆ‡æ–­åŠ¨åŠ›ï¼
+            stop_flag = 1; // ?? ´¥·¢È«¾Ö¼±Í££¬ÇĞ¶Ï¶¯Á¦£¡
         }
     }
     else
     {
-        // åªè¦æœ‰ä¸€ç¬é—´è„±ç¦»äº†é«˜è´Ÿè½½ï¼ˆæ¯”å¦‚è¿‡å®Œå¼¯äº†ï¼‰ï¼Œè®¡æ—¶å™¨ç«‹åˆ»æ¸…é›¶ï¼Œé˜²æ­¢è¯¯åˆ¤
+        // Ö»ÒªÓĞÒ»Ë²¼äÍÑÀëÁË¸ß¸ºÔØ£¨±ÈÈç¹ıÍêÍäÁË£©£¬¼ÆÊ±Æ÷Á¢¿ÌÇåÁã£¬·ÀÖ¹ÎóÅĞ
         overload_timer = 0; 
     }
 }
 
 /**
- * @brief ç”µæœºé€Ÿåº¦æ§åˆ¶å‡½æ•°ï¼šè¾“å…¥ç›®æ ‡é€Ÿåº¦ï¼Œè¯»å–å½“å‰é€Ÿåº¦ï¼Œé€šè¿‡PIDè®¡ç®—å æ®æ¯”ï¼Œæ§åˆ¶ç”µæœºè½¬é€Ÿ
- * @param Left_Target_Speed å·¦è½®ç›®æ ‡é€Ÿåº¦ Right_Target_Speed å³è½®ç›®æ ‡é€Ÿåº¦
- * @param æ— è¿”å›å€¼ï¼Œä½†å¯èƒ½ä¼šå‡ºé”™
+ * @brief µç»úËÙ¶È¿ØÖÆº¯Êı£ºÊäÈëÄ¿±êËÙ¶È£¬¶ÁÈ¡µ±Ç°ËÙ¶È£¬Í¨¹ıPID¼ÆËãÕ¼¿Õ±È£¬¿ØÖÆµç»ú×ªËÙ
+ * @param Left_Target_Speed ×óÂÖÄ¿±êËÙ¶È Right_Target_Speed ÓÒÂÖÄ¿±êËÙ¶È
+ * @param ÎŞ·µ»ØÖµ£¬µ«¿ÉÄÜ»á³ö´í
  */
 void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
 {
-//		static uint8 Motor_stop_Time = 0; // å µè½¬è®¡æ—¶å™¨
-//    static int16 left_pwm_last = 0;   // è®°å½•ä¸Šä¸€æ¬¡çš„ PWM (ç”¨äºæ»¤æ³¢)
+//		static uint8 Motor_stop_Time = 0; // ¶Â×ª¼ÆÊ±Æ÷
+//    static int16 left_pwm_last = 0;   // ¼ÇÂ¼ÉÏÒ»´ÎµÄ PWM (ÓÃÓÚÂË²¨)
 //    static int16 right_pwm_last = 0;
-		_encoder_L = -1 * Read_Encoder(1);//è¯»å–ç¼–ç å™¨æ•°å€¼(çœŸå®é€Ÿåº¦) ,å·¦ç¼–ç å™¨å‰è¿›ä¸ºè´Ÿå€¼å› æ­¤å‰é¢åŠ ä¸Šè´Ÿå·
-		_encoder_R = Read_Encoder(2);//è¯»å–ç¼–ç å™¨æ•°å€¼(çœŸå®é€Ÿåº¦)
+		_encoder_L = -1 * Read_Encoder(1); //¶ÁÈ¡±àÂëÆ÷ÊıÖµ(ÕæÊµËÙ¶È) ,×ó±àÂëÆ÷Ç°½øÎª¸ºÖµÒò´ËÇ°Ãæ¼ÓÉÏ¸ººÅ
+		_encoder_R = Read_Encoder(2);      //¶ÁÈ¡±àÂëÆ÷ÊıÖµ(ÕæÊµËÙ¶È)
 		Car_Distance_Calculate();
-		/*å µè½¬æ£€æµ‹æœºåˆ¶ (æ’å¢™ä¿æŠ¤)*/
+		/*¶Â×ª¼ì²â»úÖÆ (×²Ç½±£»¤)*/
 //		if ((Left_Target_Speed != 0 || Right_Target_Speed != 0) && 
 //         (abs(_encoder_L) < 5 || abs(_encoder_R) < 5) && 
 //         stop_flag == 0)
 //		{
 //				Motor_stop_Time++;
-//        if (Motor_stop_Time >= 50) // å‡è®¾2mså‘¨æœŸï¼Œ50æ¬¡å°±æ˜¯æŒç»­100mså µè½¬
+//        if (Motor_stop_Time >= 50) // ¼ÙÉè2msÖÜÆÚ£¬50´Î¾ÍÊÇ³ÖĞø100ms¶Â×ª
 //        {
-//            stop_flag = 1;         // è§¦å‘æ€¥åœï¼
+//            stop_flag = 1;         // ´¥·¢¼±Í££¡
 //        }
 //		}
 //		else 
 //		{
-//				Motor_stop_Time = 0;       // æ¢å¤æ­£å¸¸ï¼Œæ¸…é›¶è®¡æ•°å™¨
+//				Motor_stop_Time = 0;       // »Ö¸´Õı³££¬ÇåÁã¼ÆÊıÆ÷
 //		}
 
-	//é€Ÿåº¦ç¯å æ®æ¯”ï¼Œåˆ†åˆ«ç”¨PID_LEFTå’ŒPID_RIGHTç´¢å¼•æ¥å®ç°å·¦å³è½®æ§åˆ¶
+	//ËÙ¶È»·Õ¼¿Õ±È£¬·Ö±ğÓÃPID_LEFTºÍPID_RIGHTË÷ÒıÀ´ÊµÏÖ×óÓÒÂÖ¿ØÖÆ
 	left_pwm = PID_Calculate_ByIndex(PID_LEFT, _encoder_L, Left_Target_Speed);
 	right_pwm = PID_Calculate_ByIndex(PID_RIGHT, _encoder_R, Right_Target_Speed);
 		
-			/*è¾“å‡ºä½é€šæ»¤æ³¢  é˜²æ­¢ç”µæµçªå˜*/
+			/*Êä³öµÍÍ¨ÂË²¨ ·ÀÖ¹µçÁ÷Í»±ä*/
 //		left_pwm = (int16)(left_pwm * 0.8f + left_pwm_last * 0.2f);
 //    right_pwm = (int16)(right_pwm * 0.8f + right_pwm_last * 0.2f);
 //    left_pwm_last = left_pwm;
@@ -142,9 +142,9 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
 //		}
 		Motor_Ctrl(right_pwm, -left_pwm);
 	/*
-	å½“3000å ç©ºæ¯”æ—¶å¯¹åº”ç¼–ç å™¨è¾“å‡ºä¸º1100ï¼Œåˆ™è®¤ä¸ºå·¦å³è½®æœ€å¤§è½¬é€Ÿä¸º1100
+	µ±1000Õ¼¿Õ±ÈÊ±¶ÔÓ¦±àÂëÆ÷Êä³öÎª1100£¬ÔòÈÏÎª×óÓÒÂÖ×î´ó×ªËÙÎª1100
 	*/
-//	Motor_Ctrl(-right_pwm, left_pwm); //è¾“å‡ºéœ€è¦è‡ªå·±ç¡®ä¿æ­£ç¡®
+//	Motor_Ctrl(-right_pwm, left_pwm); //Êä³öĞèÒª×Ô¼ºÈ·±£ÕıÈ·
 	//printf("%d,%d,%d,%d,%d\n", chassis.target_speed, _encoder_L,_encoder_R, left_pwm,-right_pwm);
 	
 //	vofa_target_speed = Left_Target_Speed;
@@ -154,37 +154,37 @@ void Motor_Control(int16 Left_Target_Speed, int16 Right_Target_Speed)
 
 
 /**
- * @brief è´Ÿå‹é£æ‰‡å¹³æ»‘æ§åˆ¶åå°ä»»åŠ¡ (è½¯ç€é™†)
- * æ”¾åœ¨ main çš„ while(1) ä¸­æ‰§è¡Œ
+ * @brief ¸ºÑ¹·çÉÈÆ½»¬¿ØÖÆºóÌ¨ÈÎÎñ (Èí×ÅÂ½)
+ * ·ÅÔÚ main µÄ while(1) ÖĞÖ´ĞĞ
  */
 void Fan_Smooth_Task(void)
 {
     static uint16 fan_tick = 0;
     
-    // 1. æ ¹æ®å½“å‰è½¦æ¨¡çŠ¶æ€ï¼Œä¸‹è¾¾ã€æœŸæœ›ç›®æ ‡ã€‘
+    // 1. ¸ù¾İµ±Ç°³µÄ£×´Ì¬£¬ÏÂ´ï¡¾ÆÚÍûÄ¿±ê¡¿
     if (stop_flag == 1) 
     {
-        target_fan_pwm = 1000; // æ­»æœº/å¾…æœºï¼šæœŸæœ› 900
+        target_fan_pwm = 1000; // ËÀ»ú/´ı»ú£ºÆÚÍû 1000
     }
     
-    // 2. åˆ©ç”¨ while(1) çš„å¾ªç¯å‘¨æœŸï¼Œè¿›è¡Œéé˜»å¡ã€ç°å€¼è¿½è¸ªã€‘
+    // 2. ÀûÓÃ while(1) µÄÑ­»·ÖÜÆÚ£¬½øĞĞ·Ç×èÈû¡¾ÏÖÖµ×·×Ù¡¿
     fan_tick++;
-    if (fan_tick >= 5) // å†³å®šå¹³æ»‘çš„é€Ÿåº¦ï¼Œæ•°å€¼è¶Šå¤§å˜åŒ–è¶Šæ…¢
+    if(fan_tick >= 2) // ¾ö¶¨Æ½»¬µÄËÙ¶È£¬ÊıÖµÔ½´ó±ä»¯Ô½Âı
     {
         fan_tick = 0;
         
-        // ç°å€¼ < æœŸæœ›å€¼ï¼šç¼“åŠ é€Ÿ
+        // ÏÖÖµ < ÆÚÍûÖµ£º»º¼ÓËÙ
         if (current_fan_pwm < target_fan_pwm) 
         {
             current_fan_pwm += 50; 
         }
-        // ç°å€¼ > æœŸæœ›å€¼ï¼šç¼“å‡é€Ÿ (é˜²æ’å¢™ç€é™†)
+        // ÏÖÖµ > ÆÚÍûÖµ£º»º¼õËÙ (·À×²Ç½×ÅÂ½)
         else if (current_fan_pwm > target_fan_pwm) 
         {
             current_fan_pwm -= 50; 
         }
         
-        // 3. æ°¸è¿œåªç”¨ç°å€¼æ¥é©±åŠ¨ç”µæœº
+        // 3. ÓÀÔ¶Ö»ÓÃÏÖÖµÀ´Çı¶¯µç»ú
         BLmotor_Ctrl_w1(current_fan_pwm);
     }
 }

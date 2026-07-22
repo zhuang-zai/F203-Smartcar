@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_Clock                                                      21/06/26  23:15:59  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      15/07/26  20:07:38  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Clock
@@ -66,7 +66,7 @@ stmt  level    source
    54   1      }
    55          
    56          //========================================================================
-C251 COMPILER V5.60.0,  AI8051U_Clock                                                      21/06/26  23:15:59  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      15/07/26  20:07:38  PAGE 2   
 
    57          // 函数: void HSPllClkConfig(u8 clksrc, u8 pcki, u8 pllsel, u8 div)
    58          // 描述: 高速IO时钟初始化程序.
@@ -135,7 +135,7 @@ Module Information          Static   Overlayable
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
-C251 COMPILER V5.60.0,  AI8051U_Clock                                                      21/06/26  23:15:59  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      15/07/26  20:07:38  PAGE 3   
 
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------

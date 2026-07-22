@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               22/06/26  17:03:45  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               15/07/26  20:14:31  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -66,7 +66,7 @@ stmt  level    source
    54   3                  // Í¨µÀË³Ðò: 
    55   3                  // CH1: »·µº×´Ì¬ (0:NORM, 1:APPR, 2:TURN, 3:IN, 4:EXIT)
    56   3                  // CH2: »·µºÀàÐÍ (0:NONE, 1:LEFT, 2:RIGHT)
-C251 COMPILER V5.60.0,  main                                                               22/06/26  17:03:45  PAGE 2   
+C251 COMPILER V5.60.0,  main                                                               15/07/26  20:14:31  PAGE 2   
 
    57   3                  // CH3: Ñ­¼£Îó²î (-100 ~ 100)
    58   3                  // CH4: ×óÂÖËÙ
@@ -86,24 +86,26 @@ stmt  level    source
    71   3                              //printf("%d,%d,%d,%d,%d,%d\n",0,chassis.current_deviation,target_yaw_rate,direction_output,
              -left_pwm,right_pwm);
    72   3                //printf("%d,%d\n", current_adc,stop_flag);
-   73   3                printf("%d,%d,%ld\n",loop_state,loop_type,(long)global_distance);
-   74   3      //          printf("%d,%d,%d,%d,%d,%d,%d,%d,%d\n", chassis.left_speed,chassis.right_speed ,direction_output,_e
+   73   3                printf("%d,%d,%ld,%d,%d,%d,%d,%d\n",loop_state,loop_type,(long)global_distance,chassis.current_devia
+             -tion,_encoder_L,_encoder_R,left_pwm,right_pwm);
+   74   3      //          printf("%d,%d,%ld\n",loop_state,loop_type,(long)global_distance);
+   75   3      //          printf("%d,%d,%d,%d,%d,%d,%d,%d,%d\n", chassis.left_speed,chassis.right_speed ,direction_output,_e
              -ncoder_L,_encoder_R,left_pwm,right_pwm,current_adc,stop_flag);
-   75   3      //          printf("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", target_yaw_rate,actual_yaw_rate ,direction_output,_encod
+   76   3      //          printf("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", target_yaw_rate,actual_yaw_rate ,direction_output,_encod
              -er_L,_encoder_R,left_pwm,right_pwm,current_adc,current_fan_pwm,stop_flag);
-   76   3      //            printf("%ld,%ld\n", (long)car_distance, (long)car_angle);//           printf("%d,%d,%d,%d,%d\n",chass
+   77   3      //            printf("%ld,%ld\n", (long)car_distance, (long)car_angle);//           printf("%d,%d,%d,%d,%d\n",chass
              -is.target_speed,_encoder_L,_encoder_R,left_pwm,right_pwm);
-   77   3              }
-   78   2      
-   79   2            LED_Ctrl(LED0, RVS);
-   80   2          }
-   81   1      }
-   82          
+   78   3              }
+   79   2      
+   80   2            LED_Ctrl(LED0, RVS);
+   81   2          }
+   82   1      }
+   83          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       126     ------
+  code size            =       166     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -118,7 +120,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        13     ------
+  hconst size          =        28     ------
 End of Module Information.
 
 

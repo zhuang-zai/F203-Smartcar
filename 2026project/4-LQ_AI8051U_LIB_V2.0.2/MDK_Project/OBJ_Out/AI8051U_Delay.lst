@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_Delay                                                      21/06/26  23:15:59  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_Delay                                                      15/07/26  20:07:38  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Delay
@@ -66,7 +66,7 @@ stmt  level    source
    54          //========================================================================
    55          void I2C_Delay_2us(void)
    56          {
-C251 COMPILER V5.60.0,  AI8051U_Delay                                                      21/06/26  23:15:59  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_Delay                                                      15/07/26  20:07:38  PAGE 2   
 
    57   1        u8 dly;
    58   1        dly = MAIN_Fosc / 2000000UL; // ∞¥2usº∆À„

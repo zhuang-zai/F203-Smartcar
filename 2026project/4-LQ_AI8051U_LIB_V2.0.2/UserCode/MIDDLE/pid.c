@@ -7,11 +7,11 @@ static PID_TypeDef pid_array[PID_GROUPS];
 static const float pid_param_table[PID_GROUPS][6] = 
 {
     //左轮速度环 增量式PI
-    {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},     // 1.2   0.2
+	{6.0f, 1.0f, 0.0f, 3000,-3000,PID_INCREMENT},     // 1.2   0.2    速度400/450限幅原来是+-2800   当速度为400/450时要求限幅达到3000
     //右轮速度环 增量式PI
-    {6.0f, 1.0f, 0.0f, 2400,-2400,PID_INCREMENT},
+    {6.0f, 1.0f, 0.0f,3000,-3000,PID_INCREMENT},
     //方向环 位置式PD
-    {400.0f, 0.0f, 120.0f, 8000,-8000, PID_POSITION},  // P = 74.0， D = 30.0f
+    {400.0f, 0.0f, 150.0f, 20000,-20000, PID_POSITION},  // speed = 300时， P = 400，D = 120   限幅正负 8000 10000    速度为450/400时，限幅正负15000  
 		{0.07f, 0.0f, 0.007f, 100, -100, PID_POSITION} // Kp先给个0.5试试    P0.75   D0.5
 };
 

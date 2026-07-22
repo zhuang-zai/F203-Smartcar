@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_RTC                                                        21/06/26  23:16:00  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_RTC                                                        15/07/26  20:07:39  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_RTC
@@ -66,7 +66,7 @@ stmt  level    source
    54   1      
    55   1        if(RTCx->RTC_Enable == ENABLE)
    56   1        {
-C251 COMPILER V5.60.0,  AI8051U_RTC                                                        21/06/26  23:16:00  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_RTC                                                        15/07/26  20:07:39  PAGE 2   
 
    57   2          RTCCR = 0x01;     //RTC使能
    58   2          while(RTCCFG & 0x01); //等待初始化完成,需要在 "RTC使能" 之后判断.

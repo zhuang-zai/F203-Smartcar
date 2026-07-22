@@ -4,83 +4,141 @@
 #include "LQ_Encoder.h"
 #include "LQ_LSM6DSR_Hard.h"
 
-// è®¾å®šå•èŠ‚ 3.3V (æ€»å‹ 9.9V) çš„æé™æ­»äº¡çº¿é˜ˆå€¼
+// Éè¶¨µ¥½Ú 3.3V (×ÜÑ¹ 9.9V) µÄ¼«ÏŞËÀÍöÏßãĞÖµ
 #define BAT_SAFE_ADC_THRESHOLD  2240
 // ==========================================
-// ğŸŒŸ ç‰©ç†æ ‡å®šå¸¸æ•° (æ ¹æ®å®é™…æµ‹è¯•ç»“æœè®¾å®š)
+// ?? ÎïÀí±ê¶¨³£Êı (¸ù¾İÊµ¼Ê²âÊÔ½á¹ûÉè¶¨)
 // ==========================================
-#define ROUNDABOUT_ZONE_MIN  600000  // ½øÈë±½»·Ô¤¾¯Çø (ÌáÇ°Ò»µãÕöÑÛ)
-#define ROUNDABOUT_ZONE_MAX  900000 // Àë¿ª±½»·Ô¤¾¯Çø (¹ıÍê»·µººó³¹µ×±ÕÑÛ)
+#define STOP_EXTRA_DIST  32000  // ?? ÅÜÍêÁ½È¦³åÏßºó£¬¶àÅÜÔ¼ 0.5Ã× (1m ¡Ö 64000) È»ºóÍ£³µ
+
+// ¼ÙÉèÄãÍÆ³µ²âµÃÁ¬ĞøÖ±½ÇÍäÈë¿ÚÔÚ 1500000£¬³ö¿ÚÔÚ 1600000 (ÇëÓÃ VOFA Êµ¼Ê²â¶¨)
+#define RIGHT_ANGLE_ZONE_MIN  1630000   //ËÙ¶ÈÎª250Ê±    1450000   Îª300Ê±    1600000
+#define RIGHT_ANGLE_ZONE_MAX  1750000   //ËÙ¶ÈÎª250Ê±    1700000		Îª300Ê±    1750000
+
+// ËÙ¶ÈµµÎ»¶¨Òå
+#define SPEED_BASE  400  // Ö±µÀºÍÆÕÍ¨´óÍäµÄ»ù´¡ËÙ¶È
+#define SPEED_SLOW  400  // Á¬ĞøÖ±½ÇÍäµÄ°²È«¹ıÍäËÙ¶È
+#define ROUNDABOUT_ZONE_MIN  350000  // ½øÈë±½»·Ô¤¾¯Çø (ÌáÇ°Ò»µãÕöÑÛ)
+#define ROUNDABOUT_ZONE_MAX  850000 // Àë¿ª±½»·Ô¤¾¯Çø (¹ıÍê»·µººó³¹µ×±ÕÑÛ)
 #define PITCH_THRESHOLD  1500
-// è·ç¦»æ ‡å®šï¼š1m â‰ˆ 64000 
-#define LOOP_ENTRY_DIST  15000  // å…¥ç¯å‰ç›²å¼€è·ç¦» (çº¦ 0.5m)ï¼Œå¦‚æœè¿›ç¯å¤ªæ—©ï¼Œå¯å¢å¤§æ­¤å€¼
+// ¾àÀë±ê¶¨£º1m ¡Ö 64000 
+#define LOOP_ENTRY_DIST  15000  // Èë»·Ç°Ã¤¿ª¾àÀë (Ô¼ 0.5m)£¬Èç¹û½ø»·Ì«Ôç£¬¿ÉÔö´ó´ËÖµ
 #define LOOP_IN_DIST 13000
-#define LOOP_COOLDOWN_DIST  12000 // å‡ºç¯åçš„å†·å´è·ç¦» (çº¦ 30cm, 64000*0.3)
-// è§’åº¦æ ‡å®šï¼š1Â° â‰ˆ 14.21
-#define LOOP_EXIT_ANGLE  5300   // ç¯å²›å‡ºå£è§¦å‘è§’åº¦g (çº¦ 310Â°)
-#define LOOP_IN_ANGLE  600   // ç¯å²›å…¥å£è§¦å‘è§’åº¦ (çº¦ 30Â°)
-#define LOOP_EXIT_EXTRA_ANGLE  420   // å‡ºç¯é¢å¤–è¦æ±‚çš„ 30Â° æ—‹è½¬
+#define LOOP_COOLDOWN_DIST  12000 // ³ö»·ºóµÄÀäÈ´¾àÀë (Ô¼ 30cm, 64000*0.3)
+// ½Ç¶È±ê¶¨£º1¡ã ¡Ö 14.21
+#define LOOP_EXIT_ANGLE  5300   // »·µº³ö¿Ú´¥·¢½Ç¶È (Ô¼ 310¡ã)
+#define LOOP_IN_ANGLE  600   // »·µºÈë¿Ú´¥·¢½Ç¶È (Ô¼ 30¡ã)
+#define LOOP_EXIT_EXTRA_ANGLE  420   // ³ö»·¶îÍâÒªÇóµÄ 30¡ã Ğı×ª
 Chassis_TypeDef chassis;
-IMU_Data_t imu_data; // å®ä¾‹åŒ–å…¨å±€ç¼“å­˜å˜é‡
-int16 direction_output;          // å†…ç¯è¾“å‡ºï¼šæœ€ç»ˆç»™è½¦è½®çš„å·®é€Ÿä¿®æ­£é‡
-int16 actual_yaw_rate;            // å†…ç¯è¾“å…¥ï¼šçœŸå®çš„åèˆªè§’é€Ÿåº¦
+IMU_Data_t imu_data; // ÊµÀı»¯È«¾Ö»º´æ±äÁ¿
+int16 direction_output;          // ÄÚ»·Êä³ö£º×îÖÕ¸ø³µÂÖµÄ²îËÙĞŞÕıÁ¿
+int16 actual_yaw_rate;           // ÄÚ»·ÊäÈë£ºÕæÊµµÄÆ«º½½ÇËÙ¶È
 int16 current_adc;
 int16 target_yaw_rate = 0;
 int set_angle_calculation = 0;
 RoundaboutState_e loop_state = LOOP_NORMAL;
 LoopType_e loop_type = LOOP_NONE;
 
-double car_angle = 0.0f;       // è½¦è¾†ç»å¯¹è§’åº¦
+double car_angle = 0.0f;       // ³µÁ¾¾ø¶Ô½Ç¶È
+
+uint8 current_lap = 1;         // ?? ¼ÇÂ¼µ±Ç°ËùÔÚµÄÈ¦Êı
+
+
 /**
- * @brief åº•ç›˜åˆå§‹åŒ–
- * åˆå§‹åŒ–åº•ç›˜ç»“æ„ä½“ä¸­çš„é€Ÿåº¦å’Œç›®æ ‡åå·®å˜é‡
+ * @brief È¦ÊıÍ³¼ÆÓë³åÏßÍ£³µÈÎÎñ
+ * ¼à¿Ø global_distance µÄÌø±äÀ´¼ÆËãÈ¦Êı£¬²¢ÔÚÅÜÂúÁ½È¦ºóÑÓºóÒ»¶Î¾àÀë×Ô¶¯Í£³µ
+ */
+void Lap_Control_Task(void)
+{
+    static double last_global_distance = 0.0f;
+    
+    // Èç¹ûÏµÍ³´¦ÓÚ¼±Í£»òÎ´·¢³µ×´Ì¬£¬ÖØÖÃÈ¦ÊıºÍÀúÊ·Àï³Ì£¬µÈ´ıÏÂ´Î·¢³µ
+    if (stop_flag == 1)
+    {
+        current_lap = 1;
+        last_global_distance = 0.0f;
+        return;
+    }
+
+    // ?? È¦ÊıÍ³¼Æ£º¼ì²âÀï³Ì¡°ÇåÁãÌø±ä¡± (±ÈÈç³µ×Ó¿ç¹ıÆğÅÜÏßÊ±£¬Àï³Ì´Ó 1700000 Í»½µµ½ 0)
+    // Éè¶¨ 500000 ÎªãĞÖµ£¬·ÀÖ¹ÓÉÓÚ³µ×ÓÇáÎ¢µ¹³µ»òÊı¾İ²¨¶¯µ¼ÖÂµÄÎóÅĞ
+    if (last_global_distance - global_distance > 500000.0f)
+    {
+        current_lap++; // Íê³ÉÒ»È¦£¬È¦Êı¼Ó 1
+    }
+    last_global_distance = global_distance;
+
+    // ?? ³åÏßÍ£³µÂß¼­£ºÒÑ¾­ÅÜÍêÁË 2 È¦ (ÒâÎ¶×Å½øÈëÁËµÚ 3 È¦)£¬ÇÒ¶àÅÜÁËÖ¸¶¨µÄ³åÏß¾àÀë
+    if (current_lap > 2 && loop_state == LOOP_IN_LOOP)
+    {
+        stop_flag = 1; // ´¥·¢È«¾Ö¼±Í££¬ÇĞ¶Ï¶¯Á¦£¡
+    }
+}
+void Speed_Plan_Task(void)
+{
+	if(!stop_flag)
+	{
+		// Èç¹ûÔÚÁ¬ĞøÖ±½ÇÍäÇø¼äÄÚ
+    if (global_distance >= RIGHT_ANGLE_ZONE_MIN && global_distance <= RIGHT_ANGLE_ZONE_MAX)
+    {
+        chassis.target_speed = SPEED_SLOW; // Ö±½ÓÍ»±ä½µËÙµ½ 150
+    }
+    else
+    {
+        chassis.target_speed = SPEED_BASE; // ³öÍäºóÖ±½ÓÍ»±ä»Ö¸´µ½ 300
+    }
+	}
+}
+/**
+ * @brief µ×ÅÌ³õÊ¼»¯
+ * ³õÊ¼»¯µ×ÅÌ½á¹¹ÌåÖĞµÄËÙ¶ÈºÍÄ¿±êÆ«²î±äÁ¿
  */
 void Chassis_Init(void)
 {
-		chassis.target_speed = 300;       // åˆå§‹åŒ–ç›®æ ‡é€Ÿåº¦ä¸º100   max : 1100
-    chassis.current_deviation = 0;  // åˆå§‹åŒ–å½“å‰åå·®ä¸º0
-    chassis.left_speed = 0;         // åˆå§‹åŒ–å·¦è½®é€Ÿåº¦ä¸º0
-    chassis.right_speed = 0;        // åˆå§‹åŒ–å³è½®é€Ÿåº¦ä¸º0
+    chassis.target_speed = 450;       // ³õÊ¼»¯Ä¿±êËÙ¶ÈÎª 300   max : 1100  ×î¼Ñ  400
+    chassis.current_deviation = 0;  // ³õÊ¼»¯µ±Ç°Æ«²îÎª 0
+    chassis.left_speed = 0;         // ³õÊ¼»¯×óÂÖËÙ¶ÈÎª 0
+    chassis.right_speed = 0;        // ³õÊ¼»¯ÓÒÂÖËÙ¶ÈÎª 0
 }
 
 void Clear_Car_Angle(void)
 {
-	car_angle = 0.0f;
+    car_angle = 0.0f;
 }
 
 /**
- * @brief ç”µæ± ä½å‹ä¿æŠ¤ç›‘æ§ä»»åŠ¡
- * å»ºè®®æ”¾åœ¨ 2ms çš„ Timer1 ä¸­æ–­ä¸­æ‰§è¡Œ
+ * @brief µç³ØµÍÑ¹±£»¤¼à¿ØÈÎÎñ
+ * ½¨Òé·ÅÔÚ 2ms µÄ Timer1 ÖĞ¶ÏÖĞÖ´ĞĞ
  */
 void Battery_Protection_Task(void)
 {
     static uint16 low_vol_timer = 0;
     
-    // 1. ç›´æ¥è¯»å–åŸå§‹ ADC å€¼ (æ— éœ€æ¶ˆè€—ç®—åŠ›è½¬æ¢æˆæµ®ç‚¹ç”µå‹)
+    // 1. Ö±½Ó¶ÁÈ¡Ô­Ê¼ ADC Öµ (ÎŞĞèÏûºÄËãÁ¦×ª»»³É¸¡µãµçÑ¹)
     current_adc = Get_ADCResult(ADC_CH9_P01);
     
-		if(stop_flag == 1) return;
-    // 2. æ£€æµ‹æ˜¯å¦ä½äºè­¦æˆ’çº¿
+    if(stop_flag == 1) return;
+    // 2. ¼ì²âÊÇ·ñµÍÓÚ¾¯½äÏß
     if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
     {
         low_vol_timer++;
         
-        // 3. æ—¶é—´æ»¤æ³¢ï¼ˆé˜²æŠ–ï¼‰ï¼š2ms * 500 = 1ç§’
-        // é˜²æ­¢ç”µæœºç¬é—´åŠ é€ŸæŠ½è¡€å¯¼è‡´çš„è¯¯åˆ¤
+        // 3. Ê±¼äÂË²¨£¨·À¶¶£©£º2ms * 500 = 1Ãë
+        // ·ÀÖ¹µç»úË²¼ä¼ÓËÙ³éÑªµ¼ÖÂµÄÎóÅĞ
         if (low_vol_timer >= 500) 
         {
-            stop_flag = 1;  // è§¦å‘å…¨å±€æ€¥åœ
+            stop_flag = 1;  // ´¥·¢È«¾Ö¼±Í£
         }
     }
     else 
     {
-        // ç”µå‹å¼¹å›å®‰å…¨çº¿ä»¥ä¸Šï¼Œæ¸…é›¶è®¡æ—¶å™¨
+        // µçÑ¹µ¯»Ø°²È«ÏßÒÔÉÏ£¬ÇåÁã¼ÆÊ±Æ÷
         low_vol_timer = 0;
     }
 }
 /**
- * @brief ç»Ÿä¸€æ›´æ–° IMU å…¨éƒ¨ 6 è½´æ•°æ®
- * å»ºè®®åœ¨æ§åˆ¶ä¸»å¾ªç¯ (2ms) çš„æœ€å¼€å¤´è°ƒç”¨ä¸€æ¬¡å³å¯
+ * @brief Í³Ò»¸üĞÂ IMU È«²¿ 6 ÖáÊı¾İ
+ * ½¨ÒéÔÚ¿ØÖÆÖ÷Ñ­»· (2ms) µÄ×î¿ªÍ·µ÷ÓÃÒ»´Î¼´¿É
  */
 void IMU_Update(void)
 {
@@ -95,100 +153,100 @@ void IMU_Update(void)
 }
 
 /**
- * @brief è·å–é™€èºä»ªZè½´è§’é€Ÿåº¦ (åèˆªè§’é€Ÿåº¦)
- * @return int16 Zè½´åŸå§‹è§’é€Ÿåº¦æ•°æ®
+ * @brief »ñÈ¡ÍÓÂİÒÇZÖá½ÇËÙ¶È (Æ«º½½ÇËÙ¶È)
+ * @return int16 ZÖáÔ­Ê¼½ÇËÙ¶ÈÊı¾İ
  */
 int16 Get_Yaw_Rate(void)
 {
     int16 ax, ay, az, gx, gy, gz;
     
-    // è°ƒç”¨åº•å±‚å‡½æ•°è¯»å–6è½´æ•°æ®
-    // æ³¨æ„ï¼šä¼ å…¥çš„æ˜¯å˜é‡çš„åœ°å€(&)ï¼Œåº•å±‚å‡½æ•°ä¼šæŠŠè¯»åˆ°çš„å€¼æ”¾è¿›è¿™äº›å˜é‡é‡Œ
+    // µ÷ÓÃµ×²ãº¯Êı¶ÁÈ¡6ÖáÊı¾İ
+    // ×¢Òâ£º´«ÈëµÄÊÇ±äÁ¿µÄµØÖ·(&)£¬µ×²ãº¯Êı»á°Ñ¶Áµ½µÄÖµ·Å½øÕâĞ©±äÁ¿Àï
 #ifdef HARDWARE_SPI
     LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
 #elif defined HARDWARE_IIC
     LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
 #else
-    // å¦‚æœéƒ½æ²¡æœ‰å®šä¹‰ï¼Œé»˜è®¤ç»™0é˜²æ­¢æŠ¥é”™ï¼Œè¯·æ£€æŸ¥ä½ çš„å·¥ç¨‹å®å®šä¹‰
+    // Èç¹û¶¼Ã»ÓĞ¶¨Òå£¬Ä¬ÈÏ¸ø 0 ·ÀÖ¹±¨´í£¬Çë¼ì²éÄãµÄ¹¤³Ìºê¶¨Òå
     gz = 0; 
 #endif
 
-    // æˆ‘ä»¬åªéœ€è¦ Zè½´çš„è§’é€Ÿåº¦ (Gyro Z)
+    // ÎÒÃÇÖ»ĞèÒª ZÖáµÄ½ÇËÙ¶È (Gyro Z)
     return gz; 
 }
 
 /**
- * @brief è·å–é™€èºä»ªYè½´è§’é€Ÿåº¦ (é€šå¸¸ä¸ºä¿¯ä»°æˆ–æ¨ªæ»šè§’é€Ÿåº¦ï¼Œå–å†³äºå®‰è£…æ–¹å‘)
- * @return int16 Yè½´åŸå§‹è§’é€Ÿåº¦æ•°æ®
+ * @brief »ñÈ¡ÍÓÂİÒÇYÖá½ÇËÙ¶È (Í¨³£Îª¸©Ñö»òºá¹ö½ÇËÙ¶È£¬È¡¾öÓÚ°²×°·½Ïò)
+ * @return int16 YÖáÔ­Ê¼½ÇËÙ¶ÈÊı¾İ
  */
 int16 Get_Pitch_Rate(void)
 {
     int16 ax, ay, az, gx, gy, gz;
     
-    // è°ƒç”¨åº•å±‚å‡½æ•°è¯»å–6è½´æ•°æ®
-    // æ³¨æ„ï¼šä¼ å…¥çš„æ˜¯å˜é‡çš„åœ°å€(&)ï¼Œåº•å±‚å‡½æ•°ä¼šæŠŠè¯»åˆ°çš„å€¼æ”¾è¿›è¿™äº›å˜é‡é‡Œ
+    // µ÷ÓÃµ×²ãº¯Êı¶ÁÈ¡6ÖáÊı¾İ
+    // ×¢Òâ£º´«ÈëµÄÊÇ±äÁ¿µÄµØÖ·(&)£¬µ×²ãº¯Êı»á°Ñ¶Áµ½µÄÖµ·Å½øÕâĞ©±äÁ¿Àï
 #ifdef HARDWARE_SPI
     LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
 #elif defined HARDWARE_IIC
     LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
 #else
-    // å¦‚æœéƒ½æ²¡æœ‰å®šä¹‰ï¼Œé»˜è®¤ç»™0é˜²æ­¢æŠ¥é”™ï¼Œè¯·æ£€æŸ¥ä½ çš„å·¥ç¨‹å®å®šä¹‰
-    gy = 0;  // ğŸŒŸ æ³¨æ„è¿™é‡Œæ”¹æˆäº†ç»™ gy èµ‹é»˜è®¤å€¼
+    // Èç¹û¶¼Ã»ÓĞ¶¨Òå£¬Ä¬ÈÏ¸ø 0 ·ÀÖ¹±¨´í£¬Çë¼ì²éÄãµÄ¹¤³Ìºê¶¨Òå
+    gy = 0;  // ?? ×¢ÒâÕâÀï¸Ä³ÉÁË¸ø gy ¸³Ä¬ÈÏÖµ
 #endif
 
-    // æˆ‘ä»¬åªéœ€è¦ Yè½´çš„è§’é€Ÿåº¦ (Gyro Y)
+    // ÎÒÃÇÖ»ĞèÒª YÖáµÄ½ÇËÙ¶È (Gyro Y)
     return gy; 
 }
 
 ///**
-// * @brief è®¡ç®—å¾ªè¿¹åå·®
-// * ä½¿ç”¨å·®æ¯”å’Œç®—æ³•è®¡ç®—è½¦è¾†åç¦»ä¸­å¿ƒçº¿çš„ç¨‹åº¦
-// * å…¬å¼ï¼š( (å·¦æ„Ÿ+å·¦æ„Ÿ) - (å³æ„Ÿ+å³æ„Ÿ) ) / (æ€»ç”µæ„Ÿ + è¡¥å¿å€¼) * 100
-// * @return int å½’ä¸€åŒ–åçš„åå·®å€¼ï¼ŒèŒƒå›´ -100 åˆ° 100
+// * @brief ¼ÆËãÑ­¼£Æ«²î
+// * Ê¹ÓÃ²î±ÈºÍËã·¨¼ÆËã³µÁ¾Æ«ÀëÖĞĞÄÏßµÄ³Ì¶È
+// * ¹«Ê½£º( (×ó¸Ğ+×ó¸Ğ) - (ÓÒ¸Ğ+ÓÒ¸Ğ) ) / (×Üµç¸Ğ + ²¹³¥Öµ) * 100
+// * @return int ¹éÒ»»¯ºóµÄÆ«²îÖµ£¬·¶Î§ -100 µ½ 100
 // */
 //int Calculate_Deviation(void) 
 //{
-//    // è·å–ç”µæ„ŸADCæ•°ç»„æŒ‡é’ˆ (å‡è®¾é¡ºåºä¸º: å·¦å¤–, å·¦å†…, ä¸­, å³å†…, å³å¤–)
+//    // »ñÈ¡µç¸ĞADCÊı×éÖ¸Õë (¼ÙÉèË³ĞòÎª: ×óÍâ, ×óÄÚ, ÖĞ, ÓÒÄÚ, ÓÒÍâ)
 //    int* adc_values = GetInductance();
 //    
-//    // è®¡ç®—å·¦å³ä¸¤ä¾§ç”µæ„Ÿå€¼çš„å·®å€¼ (åˆ†å­)ï¼Œåæ˜ åå‘å“ªä¸€ä¾§
+//    // ¼ÆËã×óÓÒÁ½²àµç¸ĞÖµµÄ²îÖµ (·Ö×Ó)£¬·´Ó³Æ«ÏòÄÄÒ»²à
 //    int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
 //    
-//    // è®¡ç®—æ‰€æœ‰ç”µæ„Ÿå€¼çš„æ€»å’Œ (åˆ†æ¯)ï¼Œ+10æ˜¯ä¸ºäº†é˜²æ­¢åˆ†æ¯ä¸º0å¯¼è‡´é™¤é›¶é”™è¯¯
-//    // ä½¿ç”¨â€œå·®æ¯”å’Œâ€å¯ä»¥æ¶ˆé™¤ç”±äºé€Ÿåº¦å˜åŒ–å¯¼è‡´çš„ç£åœºå¼ºåº¦æ•´ä½“å˜åŒ–å½±å“
+//    // ¼ÆËãËùÓĞµç¸ĞÖµµÄ×ÜºÍ (·ÖÄ¸)£¬+10ÊÇÎªÁË·ÀÖ¹·ÖÄ¸Îª0µ¼ÖÂ³ıÁã´íÎó
+//    // Ê¹ÓÃ¡°²î±ÈºÍ¡±¿ÉÒÔÏû³ıÓÉÓÚËÙ¶È±ä»¯µ¼ÖÂµÄ´Å³¡Ç¿¶ÈÕûÌå±ä»¯Ó°Ïì
 //    int eleAdd = adc_values[0] + adc_values[1] + adc_values[2] + adc_values[3] + adc_values[4] + 10;
-//	
-//    // è®¡ç®—å½’ä¸€åŒ–åå·®å€¼
+//  
+//    // ¼ÆËã¹éÒ»»¯Æ«²îÖµ
 //    float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
-//	
-//		static uint16 off_track_timer = 0;   // ä¸¢çº¿æŒç»­æ—¶é—´è®¡æ•°å™¨
-//		if(stop_flag == 1) return 0;
-//	
-//		if(eleAdd < 20.0)
-//		{
-//			off_track_timer++;
-//			if(off_track_timer >= 250) stop_flag = 1;
-//		}
-//		else
-//		{
-//			off_track_timer = 0;
-//		}
+//  
+//      static uint16 off_track_timer = 0;   // ¶ªÏß³ÖĞøÊ±¼ä¼ÆÊıÆ÷
+//      if(stop_flag == 1) return 0;
+//  
+//      if(eleAdd < 20.0)
+//      {
+//          off_track_timer++;
+//          if(off_track_timer >= 250) stop_flag = 1;
+//      }
+//      else
+//      {
+//          off_track_timer = 0;
+//      }
 //    
-//    // é™å¹…å¤„ç†ï¼šå°†åå·®å€¼é™åˆ¶åœ¨ -100 åˆ° 100 ä¹‹é—´
+//    // ÏŞ·ù´¦Àí£º½«Æ«²îÖµÏŞÖÆÔÚ -100 µ½ 100 Ö®¼ä
 //    if(eleValue > 100.0f) eleValue = 100.0f;
 //    else if(eleValue < -100.0f) eleValue = -100.0f;
 
-//    // è½¬æ¢ä¸ºæ•´å‹è¿”å›ç»™æ§åˆ¶å±‚
+//    // ×ª»»ÎªÕûĞÍ·µ»Ø¸ø¿ØÖÆ²ã
 //    return (int)(eleValue);
 //}
 
 /**
- * @brief è®¡ç®—å¾ªè¿¹åå·®
- * æ ¹æ®è‹¯ç¯çŠ¶æ€æœºï¼ŒåŠ¨æ€åˆ‡æ¢å·®æ¯”å’Œæƒé‡ï¼Œæ¬ºéª— PID åšå‡ºç‰¹å®šè½¬å‘åŠ¨ä½œ
+ * @brief ¼ÆËãÑ­¼£Æ«²î
+ * ¸ù¾İ±½»·×´Ì¬»ú£¬¶¯Ì¬ÇĞ»»²î±ÈºÍÈ¨ÖØ£¬ÆÛÆ­ PID ×ö³öÌØ¶¨×ªÏò¶¯×÷
  */
 int Calculate_Deviation(void) 
 {
-    int* adc = GetInductance(); // ç®€åŒ–æŒ‡é’ˆåç§°ï¼Œæ–¹ä¾¿ä¹¦å†™
+    int* adc = GetInductance(); // ¼ò»¯Ö¸ÕëÃû³Æ£¬·½±ãÊéĞ´
     float eleSub = 0;
     float eleAdd = 0;
     float eleValue = 0;
@@ -197,71 +255,71 @@ int Calculate_Deviation(void)
     if(stop_flag == 1) return 0;
 
     // =========================================================================
-    // ğŸŒŸ æ ¸å¿ƒæ§åˆ¶å±‚ï¼šçŠ¶æ€æœºå¤šè·¯å¤ç”¨æƒé‡åˆ†é…
+    // ?? ºËĞÄ¿ØÖÆ²ã£º×´Ì¬»ú¶àÂ·¸´ÓÃÈ¨ÖØ·ÖÅä
     // =========================================================================
     if (loop_state == LOOP_NORMAL)
     {
-        // ã€æ­£å¸¸å·¡çº¿ã€‘åŸæ±åŸå‘³çš„å·®æ¯”å’Œ
+        // ¡¾Õı³£Ñ­Ïß¡¿Ô­Ö­Ô­Î¶µÄ²î±ÈºÍ
         eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
         eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
     }
     else if (loop_state == LOOP_APPROACH)
     {
-        // ã€é€¼è¿‘é˜¶æ®µã€‘å±è”½æœ€å¤–ä¾§ç”µæ„Ÿ (adc[0]å’Œadc[3])ï¼Œé˜²æ­¢è¢«ä¾§è¾¹åœ†ç¯çš„ç£åœºææ—©â€œå¸â€å
+        // ¡¾±Æ½ü½×¶Î¡¿ÆÁ±Î×îÍâ²àµç¸Ğ (adc[0]ºÍadc[3])£¬·ÀÖ¹±»²à±ßÔ²»·µÄ´Å³¡ÌáÔç¡°Îü¡±Æ«
         eleSub = adc[1] - adc[4];
 //        eleAdd = adc[1] + adc[2] + adc[4] + 10;
-//					eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
-					eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+//                  eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
+                    eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
     }
     else if (loop_state == LOOP_TURN_IN)
     {
-        // ã€å¼ºåˆ¶å…¥ç¯ã€‘åˆ¶é€ å·¨å¤§å‡åå·®ï¼Œç¬é—´æ‹‰æ»¡ PIDï¼
+        // ¡¾Ç¿ÖÆÈë»·¡¿ÖÆÔì¾Ş´ó¼ÙÆ«²î£¬Ë²¼äÀ­Âú PID£¡
         if (loop_type == LOOP_RIGHT)
         {
-            // è¿›å·¦ç¯ï¼šæåº¦å‰Šå¼±å·¦ä¾§ï¼Œæ”¾å¤§å³ä¾§ã€‚åˆ¶é€ â€œä¸¥é‡åå³â€çš„å‡è±¡ï¼Œå¼ºè¿«è½¦çŒ›å‘å·¦æ‰“æ­»ï¼
+            // ½ø×ó»·£º¼«¶ÈÏ÷Èõ×ó²à£¬·Å´óÓÒ²à¡£ÖÆÔì¡°ÑÏÖØÆ«ÓÒ¡±µÄ¼ÙÏó£¬Ç¿ÆÈ³µÃÍÏò×ó´òËÀ£¡
             eleSub = (0.2f * adc[0] + 0.5f * adc[1]) - (1.8f * adc[3] + 1.5f * adc[4]);
         }
         else if (loop_type == LOOP_LEFT)
         {
-            // è¿›å³ç¯ï¼šæåº¦æ”¾å¤§å·¦ä¾§ï¼Œå‰Šå¼±å³ä¾§ã€‚åˆ¶é€ â€œä¸¥é‡åå·¦â€çš„å‡è±¡ï¼Œå¼ºè¿«è½¦çŒ›å‘å³æ‰“æ­»ï¼
+            // ½øÓÒ»·£º¼«¶È·Å´ó×ó²à£¬Ï÷ÈõÓÒ²à¡£ÖÆÔì¡°ÑÏÖØÆ«×ó¡±µÄ¼ÙÏó£¬Ç¿ÆÈ³µÃÍÏòÓÒ´òËÀ£¡
             eleSub = (1.8f * adc[0] + 1.5f * adc[1]) - (0.2f * adc[3] + 0.5f * adc[4]);
         }
         eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
     }
     else if (loop_state == LOOP_IN_LOOP)
     {
-        // ã€ç¯å†…å·¡çº¿ã€‘å¾®è°ƒæƒé‡ï¼Œé˜²æ­¢è¢«ç¦»å¿ƒåŠ›ç”©å‡º
+        // ¡¾»·ÄÚÑ­Ïß¡¿Î¢µ÷È¨ÖØ£¬·ÀÖ¹±»ÀëĞÄÁ¦Ë¦³ö
 //        if (loop_type == LOOP_RIGHT)
 //        {
-//            // å·¦ç¯å†…ï¼Œé€‚åº¦æ”¾å¤§å³ä¾§ï¼Œè®©è½¦æœ‰æŒç»­å‘å·¦é æ‹¢ï¼ˆè´´å†…ä¾§ï¼‰çš„è¶‹åŠ¿
+//            // ×ó»·ÄÚ£¬ÊÊ¶È·Å´óÓÒ²à£¬ÈÃ³µÓĞ³ÖĞøÏò×ó¿¿Â££¨ÌùÄÚ²à£©µÄÇ÷ÊÆ
 //            eleSub = (0.8f * adc[0] + 0.8f * adc[1]) - (1.2f * adc[3] + 1.2f * adc[4]);
 //        }
 //        else 
 //        {
-//            // å³ç¯å†…ï¼Œé€‚åº¦æ”¾å¤§å·¦ä¾§ï¼Œè®©è½¦æœ‰æŒç»­å‘å³é æ‹¢çš„è¶‹åŠ¿
+//            // ÓÒ»·ÄÚ£¬ÊÊ¶È·Å´ó×ó²à£¬ÈÃ³µÓĞ³ÖĞøÏòÓÒ¿¿Â£µÄÇ÷ÊÆ
 //            eleSub = (1.2f * adc[0] + 1.2f * adc[1]) - (0.8f * adc[3] + 0.8f * adc[4]);
 //        }
-				eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
+                eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
         eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
     }
     else if (loop_state == LOOP_EXITING)
     {
-        // ã€å¼ºåˆ¶å‡ºç¯ã€‘åå‘æ‹‰æ‰¯ï¼ŒæŠŠè½¦å¤´å¼ºåˆ¶æ‹½å‡ºåœ†ç¯
+        // ¡¾Ç¿ÖÆ³ö»·¡¿·´ÏòÀ­³¶£¬°Ñ³µÍ·Ç¿ÖÆ×§³öÔ²»·
         if (loop_type == LOOP_RIGHT)
         {
-            // å·¦ç¯å‡ºç¯ï¼šæ”¾å¤§å·¦ä¾§æƒé‡ï¼Œé€ç»™ PID æ­£åå·®ï¼Œå¼ºè¿«è½¦å¤´å‘å³è½¬ï¼ˆæ‹‰ç›´å‡ºç¯ï¼‰
+            // ×ó»·³ö»·£º·Å´ó×ó²àÈ¨ÖØ£¬ËÍ¸ø PID ÕıÆ«²î£¬Ç¿ÆÈ³µÍ·ÏòÓÒ×ª£¨À­Ö±³ö»·£©
             eleSub = (1.5f * adc[0] + 1.5f * adc[1]) - (0.5f * adc[3] + 0.5f * adc[4]);
         }
         else 
         {
-            // å³ç¯å‡ºç¯ï¼šæ”¾å¤§å³ä¾§æƒé‡ï¼Œå¼ºè¿«è½¦å¤´å‘å·¦è½¬
+            // ÓÒ»·³ö»·£º·Å´óÓÒ²àÈ¨ÖØ£¬Ç¿ÆÈ³µÍ·Ïò×ó×ª
             eleSub = (0.5f * adc[0] + 0.5f * adc[1]) - (1.5f * adc[3] + 1.5f * adc[4]);
         }
         eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
     }
     // =========================================================================
 
-    // ä¸¢çº¿ä¿æŠ¤é€»è¾‘ (ä¿æŒåŸæ ·ä¸åŠ¨)
+    // ¶ªÏß±£»¤Âß¼­ (±£³ÖÔ­Ñù²»¶¯)
     if(eleAdd < 20.0)
     {
         off_track_timer++;
@@ -272,28 +330,28 @@ int Calculate_Deviation(void)
         off_track_timer = 0;
     }
 
-    // å½’ä¸€åŒ–åå·®å€¼è®¡ç®—
+    // ¹éÒ»»¯Æ«²îÖµ¼ÆËã
     eleValue = (float)eleSub / (float)eleAdd * 100.0f;
 
-    // é™å¹…å¤„ç†ï¼šå°†åå·®å€¼é™åˆ¶åœ¨ -100 åˆ° 100 ä¹‹é—´
+    // ÏŞ·ù´¦Àí£º½«Æ«²îÖµÏŞÖÆÔÚ -100 µ½ 100 Ö®¼ä
     if(eleValue > 100.0f) eleValue = 100.0f;
     else if(eleValue < -100.0f) eleValue = -100.0f;
 
-    // è½¬æ¢ä¸ºæ•´å‹è¿”å›ç»™æ§åˆ¶å±‚
+    // ×ª»»ÎªÕûĞÍ·µ»Ø¸ø¿ØÖÆ²ã
     return (int)(eleValue);
 }
 
 
 /**
- * @brief åŠ¨æ€è§’é€Ÿåº¦é˜¶è·ƒæµ‹è¯•åºåˆ— (çŠ¶æ€æœº)
- * @note ä¾èµ– Timer1 çš„ 2ms å‘¨æœŸã€‚500æ¬¡ tick = 1ç§’ã€‚
+ * @brief ¶¯Ì¬½ÇËÙ¶È½×Ô¾²âÊÔĞòÁĞ (×´Ì¬»ú)
+ * @note ÒÀÀµ Timer1 µÄ 2ms ÖÜÆÚ¡£500´Î tick = 1Ãë¡£
  */
 void Dynamic_Yaw_Test_Task(void)
 {
-    static uint16 time_tick = 0;   // æ—¶é—´è®¡æ•°å™¨
-    static uint8 current_stage = 0; // å½“å‰æ‰€å¤„çš„æµ‹è¯•é˜¶æ®µ
+    static uint16 time_tick = 0;   // Ê±¼ä¼ÆÊıÆ÷
+    static uint8 current_stage = 0; // µ±Ç°Ëù´¦µÄ²âÊÔ½×¶Î
 
-    // 1. å¦‚æœè½¦å­å¤„äºæ€¥åœ/æœªå‘è½¦çŠ¶æ€ï¼Œé‡ç½®æµ‹è¯•è¿›åº¦
+    // 1. Èç¹û³µ×Ó´¦ÓÚ¼±Í£/Î´·¢³µ×´Ì¬£¬ÖØÖÃ²âÊÔ½ø¶È
     if (stop_flag == 1) 
     {
         time_tick = 0;
@@ -302,33 +360,33 @@ void Dynamic_Yaw_Test_Task(void)
         return;
     }
 
-    // 2. è½¦å­å¯åŠ¨åï¼Œå¼€å§‹è®¡æ—¶ (2ms è¿›ä¸€æ¬¡)
+    // 2. ³µ×ÓÆô¶¯ºó£¬¿ªÊ¼¼ÆÊ± (2ms ½øÒ»´Î)
     time_tick++;
 
-    // 3. è®¾å®šæ¯ä¸ªé˜¶æ®µæŒç»­çš„æ—¶é—´ï¼šä¾‹å¦‚ 1.5 ç§’ (750 ticks) åˆ‡æ¢ä¸€æ¬¡çŠ¶æ€
+    // 3. Éè¶¨Ã¿¸ö½×¶Î³ÖĞøµÄÊ±¼ä£ºÀıÈç 1.5 Ãë (750 ticks) ÇĞ»»Ò»´Î×´Ì¬
     if (time_tick >= 2500) 
     {
-        time_tick = 0;       // æ¸…é›¶è®¡æ—¶å™¨
-        current_stage++;     // è¿›å…¥ä¸‹ä¸€ä¸ªæµ‹è¯•é˜¶æ®µ
+        time_tick = 0;       // ÇåÁã¼ÆÊ±Æ÷
+        current_stage++;     // ½øÈëÏÂÒ»¸ö²âÊÔ½×¶Î
     }
 
-    // 4. æ‰§è¡ŒçŠ¶æ€æœºåºåˆ—
+    // 4. Ö´ĞĞ×´Ì¬»úĞòÁĞ
     switch (current_stage)
     {
-        case 0: target_yaw_rate = 4000;  break;  // é˜¶æ®µ0ï¼šæ­£è½¬ 3000
-        case 1: target_yaw_rate = -4000; break;  // é˜¶æ®µ1ï¼šåè½¬ 3000
-        case 2: target_yaw_rate = 7000;  break;  // é˜¶æ®µ2ï¼šæ­£è½¬ 4000
-       case 3: target_yaw_rate = -7000; break;  // é˜¶æ®µ3ï¼šåè½¬ 4000
-//        case 4: target_yaw_rate = 8500;  break;  // é˜¶æ®µ4ï¼šæ­£è½¬ 5000
-//        case 5: target_yaw_rate = 5500; break;  // é˜¶æ®µ5ï¼šåè½¬ 5000
-//        case 6: target_yaw_rate = 6000;  break;  // é˜¶æ®µ6ï¼šæ­£è½¬ 6000
-//        case 7: target_yaw_rate = -6000; break;  // é˜¶æ®µ7ï¼šåè½¬ 6000
-//			case 8: target_yaw_rate = 9000;break;
-//			case 9: target_yaw_rate = -9000;break;
-//			case 10:target_yaw_rate = 10000;break;
-//			case 11:target_yaw_rate = -10000;break;
+        case 0: target_yaw_rate = 4000;  break;  // ½×¶Î0£ºÕı×ª 4000
+        case 1: target_yaw_rate = -4000; break;  // ½×¶Î1£º·´×ª 4000
+        case 2: target_yaw_rate = 7000;  break;  // ½×¶Î2£ºÕı×ª 7000
+       case 3: target_yaw_rate = -7000; break;  // ½×¶Î3£º·´×ª 7000
+//        case 4: target_yaw_rate = 8500;  break;  // ½×¶Î4£ºÕı×ª 8500
+//        case 5: target_yaw_rate = 5500; break;  // ½×¶Î5£º·´×ª 5500
+//        case 6: target_yaw_rate = 6000;  break;  // ½×¶Î6£ºÕı×ª 6000
+//        case 7: target_yaw_rate = -6000; break;  // ½×¶Î7£º·´×ª 6000
+//          case 8: target_yaw_rate = 9000;break;
+//          case 9: target_yaw_rate = -9000;break;
+//          case 10:target_yaw_rate = 10000;break;
+//          case 11:target_yaw_rate = -10000;break;
         default:
-            // æµ‹è¯•ç»“æŸï¼šå½’é›¶å¹¶å¼ºè¡Œè§¦å‘åœè½¦ä¿æŠ¤
+            // ²âÊÔ½áÊø£º¹éÁã²¢Ç¿ĞĞ´¥·¢Í£³µ±£»¤
             target_yaw_rate = 0;
             stop_flag = 1; 
             break;
@@ -337,90 +395,90 @@ void Dynamic_Yaw_Test_Task(void)
 
 void Roundabout_Detect_Task(void)
 {
-    int* adc = GetInductance(); // 0:å·¦å¤–, 1:å·¦å†…, 2:ä¸­, 3:å³å†…, 4:å³å¤–
-		int16 pitch = imu_data.gy;
+    int* adc = GetInductance(); // 0:×óÍâ, 1:×óÄÚ, 2:ÖĞ, 3:ÓÒÄÚ, 4:ÓÒÍâ
+        int16 pitch = imu_data.gy;
     static uint16 state_timer = 0;
-		static uint16 timeout_counter = 0; // ğŸŒŸ æ–°å¢ï¼šè¶…æ—¶ä¿æŠ¤è®¡æ•°å™¨
-		
+        static uint16 timeout_counter = 0; // ?? ĞÂÔö£º³¬Ê±±£»¤¼ÆÊıÆ÷
+        
     switch(loop_state)
     {
         case LOOP_NORMAL:
-					
-				if (global_distance < ROUNDABOUT_ZONE_MIN || global_distance > ROUNDABOUT_ZONE_MAX)
+                    
+                if ((global_distance > ROUNDABOUT_ZONE_MAX  || global_distance < ROUNDABOUT_ZONE_MIN)&& current_lap < 3)
             {
                 // ²»ÔÚ±½»·ÇøÓò£¬Ç¿ÖÆ¹éÁãËùÓĞÏà¹Ø¼ÆÊ±Æ÷£¬²¢Ö±½ÓÌø³ö£¬´¿×ÔÖ÷Ñ­¼££¡
                 state_timer = 0;
                 break; 
             }
-    // ğŸŒŸ è¯†åˆ«å·¦ç¯
-				if (set_distance_calculation == 1 && car_distance < LOOP_COOLDOWN_DIST)
+    // ?? Ê¶±ğ×ó»·
+                if (set_distance_calculation == 1 && car_distance < LOOP_COOLDOWN_DIST)
             {
-                // è¿˜åœ¨å†·å´æœŸå†…ï¼Œä»€ä¹ˆéƒ½ä¸åš
+                // »¹ÔÚÀäÈ´ÆÚÄÚ£¬Ê²Ã´¶¼²»×ö
                 state_timer = 0;
                 break; 
             }
         else if (set_distance_calculation == 1 && car_distance >= LOOP_COOLDOWN_DIST)
             {
-                // è·‘å¤Ÿäº†å†·å´è·ç¦»ï¼Œå…³é—­è·ç¦»ç§¯åˆ†ï¼Œæ¢å¤æ­£å¸¸å¯»æ‰¾çŠ¶æ€
+                // ÅÜ¹»ÁËÀäÈ´¾àÀë£¬¹Ø±Õ¾àÀë»ı·Ö£¬»Ö¸´Õı³£Ñ°ÕÒ×´Ì¬
                 set_distance_calculation = 0; 
             }
-				if(adc[2] > 90 && ((adc[0] > 80 )|| adc[3] > 80) && abs(pitch) < PITCH_THRESHOLD) 		//(adc[0] + adc[1]) - (adc[3] + adc[4]) > 30   (adc[0] + adc[1]) - (adc[3] + adc[4]) > 15  abs(pitch) < PITCH_THRESHOLD
-				{
-						state_timer++;
-						if(state_timer >= 2) // 20ms é˜²æŠ–
-						{
-								loop_state = LOOP_APPROACH;
-								loop_type = LOOP_NONE;
-								Clear_Car_Distance(); // è·ç¦»æ¸…é›¶ï¼Œå¼€å§‹ç›²å¼€è®¡æ­¥
-								set_distance_calculation = 1;  //å¼€å¯ä½ç½®è®¡ç®—
-								state_timer = 0;
-								timeout_counter = 0; // æ¸…é›¶è¶…æ—¶è®¡æ•°
-						}
-				}
-    // ğŸŒŸ è¯†åˆ«å³ç¯ (å¿…é¡»åŠ  else ifï¼)
-//				else if(adc[2] > 90 && adc[3] > 70  && (adc[4] + adc[3]) - (adc[0] + adc[1]) > 10)		//(adc[4] + adc[3]) - (adc[0] + adc[1]) > 25   (adc[4] + adc[3]) - (adc[0] + adc[1]) > 15
-//				{
-//						state_timer++;
-//						if(state_timer >= 1) // 20ms é˜²æŠ–
-//						{
-//								loop_state = LOOP_APPROACH;
-//								loop_type = LOOP_RIGHT;
-//								Clear_Car_Distance(); // è·ç¦»æ¸…é›¶ï¼Œå¼€å§‹ç›²å¼€è®¡æ­¥
-//								set_distance_calculation = 1;  //å¼€å¯è·ç¦»ç§¯åˆ†
-//								state_timer = 0;
-//								timeout_counter = 0; // æ¸…é›¶è¶…æ—¶è®¡æ•°
-//						}
-//				}
-    // ğŸŒŸ å¦‚æœéƒ½ä¸æ»¡è¶³ï¼Œæ‰æ¸…é›¶é˜²æŠ–è®¡æ—¶å™¨
-				else 
-				{ 
-						state_timer = 0;
-				}
-				break;
+                if(adc[2] > 90 && ((adc[0] > 80 )|| adc[3] > 80))         //(adc[0] + adc[1]) - (adc[3] + adc[4]) > 30   (adc[0] + adc[1]) - (adc[3] + adc[4]) > 15  abs(pitch) < PITCH_THRESHOLD
+                {
+                        state_timer++;
+                        if(state_timer >= 2) // 20ms ·À¶¶
+                        {
+                                loop_state = LOOP_APPROACH;
+                                loop_type = LOOP_NONE;
+                                Clear_Car_Distance(); // ¾àÀëÇåÁã£¬¿ªÊ¼Ã¤¿ª¼Æ²½
+                                set_distance_calculation = 1;  //¿ªÆôÎ»ÖÃ¼ÆËã
+                                state_timer = 0;
+                                timeout_counter = 0; // ÇåÁã³¬Ê±¼ÆÊı
+                        }
+                }
+    // ?? Ê¶±ğÓÒ»· (±ØĞë¼Ó else if)
+//              else if(adc[2] > 90 && adc[3] > 70  && (adc[4] + adc[3]) - (adc[0] + adc[1]) > 10)      //(adc[4] + adc[3]) - (adc[0] + adc[1]) > 25   (adc[4] + adc[3]) - (adc[0] + adc[1]) > 15
+//              {
+//                      state_timer++;
+//                      if(state_timer >= 1) // 20ms ·À¶¶
+//                      {
+//                              loop_state = LOOP_APPROACH;
+//                              loop_type = LOOP_RIGHT;
+//                              Clear_Car_Distance(); // ¾àÀëÇåÁã£¬¿ªÊ¼Ã¤¿ª¼Æ²½
+//                              set_distance_calculation = 1;  //¿ªÆô¾àÀë»ı·Ö
+//                              state_timer = 0;
+//                              timeout_counter = 0; // ÇåÁã³¬Ê±¼ÆÊı
+//                      }
+//              }
+    // ?? Èç¹û¶¼²»Âú×ã£¬²ÅÇåÁã·À¶¶¼ÆÊ±Æ÷
+                else 
+                { 
+                        state_timer = 0;
+                }
+                break;
 
         case LOOP_APPROACH:
-            // ç­‰å¾…è½¦å¤´é€¼è¿‘å…¥ç¯ç‚¹ï¼ˆé é‡Œç¨‹ç§¯åˆ†åˆ¤æ–­ï¼‰
-						timeout_counter++;
+            // µÈ´ı³µÍ·±Æ½üÈë»·µã£¨¿¿Àï³Ì»ı·ÖÅĞ¶Ï£©
+            timeout_counter++;
             if(car_distance >= LOOP_ENTRY_DIST && adc[2] > 70 &&(adc[0] > 60 || adc[3] > 60)) 
             {
-								
-								if ((adc[0] + adc[1]) >= (adc[3] + adc[4])) 
+                                
+                if ((adc[0] + adc[1]) >= (adc[3] + adc[4])) 
                 {
-                    loop_type = LOOP_LEFT;  // å·¦è¾¹èƒ½é‡å¤§ï¼Œç¡®è®¤æ˜¯å·¦ç¯
+                    loop_type = LOOP_LEFT;  // ×ó±ßÄÜÁ¿´ó£¬È·ÈÏÊÇ×ó»·
                 }
                 else if((adc[0] + adc[1])< (adc[3] + adc[4]))
                 {
-                    loop_type = LOOP_RIGHT; // å³è¾¹èƒ½é‡å¤§ï¼Œç¡®è®¤æ˜¯å³ç¯
+                    loop_type = LOOP_RIGHT; // ÓÒ±ßÄÜÁ¿´ó£¬È·ÈÏÊÇÓÒ»·
                 }
-								
+                                
                 loop_state = LOOP_TURN_IN;
-								Clear_Car_Distance();
-                Clear_Car_Angle(); // ğŸŒŸ è§’åº¦æ¸…é›¶ï¼Œå‡†å¤‡å…¥ç¯æµ‹è§’åº¦ï¼
-								set_angle_calculation = 1;
-								set_distance_calculation = 1;
-								timeout_counter = 0; // ğŸŒŸ çŠ¶æ€åˆ‡æ¢ï¼Œæ¸…é›¶è¶…æ—¶è®¡æ•°
+                Clear_Car_Distance();
+								Clear_Car_Angle(); // ?? ½Ç¶ÈÇåÁã£¬×¼±¸Èë»·²â½Ç¶È£¡
+                set_angle_calculation = 1;
+                set_distance_calculation = 1;
+                timeout_counter = 0; // ?? ×´Ì¬ÇĞ»»£¬ÇåÁã³¬Ê±¼ÆÊı
             }
-//						else if (timeout_counter > 500)
+//                      else if (timeout_counter > 500)
 //            {
 //                loop_state = LOOP_NORMAL;
 //                loop_type = LOOP_NONE;
@@ -430,22 +488,22 @@ void Roundabout_Detect_Task(void)
             break;
 
         case LOOP_TURN_IN:
-            // å…¥ç¯ä¸€å®šæ—¶é—´ï¼Œæˆ–è€…ä¾§è¾¹ç”µæ„Ÿå›è½ï¼Œè®¤ä¸ºå·²è¿›ç¯
-						timeout_counter++;
-						if(car_angle > LOOP_IN_ANGLE && adc[2] < 60 && car_distance > LOOP_IN_DIST)
-						{
-								loop_state = LOOP_IN_LOOP;
-							
-							// ğŸŒŸ æå…¶é‡è¦ï¼šä¸ºä¸‹ä¸€ä¸ªé˜¶æ®µ (IN_LOOP) å‡†å¤‡å¹²å‡€çš„æˆ˜åœºï¼
-                Clear_Car_Angle();    // æ¸…é›¶ï¼Œå› ä¸º IN_LOOP éœ€è¦é‡æ–°ä» 0 ç®—åˆ° 310 åº¦æ¥åˆ¤æ–­å‡ºå£
-                Clear_Car_Distance(); // å¦‚æœä½  IN_LOOP é‡Œä¸ç”¨è·ç¦»ï¼Œæ¸…ä¸æ¸…æ— æ‰€è°“ï¼Œä¿é™©èµ·è§æ¸…æ‰
+            // Èë»·Ò»¶¨Ê±¼ä£¬»òÕß²à±ßµç¸Ğ»ØÂä£¬ÈÏÎªÒÑ½ø»·
+             timeout_counter++;
+             if(car_angle > LOOP_IN_ANGLE && adc[2] < 60 && car_distance > LOOP_IN_DIST)
+             {
+             loop_state = LOOP_IN_LOOP;
+                            
+             // ?? ¼«ÆäÖØÒª£ºÎªÏÂÒ»¸ö½×¶Î (IN_LOOP) ×¼±¸¸É¾»µÄÕ½³¡£¡
+             Clear_Car_Angle();    // ÇåÁã£¬ÒòÎª IN_LOOP ĞèÒªÖØĞÂ´Ó 0 Ëãµ½ 310 ¶ÈÀ´ÅĞ¶Ï³ö¿Ú
+             Clear_Car_Distance(); // Èç¹ûÄãÔÚ IN_LOOP Àï²»ÓÃ¾àÀë£¬Çå²»ÇåÎŞËùÎ½£¬±£ÏÕÆğ¼ûÇåµô
                 
-                // IN_LOOP åªéœ€è¦æµ‹è§’åº¦ï¼Œä¸éœ€è¦æµ‹è·ç¦»äº†
-                set_distance_calculation = 0; 
-                set_angle_calculation = 1;
-							  timeout_counter = 0; // ğŸŒŸ çŠ¶æ€åˆ‡æ¢ï¼Œæ¸…é›¶è¶…æ—¶è®¡æ•°
-						}
-//						else if (timeout_counter > 300)
+             // IN_LOOP Ö»ĞèÒª²â½Ç¶È£¬²»ĞèÒª²â¾àÀëÁË
+             set_distance_calculation = 0; 
+             set_angle_calculation = 1;
+             timeout_counter = 0; //  ×´Ì¬ÇĞ»»£¬ÇåÁã³¬Ê±¼ÆÊı
+                        }
+//                      else if (timeout_counter > 300)
 //            {
 //                loop_state = LOOP_NORMAL;
 //                loop_type = LOOP_NONE;
@@ -455,18 +513,18 @@ void Roundabout_Detect_Task(void)
             break;
 
         case LOOP_IN_LOOP:
-					timeout_counter++; // ğŸŒŸ å¼€å§‹è®¡æ—¶
-            // åœ¨ç¯å†…ï¼Œç»å¯¹ä¸èƒ½çœ‹ç”µæ„Ÿï¼Œåªçœ‹é™€èºä»ªè§’åº¦ç§¯åˆ†ï¼
-            // è½¬å¤Ÿäº† 300 åº¦ï¼Œè®¤ä¸ºåˆ°äº†å‡ºå£
+                    timeout_counter++; // ?? ¿ªÊ¼¼ÆÊ±
+            // ÔÚ»·ÄÚ£¬¾ø¶Ô²»ÄÜ¿´µç¸Ğ£¬Ö»¿´ÍÓÂİÒÇ½Ç¶È»ı·Ö£¡
+            // ×ª¹»ÁË 300 ¶È£¬ÈÏÎªµ½ÁË³ö¿Ú
             if(abs((int)car_angle) > LOOP_EXIT_ANGLE)
             {
                 loop_state = LOOP_EXITING;
-								// ğŸŒŸ æå…¶å…³é”®ï¼šå°†è§’åº¦æ¸…é›¶ï¼è®© EXITING é˜¶æ®µé‡æ–°ä» 0 å¼€å§‹æµ‹é‚£ 30Â°ï¼
+                                // ?? ¼«Æä¹Ø¼ü£º½«½Ç¶ÈÇåÁã£¡ÈÃ EXITING ½×¶ÎÖØĞÂ´Ó 0 ¿ªÊ¼²âÄÇ 30¡ã£¡
                 Clear_Car_Angle(); 
-                set_angle_calculation = 1; // ä¿æŒè§’åº¦ç§¯åˆ†å¼€å¯
-								timeout_counter = 0; // ğŸŒŸ çŠ¶æ€åˆ‡æ¢ï¼Œæ¸…é›¶è¶…æ—¶è®¡æ•°
+                set_angle_calculation = 1; // ±£³Ö½Ç¶È»ı·Ö¿ªÆô
+                timeout_counter = 0; // ?? ×´Ì¬ÇĞ»»£¬ÇåÁã³¬Ê±¼ÆÊı
             }
-//						else if (timeout_counter > 700)
+//                      else if (timeout_counter > 700)
 //            {
 //                loop_state = LOOP_NORMAL;
 //                loop_type = LOOP_NONE;
@@ -476,32 +534,32 @@ void Roundabout_Detect_Task(void)
             break;
 
         case LOOP_EXITING:
-						timeout_counter++; // ğŸŒŸ å¼€å§‹è®¡æ—¶
-            // è½¦èº«å›æ­£ï¼Œç”µæ„Ÿæ¢å¤æ­£å¸¸æ°´å¹³
+                        timeout_counter++; // ?? ¿ªÊ¼¼ÆÊ±
+            // ³µÉí»ØÕı£¬µç¸Ğ»Ö¸´Õı³£Ë®Æ½
             if(abs((int)car_angle) > LOOP_EXIT_EXTRA_ANGLE)
             {
-                // ğŸŒŸ 2. è§’åº¦è½¬å¤Ÿäº†ï¼Œå†çœ‹è½¦èº«æœ‰æ²¡æœ‰å›æ­£ (ç”µæ„Ÿæ¢å¤å¹³ç›´)
+                // ?? 2. ½Ç¶È×ª¹»ÁË£¬ÔÙ¿´³µÉíÓĞÃ»ÓĞ»ØÕı (µç¸Ğ»Ö¸´Æ½Ö±)
                 if(adc[2] < 80 && adc[0] < 60 && adc[3] < 60)
                 {
                     state_timer++;
-                    if(state_timer >= 1) // 20ms é˜²æŠ–
+                    if(state_timer >= 1) // 20ms ·À¶¶
                     {
-                        // âœ… å‡ºç¯å¤§è·å…¨èƒœï¼
+                        // ?? ³ö»·´ó»ñÈ«Ê¤£¡
                         loop_state = LOOP_NORMAL;
                         loop_type = LOOP_NONE;
                         state_timer = 0;
-                        timeout_counter = 0; // ğŸŒŸ å¼€å§‹è®¡æ—¶
-                        // ğŸŒŸ å¼€å¯å‡ºç¯â€œå†·å´æœŸâ€ï¼šå…³é—­è§’åº¦ï¼Œå¼€å¯è·ç¦»ï¼Œé‡ç½®æ¸…é›¶
-												set_angle_calculation = 0; // å½»åº•å…³é—­è§’åº¦ç§¯åˆ†ï¼Œé˜²æº¢å‡º
-												Clear_Car_Angle();
+                        timeout_counter = 0; // ?? ¿ªÊ¼¼ÆÊ±
+                        // ?? ¿ªÆô³ö»·¡°ÀäÈ´ÆÚ¡±£º¹Ø±Õ½Ç¶È£¬¿ªÆô¾àÀë£¬ÖØÖÃÇåÁã
+                        set_angle_calculation = 0; // ³¹µ×¹Ø±Õ½Ç¶È»ı·Ö£¬·ÀÒç³ö
+                        Clear_Car_Angle();
                         Clear_Car_Distance();
-                        set_distance_calculation = 1; // å¼€å¯è·ç¦»ï¼Œä¸º NORMAL é‡Œçš„å†·å´æœŸæµ‹è·ï¼
+                        set_distance_calculation = 1; // ¿ªÆô¾àÀë£¬¸ø NORMAL ÀïµÄÀäÈ´ÆÚ²â¾à£¡
                     }
                 }
                 else { state_timer = 0; }
             }
-						
-//						if (timeout_counter > 300)
+                        
+//                      if (timeout_counter > 300)
 //            {
 //                loop_state = LOOP_NORMAL;
 //                loop_type = LOOP_NONE;
@@ -514,70 +572,83 @@ void Roundabout_Detect_Task(void)
 }
 
 /**
- * @brief åº•ç›˜é—­ç¯æ§åˆ¶
- * è·å–åå·®å¹¶è¾“å…¥æ–¹å‘PIDï¼Œè®¡ç®—å·®é€Ÿè¾“å‡º
+ * @brief µ×ÅÌ±Õ»·¿ØÖÆ
+ * »ñÈ¡Æ«²î²¢ÊäÈë·½ÏòPID£¬¼ÆËã²îËÙÊä³ö
  */
 void Chassis_Control(void)
 {
-    const PID_TypeDef *direction_pid; //å¤–ç¯ï¼šèµ›é“åå·®PID  
-		const PID_TypeDef *yaw_rate_pid;  // å†…ç¯ï¼šè§’é€Ÿåº¦PID (è¾“å‡ºæœ€ç»ˆå·®é€Ÿ)
-		static uint8 outer_loop_timer = 0;
-		float k = 0;
-    //è·å–æ–¹å‘ç¯PIDæ§åˆ¶å™¨å¥æŸ„å’Œåèˆªè§’é€Ÿåº¦ç¯PIDå¥æŸ„
-    direction_pid = PID_GetController(PID_DIRECTION);
-		yaw_rate_pid = PID_GetController(PID_YAW_RATE); // æ–°å¢ï¼è·å–ç¬¬4ç»„PID
+        const PID_TypeDef *direction_pid; //Íâ»·£ºÈüµÀÆ«²îPID  
+        const PID_TypeDef *yaw_rate_pid;  // ÄÚ»·£º½ÇËÙ¶ÈPID (Êä³ö×îÖÕ²îËÙ)
+        static uint8 outer_loop_timer = 0;
+        float k = 0;
+
+        direction_pid = PID_GetController(PID_DIRECTION);
+        yaw_rate_pid = PID_GetController(PID_YAW_RATE); // ĞÂÔö£º»ñÈ¡µÚ4×éPID
+    
+        IMU_Update();
+    
+
+        Battery_Protection_Task();
 	
-		IMU_Update();
-	
-		//ç”µæ± ä¿æŠ¤
-		Battery_Protection_Task();
-		/*è§’é€Ÿåº¦ç¯æµ‹è¯•*/
-//		Dynamic_Yaw_Test_Task();
+//				Speed_Plan_Task();
+				
+				Lap_Control_Task(); // ?? Ã¿ 2ms Ö´ĞĞÒ»´ÎÈ¦ÊıÅĞ¶¨Óë°²È«Í£³µÅĞ¶Ï
+//      Dynamic_Yaw_Test_Task();
   
-		outer_loop_timer++;
+        outer_loop_timer++;
     if(outer_loop_timer >= 3) 
     {
         outer_loop_timer = 0;
         
         chassis.current_deviation = Calculate_Deviation();
-        // å¤–ç¯ç®—å‡ºåŠ›çŸ©ï¼Œæ›´æ–° direction_output
+			
+				// µ±Æ«²î¾ø¶ÔÖµĞ¡ÓÚ 12 Ê± (³µ×ÓĞĞÊ»ÔÚÖ±µÀÖĞÑëÇø)£¬½µµÍ P£¬ÈÃ³µÍ·±ä¡°Èí¡±£¬·ÀÖ¹¸ßÆµ»­Áú
+        if (abs(chassis.current_deviation) <= 15) 
+        {
+            PID_SetKp(PID_DIRECTION, 300.0f); // ½µµÍ P
+        }
+        // µ±Æ«²î¾ø¶ÔÖµ´óÓÚ 18 Ê± (³µ×Ó½øÍä»òÕßÆ«ÀëÈüµÀ)£¬»Ö¸´Ô­ÓĞ¸ß P£¬ÈÃ³µÍ·±ä¡°Ó²¡±£¬Ñ¸ËÙÀ­»Ø
+        else PID_SetKp(PID_DIRECTION, 400.0f); // »Ö¸´Õı³£ P
+       
+
+        // Íâ»·Ëã³öÅ¤¾Ø£¬¸üĞÂ direction_output
         target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0);
     }
-    //è¯»å–å½“å‰çš„åèˆªè§’é€Ÿåº¦
-		actual_yaw_rate = imu_data.gz;
-		if(set_angle_calculation)
-		{
-			if (abs(actual_yaw_rate) > 20) 
+    //¶ÁÈ¡µ±Ç°µÄÆ«º½½ÇËÙ¶È
+        actual_yaw_rate = imu_data.gz;
+        if(set_angle_calculation)
+        {
+            if (abs(actual_yaw_rate) > 20) 
         {
             car_angle += abs((double)actual_yaw_rate) * 0.002f;
         }
-		}
-		direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -target_yaw_rate);
-//			direction_output = 0;
-		
+        }
+        direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -target_yaw_rate);
+//          direction_output = 0;
+        
 
-		k = direction_output * 0.01;
-		if(k >= 0)
-		{
-			k = k > 0.65 ? 0.65 : k;
-		}
-		else
-		{
-			k = k < -0.65 ? -0.65 : k;
-		}
-		if(k >= 0)
-		{
-			chassis.left_speed  = chassis.target_speed * (1 - k);
-			chassis.right_speed = chassis.target_speed * (1 + k * 0.2);
-		}
-		else
-		{
-			k *= -1;
-			chassis.left_speed  = chassis.target_speed * (1 + k * 0.2);
-			chassis.right_speed = chassis.target_speed * (1 - k);
-		}
-//		chassis.left_speed  = chassis.target_speed - direction_output;
+        k = direction_output * 0.01;
+        if(k >= 0)
+        {
+            k = k > 0.7 ? 0.7 : k;
+        }
+        else
+        {
+            k = k < -0.7 ? -0.7 : k;
+        }
+        if(k >= 0)
+        {
+            chassis.left_speed  = chassis.target_speed * (1 - 1.0 * k);  //kÏµÊıÎª1.0   ËÙ¶È300 - 200 Ê±  1.0
+            chassis.right_speed = chassis.target_speed * (1 + k * 0.4);// kÏµÊıÎª0.2		 ËÙ¶È300 - 200 Ê±  0.4
+        }
+        else
+        {
+            k *= -1;
+            chassis.left_speed  = chassis.target_speed * (1 + k * 0.4); //kÏµÊıÎª0.2
+            chassis.right_speed = chassis.target_speed * (1 - k * 1.0);  //kÏµÊıÎª1.0
+        }
+//      chassis.left_speed  = chassis.target_speed - direction_output;
 //    chassis.right_speed = chassis.target_speed + direction_output;
-    //æ‰§è¡Œç”µæœºæ§åˆ¶
-		Motor_Control(chassis.left_speed, chassis.right_speed);
+
+        Motor_Control(chassis.left_speed, chassis.right_speed);
 }

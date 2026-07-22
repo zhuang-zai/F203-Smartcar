@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 1   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_NVIC
@@ -66,7 +66,7 @@ stmt  level    source
    54          // 返回: 执行结果 SUCCESS/FAIL.
    55          // 版本: V1.0, 2020-09-29
    56          //========================================================================
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 2   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 2   
 
    57          u8 NVIC_Timer2_Init(u8 State, u8 Priority)
    58          {
@@ -134,7 +134,7 @@ stmt  level    source
   120          
   121          
   122          //========================================================================
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 3   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 3   
 
   123          // 函数: NVIC_INT0_Init
   124          // 描述: INT0嵌套向量中断控制器初始化.
@@ -202,7 +202,7 @@ stmt  level    source
   186          // 参数: Priority: 中断优先级, NULLD.
   187          // 返回: 执行结果 SUCCESS/FAIL.
   188          // 版本: V1.0, 2020-09-29
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 4   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 4   
 
   189          //========================================================================
   190          u8 NVIC_INT3_Init(u8 State, u8 Priority)
@@ -270,7 +270,7 @@ stmt  level    source
   252   1          PIE = 0; // 禁止上升沿中断
   253   1        if (State & FALLING_EDGE)
   254   1          NIE = 1; // 允许下降沿中断
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 5   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 5   
 
   255   1        else
   256   1          NIE = 0; // 禁止上升沿中断
@@ -338,7 +338,7 @@ stmt  level    source
   318          // 参数: Priority: 中断优先级, Priority_0,Priority_1,Priority_2,Priority_3.
   319          // 返回: 执行结果 SUCCESS/FAIL.
   320          // 版本: V1.0, 2020-09-29
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 6   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 6   
 
   321          //========================================================================
   322          u8 NVIC_UART2_Init(u8 State, u8 Priority)
@@ -406,7 +406,7 @@ stmt  level    source
   384          //========================================================================
   385          u8 NVIC_SPI_Init(u8 State, u8 Priority)
   386          {
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 7   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 7   
 
   387   1        if (State <= ENABLE)
   388   1          SPI_Interrupt(State);
@@ -474,7 +474,7 @@ stmt  level    source
   449   2        default:
   450   2          PWMB_IER = State;
   451   2          Priority = NULLD;
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 8   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 8   
 
   452   2          break;
   453   2        }
@@ -542,7 +542,7 @@ stmt  level    source
   515   1        if (Priority <= Priority_3)
   516   1          DMA_SPI_CFG |= Priority << 2;
   517   1        if (Bus_Priority <= Priority_3)
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 9   
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 9   
 
   518   1          DMA_SPI_CFG |= Bus_Priority; // 数据总线访问优先级
   519   1        if (State == ENABLE)
@@ -610,7 +610,7 @@ stmt  level    source
   581          u8 NVIC_DMA_UART2_Tx_Init(u8 State, u8 Priority, u8 Bus_Priority)
   582          {
   583   1        DMA_UR2T_CFG &= ~0x0f;
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 10  
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 10  
 
   584   1        if (Priority <= Priority_3)
   585   1          DMA_UR2T_CFG |= Priority << 2;
@@ -678,7 +678,7 @@ stmt  level    source
   647          // 返回: 执行结果 SUCCESS/FAIL.
   648          // 版本: V1.0, 2021-05-21
   649          //========================================================================
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 11  
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 11  
 
   650          u8 NVIC_DMA_UART3_Rx_Init(u8 State, u8 Priority, u8 Bus_Priority)
   651          {
@@ -746,7 +746,7 @@ stmt  level    source
   713          // 参数: State:    中断使能状态, ENABLE/DISABLE.
   714          // 参数: Priority: 中断优先级, Priority_0,Priority_1,Priority_2,Priority_3.
   715          // 参数: Bus_Priority: 数据总线访问优先级, Priority_0,Priority_1,Priority_2,Priority_3.
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 12  
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 12  
 
   716          // 返回: 执行结果 SUCCESS/FAIL.
   717          // 版本: V1.0, 2021-05-21
@@ -814,7 +814,7 @@ stmt  level    source
   779          // 参数: State:    中断使能状态, ENABLE/DISABLE.
   780          // 参数: Priority: 中断优先级, Priority_0,Priority_1,Priority_2,Priority_3.
   781          // 参数: Bus_Priority: 数据总线访问优先级, Priority_0,Priority_1,Priority_2,Priority_3.
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 13  
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 13  
 
   782          // 返回: 执行结果 SUCCESS/FAIL.
   783          // 版本: V1.0, 2022-03-25
@@ -882,7 +882,7 @@ stmt  level    source
   845          //========================================================================
   846          // 函数: NVIC_LIN_Init
   847          // 描述: LIN嵌套向量中断控制器初始化.
-C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       21/06/26  23:16:00  PAGE 14  
+C251 COMPILER V5.60.0,  AI8051U_NVIC                                                       15/07/26  20:07:39  PAGE 14  
 
   848          // 参数: State:    中断使能状态, ENABLE/DISABLE.
   849          // 参数: Priority: 中断优先级, Priority_0,Priority_1,Priority_2,Priority_3.

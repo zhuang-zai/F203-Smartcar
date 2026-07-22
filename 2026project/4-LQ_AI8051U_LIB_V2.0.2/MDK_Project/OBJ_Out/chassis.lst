@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 1   
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE chassis
@@ -16,626 +16,695 @@ stmt  level    source
     4          #include "LQ_Encoder.h"
     5          #include "LQ_LSM6DSR_Hard.h"
     6          
-    7          // è®¾å®šå•èŠ‚ 3.3V (æ€»å‹ 9.9V) çš„æé™æ­»äº¡çº¿é˜ˆå€¼
+    7          // Éè¶¨µ¥½Ú 3.3V (×ÜÑ¹ 9.9V) µÄ¼«ÏŞËÀÍöÏßãĞÖµ
     8          #define BAT_SAFE_ADC_THRESHOLD  2240
     9          // ==========================================
-   10          // ğŸŒŸ ç‰©ç†æ ‡å®šå¸¸æ•° (æ ¹æ®å®é™…æµ‹è¯•ç»“æœè®¾å®š)
+   10          // ?? ÎïÀí±ê¶¨³£Êı (¸ù¾İÊµ¼Ê²âÊÔ½á¹ûÉè¶¨)
    11          // ==========================================
-   12          #define ROUNDABOUT_ZONE_MIN  600000  // ½øÈë±½»·Ô¤¾¯Çø (ÌáÇ°Ò»µãÕöÑÛ)
-   13          #define ROUNDABOUT_ZONE_MAX  900000 // Àë¿ª±½»·Ô¤¾¯Çø (¹ıÍê»·µººó³¹µ×±ÕÑÛ)
-   14          #define PITCH_THRESHOLD  1500
-   15          // è·ç¦»æ ‡å®šï¼š1m â‰ˆ 64000 
-   16          #define LOOP_ENTRY_DIST  15000  // å…¥ç¯å‰ç›²å¼€è·ç¦» (çº¦ 0.5m)ï¼Œå¦‚æœè¿›ç¯å¤ªæ—©ï¼Œå¯å¢å¤§æ­¤å€
-             -¼
-   17          #define LOOP_IN_DIST 13000
-   18          #define LOOP_COOLDOWN_DIST  12000 // å‡ºç¯åçš„å†·å´è·ç¦» (çº¦ 30cm, 64000*0.3)
-   19          // è§’åº¦æ ‡å®šï¼š1Â° â‰ˆ 14.21
-   20          #define LOOP_EXIT_ANGLE  5300   // ç¯å²›å‡ºå£è§¦å‘è§’åº¦g (çº¦ 310Â°)
-   21          #define LOOP_IN_ANGLE  600   // ç¯å²›å…¥å£è§¦å‘è§’åº¦ (çº¦ 30Â°)
-   22          #define LOOP_EXIT_EXTRA_ANGLE  420   // å‡ºç¯é¢å¤–è¦æ±‚çš„ 30Â° æ—‹è½¬
-   23          Chassis_TypeDef chassis;
-   24          IMU_Data_t imu_data; // å®ä¾‹åŒ–å…¨å±€ç¼“å­˜å˜é‡
-   25          int16 direction_output;          // å†…ç¯è¾“å‡ºï¼šæœ€ç»ˆç»™è½¦è½®çš„å·®é€Ÿä¿®æ­£é‡
-   26          int16 actual_yaw_rate;            // å†…ç¯è¾“å…¥ï¼šçœŸå®çš„åèˆªè§’é€Ÿåº¦
-   27          int16 current_adc;
-   28          int16 target_yaw_rate = 0;
-   29          int set_angle_calculation = 0;
-   30          RoundaboutState_e loop_state = LOOP_NORMAL;
-   31          LoopType_e loop_type = LOOP_NONE;
-   32          
-   33          double car_angle = 0.0f;       // è½¦è¾†ç»å¯¹è§’åº¦
-   34          /**
-   35           * @brief åº•ç›˜åˆå§‹åŒ–
-   36           * åˆå§‹åŒ–åº•ç›˜ç»“æ„ä½“ä¸­çš„é€Ÿåº¦å’Œç›®æ ‡åå·®å˜é‡
-   37           */
-   38          void Chassis_Init(void)
-   39          {
-   40   1          chassis.target_speed = 300;       // åˆå§‹åŒ–ç›®æ ‡é€Ÿåº¦ä¸º100   max : 1100
-   41   1          chassis.current_deviation = 0;  // åˆå§‹åŒ–å½“å‰åå·®ä¸º0
-   42   1          chassis.left_speed = 0;         // åˆå§‹åŒ–å·¦è½®é€Ÿåº¦ä¸º0
-   43   1          chassis.right_speed = 0;        // åˆå§‹åŒ–å³è½®é€Ÿåº¦ä¸º0
-   44   1      }
+   12          #define STOP_EXTRA_DIST  32000  // ?? ÅÜÍêÁ½È¦³åÏßºó£¬¶àÅÜÔ¼ 0.5Ã× (1m ¡Ö 64000) È»ºóÍ£³µ
+   13          
+   14          // ¼ÙÉèÄãÍÆ³µ²âµÃÁ¬ĞøÖ±½ÇÍäÈë¿ÚÔÚ 1500000£¬³ö¿ÚÔÚ 1600000 (ÇëÓÃ VOFA Êµ¼Ê²â¶¨)
+   15          #define RIGHT_ANGLE_ZONE_MIN  1630000   //ËÙ¶ÈÎª250Ê±    1450000   Îª300Ê±    1600000
+   16          #define RIGHT_ANGLE_ZONE_MAX  1750000   //ËÙ¶ÈÎª250Ê±    1700000    Îª300Ê±    1750000
+   17          
+   18          // ËÙ¶ÈµµÎ»¶¨Òå
+   19          #define SPEED_BASE  400  // Ö±µÀºÍÆÕÍ¨´óÍäµÄ»ù´¡ËÙ¶È
+   20          #define SPEED_SLOW  400  // Á¬ĞøÖ±½ÇÍäµÄ°²È«¹ıÍäËÙ¶È
+   21          #define ROUNDABOUT_ZONE_MIN  350000  // ½øÈë±½»·Ô¤¾¯Çø (ÌáÇ°Ò»µãÕöÑÛ)
+   22          #define ROUNDABOUT_ZONE_MAX  850000 // Àë¿ª±½»·Ô¤¾¯Çø (¹ıÍê»·µººó³¹µ×±ÕÑÛ)
+   23          #define PITCH_THRESHOLD  1500
+   24          // ¾àÀë±ê¶¨£º1m ¡Ö 64000 
+   25          #define LOOP_ENTRY_DIST  15000  // Èë»·Ç°Ã¤¿ª¾àÀë (Ô¼ 0.5m)£¬Èç¹û½ø»·Ì«Ôç£¬¿ÉÔö´ó´ËÖµ
+   26          #define LOOP_IN_DIST 13000
+   27          #define LOOP_COOLDOWN_DIST  12000 // ³ö»·ºóµÄÀäÈ´¾àÀë (Ô¼ 30cm, 64000*0.3)
+   28          // ½Ç¶È±ê¶¨£º1¡ã ¡Ö 14.21
+   29          #define LOOP_EXIT_ANGLE  5300   // »·µº³ö¿Ú´¥·¢½Ç¶È (Ô¼ 310¡ã)
+   30          #define LOOP_IN_ANGLE  600   // »·µºÈë¿Ú´¥·¢½Ç¶È (Ô¼ 30¡ã)
+   31          #define LOOP_EXIT_EXTRA_ANGLE  420   // ³ö»·¶îÍâÒªÇóµÄ 30¡ã Ğı×ª
+   32          Chassis_TypeDef chassis;
+   33          IMU_Data_t imu_data; // ÊµÀı»¯È«¾Ö»º´æ±äÁ¿
+   34          int16 direction_output;          // ÄÚ»·Êä³ö£º×îÖÕ¸ø³µÂÖµÄ²îËÙĞŞÕıÁ¿
+   35          int16 actual_yaw_rate;           // ÄÚ»·ÊäÈë£ºÕæÊµµÄÆ«º½½ÇËÙ¶È
+   36          int16 current_adc;
+   37          int16 target_yaw_rate = 0;
+   38          int set_angle_calculation = 0;
+   39          RoundaboutState_e loop_state = LOOP_NORMAL;
+   40          LoopType_e loop_type = LOOP_NONE;
+   41          
+   42          double car_angle = 0.0f;       // ³µÁ¾¾ø¶Ô½Ç¶È
+   43          
+   44          uint8 current_lap = 1;         // ?? ¼ÇÂ¼µ±Ç°ËùÔÚµÄÈ¦Êı
    45          
-   46          void Clear_Car_Angle(void)
-   47          {
-   48   1        car_angle = 0.0f;
-   49   1      }
-   50          
-   51          /**
-   52           * @brief ç”µæ± ä½å‹ä¿æŠ¤ç›‘æ§ä»»åŠ¡
-   53           * å»ºè®®æ”¾åœ¨ 2ms çš„ Timer1 ä¸­æ–­ä¸­æ‰§è¡Œ
-   54           */
-   55          void Battery_Protection_Task(void)
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 2   
+   46          
+   47          /**
+   48           * @brief È¦ÊıÍ³¼ÆÓë³åÏßÍ£³µÈÎÎñ
+   49           * ¼à¿Ø global_distance µÄÌø±äÀ´¼ÆËãÈ¦Êı£¬²¢ÔÚÅÜÂúÁ½È¦ºóÑÓºóÒ»¶Î¾àÀë×Ô¶¯Í£³µ
+   50           */
+   51          void Lap_Control_Task(void)
+   52          {
+   53   1          static double last_global_distance = 0.0f;
+   54   1          
+   55   1          // Èç¹ûÏµÍ³´¦ÓÚ¼±Í£»òÎ´·¢³µ×´Ì¬£¬ÖØÖÃÈ¦ÊıºÍÀúÊ·Àï³Ì£¬µÈ´ıÏÂ´Î·¢³µ
+   56   1          if (stop_flag == 1)
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 2   
 
-   56          {
-   57   1          static uint16 low_vol_timer = 0;
-   58   1          
-   59   1          // 1. ç›´æ¥è¯»å–åŸå§‹ ADC å€¼ (æ— éœ€æ¶ˆè€—ç®—åŠ›è½¬æ¢æˆæµ®ç‚¹ç”µå‹)
-   60   1          current_adc = Get_ADCResult(ADC_CH9_P01);
-   61   1          
-   62   1          if(stop_flag == 1) return;
-   63   1          // 2. æ£€æµ‹æ˜¯å¦ä½äºè­¦æˆ’çº¿
-   64   1          if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
-   65   1          {
-   66   2              low_vol_timer++;
-   67   2              
-   68   2              // 3. æ—¶é—´æ»¤æ³¢ï¼ˆé˜²æŠ–ï¼‰ï¼š2ms * 500 = 1ç§’
-   69   2              // é˜²æ­¢ç”µæœºç¬é—´åŠ é€ŸæŠ½è¡€å¯¼è‡´çš„è¯¯åˆ¤
-   70   2              if (low_vol_timer >= 500) 
-   71   2              {
-   72   3                  stop_flag = 1;  // è§¦å‘å…¨å±€æ€¥åœ
-   73   3              }
-   74   2          }
-   75   1          else 
-   76   1          {
-   77   2              // ç”µå‹å¼¹å›å®‰å…¨çº¿ä»¥ä¸Šï¼Œæ¸…é›¶è®¡æ—¶å™¨
-   78   2              low_vol_timer = 0;
-   79   2          }
-   80   1      }
-   81          /**
-   82           * @brief ç»Ÿä¸€æ›´æ–° IMU å…¨éƒ¨ 6 è½´æ•°æ®
-   83           * å»ºè®®åœ¨æ§åˆ¶ä¸»å¾ªç¯ (2ms) çš„æœ€å¼€å¤´è°ƒç”¨ä¸€æ¬¡å³å¯
-   84           */
-   85          void IMU_Update(void)
-   86          {
-   87   1      #ifdef HARDWARE_SPI
-   88   1          LSM6DSR_Read_Data(&imu_data.ax, &imu_data.ay, &imu_data.az, &imu_data.gx, &imu_data.gy, &imu_data.gz)
+   57   1          {
+   58   2              current_lap = 1;
+   59   2              last_global_distance = 0.0f;
+   60   2              return;
+   61   2          }
+   62   1      
+   63   1          // ?? È¦ÊıÍ³¼Æ£º¼ì²âÀï³Ì¡°ÇåÁãÌø±ä¡± (±ÈÈç³µ×Ó¿ç¹ıÆğÅÜÏßÊ±£¬Àï³Ì´Ó 1700000 Í»½µµ½ 0)
+   64   1          // Éè¶¨ 500000 ÎªãĞÖµ£¬·ÀÖ¹ÓÉÓÚ³µ×ÓÇáÎ¢µ¹³µ»òÊı¾İ²¨¶¯µ¼ÖÂµÄÎóÅĞ
+   65   1          if (last_global_distance - global_distance > 500000.0f)
+   66   1          {
+   67   2              current_lap++; // Íê³ÉÒ»È¦£¬È¦Êı¼Ó 1
+   68   2          }
+   69   1          last_global_distance = global_distance;
+   70   1      
+   71   1          // ?? ³åÏßÍ£³µÂß¼­£ºÒÑ¾­ÅÜÍêÁË 2 È¦ (ÒâÎ¶×Å½øÈëÁËµÚ 3 È¦)£¬ÇÒ¶àÅÜÁËÖ¸¶¨µÄ³åÏß¾àÀë
+   72   1          if (current_lap > 2 && loop_state == LOOP_IN_LOOP)
+   73   1          {
+   74   2              stop_flag = 1; // ´¥·¢È«¾Ö¼±Í££¬ÇĞ¶Ï¶¯Á¦£¡
+   75   2          }
+   76   1      }
+   77          void Speed_Plan_Task(void)
+   78          {
+   79   1        if(!stop_flag)
+   80   1        {
+   81   2          // Èç¹ûÔÚÁ¬ĞøÖ±½ÇÍäÇø¼äÄÚ
+   82   2          if (global_distance >= RIGHT_ANGLE_ZONE_MIN && global_distance <= RIGHT_ANGLE_ZONE_MAX)
+   83   2          {
+   84   3              chassis.target_speed = SPEED_SLOW; // Ö±½ÓÍ»±ä½µËÙµ½ 150
+   85   3          }
+   86   2          else
+   87   2          {
+   88   3              chassis.target_speed = SPEED_BASE; // ³öÍäºóÖ±½ÓÍ»±ä»Ö¸´µ½ 300
+   89   3          }
+   90   2        }
+   91   1      }
+   92          /**
+   93           * @brief µ×ÅÌ³õÊ¼»¯
+   94           * ³õÊ¼»¯µ×ÅÌ½á¹¹ÌåÖĞµÄËÙ¶ÈºÍÄ¿±êÆ«²î±äÁ¿
+   95           */
+   96          void Chassis_Init(void)
+   97          {
+   98   1          chassis.target_speed = 450;       // ³õÊ¼»¯Ä¿±êËÙ¶ÈÎª 300   max : 1100  ×î¼Ñ  400
+   99   1          chassis.current_deviation = 0;  // ³õÊ¼»¯µ±Ç°Æ«²îÎª 0
+  100   1          chassis.left_speed = 0;         // ³õÊ¼»¯×óÂÖËÙ¶ÈÎª 0
+  101   1          chassis.right_speed = 0;        // ³õÊ¼»¯ÓÒÂÖËÙ¶ÈÎª 0
+  102   1      }
+  103          
+  104          void Clear_Car_Angle(void)
+  105          {
+  106   1          car_angle = 0.0f;
+  107   1      }
+  108          
+  109          /**
+  110           * @brief µç³ØµÍÑ¹±£»¤¼à¿ØÈÎÎñ
+  111           * ½¨Òé·ÅÔÚ 2ms µÄ Timer1 ÖĞ¶ÏÖĞÖ´ĞĞ
+  112           */
+  113          void Battery_Protection_Task(void)
+  114          {
+  115   1          static uint16 low_vol_timer = 0;
+  116   1          
+  117   1          // 1. Ö±½Ó¶ÁÈ¡Ô­Ê¼ ADC Öµ (ÎŞĞèÏûºÄËãÁ¦×ª»»³É¸¡µãµçÑ¹)
+  118   1          current_adc = Get_ADCResult(ADC_CH9_P01);
+  119   1          
+  120   1          if(stop_flag == 1) return;
+  121   1          // 2. ¼ì²âÊÇ·ñµÍÓÚ¾¯½äÏß
+  122   1          if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 3   
+
+  123   1          {
+  124   2              low_vol_timer++;
+  125   2              
+  126   2              // 3. Ê±¼äÂË²¨£¨·À¶¶£©£º2ms * 500 = 1Ãë
+  127   2              // ·ÀÖ¹µç»úË²¼ä¼ÓËÙ³éÑªµ¼ÖÂµÄÎóÅĞ
+  128   2              if (low_vol_timer >= 500) 
+  129   2              {
+  130   3                  stop_flag = 1;  // ´¥·¢È«¾Ö¼±Í£
+  131   3              }
+  132   2          }
+  133   1          else 
+  134   1          {
+  135   2              // µçÑ¹µ¯»Ø°²È«ÏßÒÔÉÏ£¬ÇåÁã¼ÆÊ±Æ÷
+  136   2              low_vol_timer = 0;
+  137   2          }
+  138   1      }
+  139          /**
+  140           * @brief Í³Ò»¸üĞÂ IMU È«²¿ 6 ÖáÊı¾İ
+  141           * ½¨ÒéÔÚ¿ØÖÆÖ÷Ñ­»· (2ms) µÄ×î¿ªÍ·µ÷ÓÃÒ»´Î¼´¿É
+  142           */
+  143          void IMU_Update(void)
+  144          {
+  145   1      #ifdef HARDWARE_SPI
+  146   1          LSM6DSR_Read_Data(&imu_data.ax, &imu_data.ay, &imu_data.az, &imu_data.gx, &imu_data.gy, &imu_data.gz)
              -;
-   89   1      #elif defined HARDWARE_IIC
+  147   1      #elif defined HARDWARE_IIC
                    LQ_HARD_IIC_LSM60DSR_Read(&imu_data.ax, &imu_data.ay, &imu_data.az, &imu_data.gx, &imu_data.gy, &imu_
              -data.gz);
                #else
                    imu_data.gy = 0; 
                    imu_data.gz = 0; 
                #endif
-   95   1      }
-   96          
-   97          /**
-   98           * @brief è·å–é™€èºä»ªZè½´è§’é€Ÿåº¦ (åèˆªè§’é€Ÿåº¦)
-   99           * @return int16 Zè½´åŸå§‹è§’é€Ÿåº¦æ•°æ®
-  100           */
-  101          int16 Get_Yaw_Rate(void)
-  102          {
-  103   1          int16 ax, ay, az, gx, gy, gz;
-  104   1          
-  105   1          // è°ƒç”¨åº•å±‚å‡½æ•°è¯»å–6è½´æ•°æ®
-  106   1          // æ³¨æ„ï¼šä¼ å…¥çš„æ˜¯å˜é‡çš„åœ°å€(&)ï¼Œåº•å±‚å‡½æ•°ä¼šæŠŠè¯»åˆ°çš„å€¼æ”¾è¿›è¿™äº›å˜é‡é‡Œ
-  107   1      #ifdef HARDWARE_SPI
-  108   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
-  109   1      #elif defined HARDWARE_IIC
+  153   1      }
+  154          
+  155          /**
+  156           * @brief »ñÈ¡ÍÓÂİÒÇZÖá½ÇËÙ¶È (Æ«º½½ÇËÙ¶È)
+  157           * @return int16 ZÖáÔ­Ê¼½ÇËÙ¶ÈÊı¾İ
+  158           */
+  159          int16 Get_Yaw_Rate(void)
+  160          {
+  161   1          int16 ax, ay, az, gx, gy, gz;
+  162   1          
+  163   1          // µ÷ÓÃµ×²ãº¯Êı¶ÁÈ¡6ÖáÊı¾İ
+  164   1          // ×¢Òâ£º´«ÈëµÄÊÇ±äÁ¿µÄµØÖ·(&)£¬µ×²ãº¯Êı»á°Ñ¶Áµ½µÄÖµ·Å½øÕâĞ©±äÁ¿Àï
+  165   1      #ifdef HARDWARE_SPI
+  166   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+  167   1      #elif defined HARDWARE_IIC
                    LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
                #else
-                   // å¦‚æœéƒ½æ²¡æœ‰å®šä¹‰ï¼Œé»˜è®¤ç»™0é˜²æ­¢æŠ¥é”™ï¼Œè¯·æ£€æŸ¥ä½ çš„å·¥ç¨‹å®å®šä¹‰
+                   // Èç¹û¶¼Ã»ÓĞ¶¨Òå£¬Ä¬ÈÏ¸ø 0 ·ÀÖ¹±¨´í£¬Çë¼ì²éÄãµÄ¹¤³Ìºê¶¨Òå
                    gz = 0; 
                #endif
-  115   1      
-  116   1          // æˆ‘ä»¬åªéœ€è¦ Zè½´çš„è§’é€Ÿåº¦ (Gyro Z)
-  117   1          return gz; 
-  118   1      }
-  119          
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 3   
+  173   1      
+  174   1          // ÎÒÃÇÖ»ĞèÒª ZÖáµÄ½ÇËÙ¶È (Gyro Z)
+  175   1          return gz; 
+  176   1      }
+  177          
+  178          /**
+  179           * @brief »ñÈ¡ÍÓÂİÒÇYÖá½ÇËÙ¶È (Í¨³£Îª¸©Ñö»òºá¹ö½ÇËÙ¶È£¬È¡¾öÓÚ°²×°·½Ïò)
+  180           * @return int16 YÖáÔ­Ê¼½ÇËÙ¶ÈÊı¾İ
+  181           */
+  182          int16 Get_Pitch_Rate(void)
+  183          {
+  184   1          int16 ax, ay, az, gx, gy, gz;
+  185   1          
+  186   1          // µ÷ÓÃµ×²ãº¯Êı¶ÁÈ¡6ÖáÊı¾İ
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 4   
 
-  120          /**
-  121           * @brief è·å–é™€èºä»ªYè½´è§’é€Ÿåº¦ (é€šå¸¸ä¸ºä¿¯ä»°æˆ–æ¨ªæ»šè§’é€Ÿåº¦ï¼Œå–å†³äºå®‰è£…æ–¹å‘)
-  122           * @return int16 Yè½´åŸå§‹è§’é€Ÿåº¦æ•°æ®
-  123           */
-  124          int16 Get_Pitch_Rate(void)
-  125          {
-  126   1          int16 ax, ay, az, gx, gy, gz;
-  127   1          
-  128   1          // è°ƒç”¨åº•å±‚å‡½æ•°è¯»å–6è½´æ•°æ®
-  129   1          // æ³¨æ„ï¼šä¼ å…¥çš„æ˜¯å˜é‡çš„åœ°å€(&)ï¼Œåº•å±‚å‡½æ•°ä¼šæŠŠè¯»åˆ°çš„å€¼æ”¾è¿›è¿™äº›å˜é‡é‡Œ
-  130   1      #ifdef HARDWARE_SPI
-  131   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
-  132   1      #elif defined HARDWARE_IIC
+  187   1          // ×¢Òâ£º´«ÈëµÄÊÇ±äÁ¿µÄµØÖ·(&)£¬µ×²ãº¯Êı»á°Ñ¶Áµ½µÄÖµ·Å½øÕâĞ©±äÁ¿Àï
+  188   1      #ifdef HARDWARE_SPI
+  189   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+  190   1      #elif defined HARDWARE_IIC
                    LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
                #else
-                   // å¦‚æœéƒ½æ²¡æœ‰å®šä¹‰ï¼Œé»˜è®¤ç»™0é˜²æ­¢æŠ¥é”™ï¼Œè¯·æ£€æŸ¥ä½ çš„å·¥ç¨‹å®å®šä¹‰
-                   gy = 0;  // ğŸŒŸ æ³¨æ„è¿™é‡Œæ”¹æˆäº†ç»™ gy èµ‹é»˜è®¤å€¼
+                   // Èç¹û¶¼Ã»ÓĞ¶¨Òå£¬Ä¬ÈÏ¸ø 0 ·ÀÖ¹±¨´í£¬Çë¼ì²éÄãµÄ¹¤³Ìºê¶¨Òå
+                   gy = 0;  // ?? ×¢ÒâÕâÀï¸Ä³ÉÁË¸ø gy ¸³Ä¬ÈÏÖµ
                #endif
-  138   1      
-  139   1          // æˆ‘ä»¬åªéœ€è¦ Yè½´çš„è§’é€Ÿåº¦ (Gyro Y)
-  140   1          return gy; 
-  141   1      }
-  142          
-  143          ///**
-  144          // * @brief è®¡ç®—å¾ªè¿¹åå·®
-  145          // * ä½¿ç”¨å·®æ¯”å’Œç®—æ³•è®¡ç®—è½¦è¾†åç¦»ä¸­å¿ƒçº¿çš„ç¨‹åº¦
-  146          // * å…¬å¼ï¼š( (å·¦æ„Ÿ+å·¦æ„Ÿ) - (å³æ„Ÿ+å³æ„Ÿ) ) / (æ€»ç”µæ„Ÿ + è¡¥å¿å€¼) * 100
-  147          // * @return int å½’ä¸€åŒ–åçš„åå·®å€¼ï¼ŒèŒƒå›´ -100 åˆ° 100
-  148          // */
-  149          //int Calculate_Deviation(void) 
-  150          //{
-  151          //    // è·å–ç”µæ„ŸADCæ•°ç»„æŒ‡é’ˆ (å‡è®¾é¡ºåºä¸º: å·¦å¤–, å·¦å†…, ä¸­, å³å†…, å³å¤–)
-  152          //    int* adc_values = GetInductance();
-  153          //    
-  154          //    // è®¡ç®—å·¦å³ä¸¤ä¾§ç”µæ„Ÿå€¼çš„å·®å€¼ (åˆ†å­)ï¼Œåæ˜ åå‘å“ªä¸€ä¾§
-  155          //    int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
-  156          //    
-  157          //    // è®¡ç®—æ‰€æœ‰ç”µæ„Ÿå€¼çš„æ€»å’Œ (åˆ†æ¯)ï¼Œ+10æ˜¯ä¸ºäº†é˜²æ­¢åˆ†æ¯ä¸º0å¯¼è‡´é™¤é›¶é”™è¯¯
-  158          //    // ä½¿ç”¨â€œå·®æ¯”å’Œâ€å¯ä»¥æ¶ˆé™¤ç”±äºé€Ÿåº¦å˜åŒ–å¯¼è‡´çš„ç£åœºå¼ºåº¦æ•´ä½“å˜åŒ–å½±å“
-  159          //    int eleAdd = adc_values[0] + adc_values[1] + adc_values[2] + adc_values[3] + adc_values[4] + 10;
-  160          //  
-  161          //    // è®¡ç®—å½’ä¸€åŒ–åå·®å€¼
-  162          //    float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
-  163          //  
-  164          //    static uint16 off_track_timer = 0;   // ä¸¢çº¿æŒç»­æ—¶é—´è®¡æ•°å™¨
-  165          //    if(stop_flag == 1) return 0;
-  166          //  
-  167          //    if(eleAdd < 20.0)
-  168          //    {
-  169          //      off_track_timer++;
-  170          //      if(off_track_timer >= 250) stop_flag = 1;
-  171          //    }
-  172          //    else
-  173          //    {
-  174          //      off_track_timer = 0;
-  175          //    }
-  176          //    
-  177          //    // é™å¹…å¤„ç†ï¼šå°†åå·®å€¼é™åˆ¶åœ¨ -100 åˆ° 100 ä¹‹é—´
-  178          //    if(eleValue > 100.0f) eleValue = 100.0f;
-  179          //    else if(eleValue < -100.0f) eleValue = -100.0f;
-  180          
-  181          //    // è½¬æ¢ä¸ºæ•´å‹è¿”å›ç»™æ§åˆ¶å±‚
-  182          //    return (int)(eleValue);
-  183          //}
-  184          
-  185          /**
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 4   
-
-  186           * @brief è®¡ç®—å¾ªè¿¹åå·®
-  187           * æ ¹æ®è‹¯ç¯çŠ¶æ€æœºï¼ŒåŠ¨æ€åˆ‡æ¢å·®æ¯”å’Œæƒé‡ï¼Œæ¬ºéª— PID åšå‡ºç‰¹å®šè½¬å‘åŠ¨ä½œ
-  188           */
-  189          int Calculate_Deviation(void) 
-  190          {
-  191   1          int* adc = GetInductance(); // ç®€åŒ–æŒ‡é’ˆåç§°ï¼Œæ–¹ä¾¿ä¹¦å†™
-  192   1          float eleSub = 0;
-  193   1          float eleAdd = 0;
-  194   1          float eleValue = 0;
-  195   1          static uint16 off_track_timer = 0;
   196   1      
-  197   1          if(stop_flag == 1) return 0;
-  198   1      
-  199   1          // =========================================================================
-  200   1          // ğŸŒŸ æ ¸å¿ƒæ§åˆ¶å±‚ï¼šçŠ¶æ€æœºå¤šè·¯å¤ç”¨æƒé‡åˆ†é…
-  201   1          // =========================================================================
-  202   1          if (loop_state == LOOP_NORMAL)
-  203   1          {
-  204   2              // ã€æ­£å¸¸å·¡çº¿ã€‘åŸæ±åŸå‘³çš„å·®æ¯”å’Œ
-  205   2              eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
-  206   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
-  207   2          }
-  208   1          else if (loop_state == LOOP_APPROACH)
-  209   1          {
-  210   2              // ã€é€¼è¿‘é˜¶æ®µã€‘å±è”½æœ€å¤–ä¾§ç”µæ„Ÿ (adc[0]å’Œadc[3])ï¼Œé˜²æ­¢è¢«ä¾§è¾¹åœ†ç¯çš„ç£åœºææ
-             -—©â€œå¸â€å
-  211   2              eleSub = adc[1] - adc[4];
-  212   2      //        eleAdd = adc[1] + adc[2] + adc[4] + 10;
-  213   2      //          eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
-  214   2                eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
-  215   2          }
-  216   1          else if (loop_state == LOOP_TURN_IN)
-  217   1          {
-  218   2              // ã€å¼ºåˆ¶å…¥ç¯ã€‘åˆ¶é€ å·¨å¤§å‡åå·®ï¼Œç¬é—´æ‹‰æ»¡ PIDï¼
-  219   2              if (loop_type == LOOP_RIGHT)
-  220   2              {
-  221   3                  // è¿›å·¦ç¯ï¼šæåº¦å‰Šå¼±å·¦ä¾§ï¼Œæ”¾å¤§å³ä¾§ã€‚åˆ¶é€ â€œä¸¥é‡åå³â€çš„å‡è±¡ï¼Œå¼ºè¿«
-             -è½¦çŒ›å‘å·¦æ‰“æ­»ï¼
-  222   3                  eleSub = (0.2f * adc[0] + 0.5f * adc[1]) - (1.8f * adc[3] + 1.5f * adc[4]);
-  223   3              }
-  224   2              else if (loop_type == LOOP_LEFT)
-  225   2              {
-  226   3                  // è¿›å³ç¯ï¼šæåº¦æ”¾å¤§å·¦ä¾§ï¼Œå‰Šå¼±å³ä¾§ã€‚åˆ¶é€ â€œä¸¥é‡åå·¦â€çš„å‡è±¡ï¼Œå¼ºè¿«
-             -è½¦çŒ›å‘å³æ‰“æ­»ï¼
-  227   3                  eleSub = (1.8f * adc[0] + 1.5f * adc[1]) - (0.2f * adc[3] + 0.5f * adc[4]);
-  228   3              }
-  229   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
-  230   2          }
-  231   1          else if (loop_state == LOOP_IN_LOOP)
-  232   1          {
-  233   2              // ã€ç¯å†…å·¡çº¿ã€‘å¾®è°ƒæƒé‡ï¼Œé˜²æ­¢è¢«ç¦»å¿ƒåŠ›ç”©å‡º
-  234   2      //        if (loop_type == LOOP_RIGHT)
-  235   2      //        {
-  236   2      //            // å·¦ç¯å†…ï¼Œé€‚åº¦æ”¾å¤§å³ä¾§ï¼Œè®©è½¦æœ‰æŒç»­å‘å·¦é æ‹¢ï¼ˆè´´å†…ä¾§ï¼‰çš„è¶‹åŠ¿
-  237   2      //            eleSub = (0.8f * adc[0] + 0.8f * adc[1]) - (1.2f * adc[3] + 1.2f * adc[4]);
-  238   2      //        }
-  239   2      //        else 
-  240   2      //        {
-  241   2      //            // å³ç¯å†…ï¼Œé€‚åº¦æ”¾å¤§å·¦ä¾§ï¼Œè®©è½¦æœ‰æŒç»­å‘å³é æ‹¢çš„è¶‹åŠ¿
-  242   2      //            eleSub = (1.2f * adc[0] + 1.2f * adc[1]) - (0.8f * adc[3] + 0.8f * adc[4]);
-  243   2      //        }
-  244   2              eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
-  245   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
-  246   2          }
-  247   1          else if (loop_state == LOOP_EXITING)
-  248   1          {
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 5   
+  197   1          // ÎÒÃÇÖ»ĞèÒª YÖáµÄ½ÇËÙ¶È (Gyro Y)
+  198   1          return gy; 
+  199   1      }
+  200          
+  201          ///**
+  202          // * @brief ¼ÆËãÑ­¼£Æ«²î
+  203          // * Ê¹ÓÃ²î±ÈºÍËã·¨¼ÆËã³µÁ¾Æ«ÀëÖĞĞÄÏßµÄ³Ì¶È
+  204          // * ¹«Ê½£º( (×ó¸Ğ+×ó¸Ğ) - (ÓÒ¸Ğ+ÓÒ¸Ğ) ) / (×Üµç¸Ğ + ²¹³¥Öµ) * 100
+  205          // * @return int ¹éÒ»»¯ºóµÄÆ«²îÖµ£¬·¶Î§ -100 µ½ 100
+  206          // */
+  207          //int Calculate_Deviation(void) 
+  208          //{
+  209          //    // »ñÈ¡µç¸ĞADCÊı×éÖ¸Õë (¼ÙÉèË³ĞòÎª: ×óÍâ, ×óÄÚ, ÖĞ, ÓÒÄÚ, ÓÒÍâ)
+  210          //    int* adc_values = GetInductance();
+  211          //    
+  212          //    // ¼ÆËã×óÓÒÁ½²àµç¸ĞÖµµÄ²îÖµ (·Ö×Ó)£¬·´Ó³Æ«ÏòÄÄÒ»²à
+  213          //    int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
+  214          //    
+  215          //    // ¼ÆËãËùÓĞµç¸ĞÖµµÄ×ÜºÍ (·ÖÄ¸)£¬+10ÊÇÎªÁË·ÀÖ¹·ÖÄ¸Îª0µ¼ÖÂ³ıÁã´íÎó
+  216          //    // Ê¹ÓÃ¡°²î±ÈºÍ¡±¿ÉÒÔÏû³ıÓÉÓÚËÙ¶È±ä»¯µ¼ÖÂµÄ´Å³¡Ç¿¶ÈÕûÌå±ä»¯Ó°Ïì
+  217          //    int eleAdd = adc_values[0] + adc_values[1] + adc_values[2] + adc_values[3] + adc_values[4] + 10;
+  218          //  
+  219          //    // ¼ÆËã¹éÒ»»¯Æ«²îÖµ
+  220          //    float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
+  221          //  
+  222          //      static uint16 off_track_timer = 0;   // ¶ªÏß³ÖĞøÊ±¼ä¼ÆÊıÆ÷
+  223          //      if(stop_flag == 1) return 0;
+  224          //  
+  225          //      if(eleAdd < 20.0)
+  226          //      {
+  227          //          off_track_timer++;
+  228          //          if(off_track_timer >= 250) stop_flag = 1;
+  229          //      }
+  230          //      else
+  231          //      {
+  232          //          off_track_timer = 0;
+  233          //      }
+  234          //    
+  235          //    // ÏŞ·ù´¦Àí£º½«Æ«²îÖµÏŞÖÆÔÚ -100 µ½ 100 Ö®¼ä
+  236          //    if(eleValue > 100.0f) eleValue = 100.0f;
+  237          //    else if(eleValue < -100.0f) eleValue = -100.0f;
+  238          
+  239          //    // ×ª»»ÎªÕûĞÍ·µ»Ø¸ø¿ØÖÆ²ã
+  240          //    return (int)(eleValue);
+  241          //}
+  242          
+  243          /**
+  244           * @brief ¼ÆËãÑ­¼£Æ«²î
+  245           * ¸ù¾İ±½»·×´Ì¬»ú£¬¶¯Ì¬ÇĞ»»²î±ÈºÍÈ¨ÖØ£¬ÆÛÆ­ PID ×ö³öÌØ¶¨×ªÏò¶¯×÷
+  246           */
+  247          int Calculate_Deviation(void) 
+  248          {
+  249   1          int* adc = GetInductance(); // ¼ò»¯Ö¸ÕëÃû³Æ£¬·½±ãÊéĞ´
+  250   1          float eleSub = 0;
+  251   1          float eleAdd = 0;
+  252   1          float eleValue = 0;
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 5   
 
-  249   2              // ã€å¼ºåˆ¶å‡ºç¯ã€‘åå‘æ‹‰æ‰¯ï¼ŒæŠŠè½¦å¤´å¼ºåˆ¶æ‹½å‡ºåœ†ç¯
-  250   2              if (loop_type == LOOP_RIGHT)
-  251   2              {
-  252   3                  // å·¦ç¯å‡ºç¯ï¼šæ”¾å¤§å·¦ä¾§æƒé‡ï¼Œé€ç»™ PID æ­£åå·®ï¼Œå¼ºè¿«è½¦å¤´å‘å³è½¬ï¼ˆæ‹‰ç›´å
-             -‡ºç¯ï¼‰
-  253   3                  eleSub = (1.5f * adc[0] + 1.5f * adc[1]) - (0.5f * adc[3] + 0.5f * adc[4]);
-  254   3              }
-  255   2              else 
-  256   2              {
-  257   3                  // å³ç¯å‡ºç¯ï¼šæ”¾å¤§å³ä¾§æƒé‡ï¼Œå¼ºè¿«è½¦å¤´å‘å·¦è½¬
-  258   3                  eleSub = (0.5f * adc[0] + 0.5f * adc[1]) - (1.5f * adc[3] + 1.5f * adc[4]);
-  259   3              }
-  260   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
-  261   2          }
-  262   1          // =========================================================================
-  263   1      
-  264   1          // ä¸¢çº¿ä¿æŠ¤é€»è¾‘ (ä¿æŒåŸæ ·ä¸åŠ¨)
-  265   1          if(eleAdd < 20.0)
-  266   1          {
-  267   2              off_track_timer++;
-  268   2              if(off_track_timer >= 250) stop_flag = 1;
-  269   2          }
-  270   1          else
-  271   1          {
-  272   2              off_track_timer = 0;
+  253   1          static uint16 off_track_timer = 0;
+  254   1      
+  255   1          if(stop_flag == 1) return 0;
+  256   1      
+  257   1          // =========================================================================
+  258   1          // ?? ºËĞÄ¿ØÖÆ²ã£º×´Ì¬»ú¶àÂ·¸´ÓÃÈ¨ÖØ·ÖÅä
+  259   1          // =========================================================================
+  260   1          if (loop_state == LOOP_NORMAL)
+  261   1          {
+  262   2              // ¡¾Õı³£Ñ­Ïß¡¿Ô­Ö­Ô­Î¶µÄ²î±ÈºÍ
+  263   2              eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
+  264   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+  265   2          }
+  266   1          else if (loop_state == LOOP_APPROACH)
+  267   1          {
+  268   2              // ¡¾±Æ½ü½×¶Î¡¿ÆÁ±Î×îÍâ²àµç¸Ğ (adc[0]ºÍadc[3])£¬·ÀÖ¹±»²à±ßÔ²»·µÄ´Å³¡ÌáÔç¡°Îü¡±Æ«
+  269   2              eleSub = adc[1] - adc[4];
+  270   2      //        eleAdd = adc[1] + adc[2] + adc[4] + 10;
+  271   2      //                  eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
+  272   2                          eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
   273   2          }
-  274   1      
-  275   1          // å½’ä¸€åŒ–åå·®å€¼è®¡ç®—
-  276   1          eleValue = (float)eleSub / (float)eleAdd * 100.0f;
-  277   1      
-  278   1          // é™å¹…å¤„ç†ï¼šå°†åå·®å€¼é™åˆ¶åœ¨ -100 åˆ° 100 ä¹‹é—´
-  279   1          if(eleValue > 100.0f) eleValue = 100.0f;
-  280   1          else if(eleValue < -100.0f) eleValue = -100.0f;
-  281   1      
-  282   1          // è½¬æ¢ä¸ºæ•´å‹è¿”å›ç»™æ§åˆ¶å±‚
-  283   1          return (int)(eleValue);
-  284   1      }
-  285          
-  286          
-  287          /**
-  288           * @brief åŠ¨æ€è§’é€Ÿåº¦é˜¶è·ƒæµ‹è¯•åºåˆ— (çŠ¶æ€æœº)
-  289           * @note ä¾èµ– Timer1 çš„ 2ms å‘¨æœŸã€‚500æ¬¡ tick = 1ç§’ã€‚
-  290           */
-  291          void Dynamic_Yaw_Test_Task(void)
-  292          {
-  293   1          static uint16 time_tick = 0;   // æ—¶é—´è®¡æ•°å™¨
-  294   1          static uint8 current_stage = 0; // å½“å‰æ‰€å¤„çš„æµ‹è¯•é˜¶æ®µ
-  295   1      
-  296   1          // 1. å¦‚æœè½¦å­å¤„äºæ€¥åœ/æœªå‘è½¦çŠ¶æ€ï¼Œé‡ç½®æµ‹è¯•è¿›åº¦
-  297   1          if (stop_flag == 1) 
-  298   1          {
-  299   2              time_tick = 0;
-  300   2              current_stage = 0;
-  301   2              target_yaw_rate = 0;
-  302   2              return;
-  303   2          }
-  304   1      
-  305   1          // 2. è½¦å­å¯åŠ¨åï¼Œå¼€å§‹è®¡æ—¶ (2ms è¿›ä¸€æ¬¡)
-  306   1          time_tick++;
-  307   1      
-  308   1          // 3. è®¾å®šæ¯ä¸ªé˜¶æ®µæŒç»­çš„æ—¶é—´ï¼šä¾‹å¦‚ 1.5 ç§’ (750 ticks) åˆ‡æ¢ä¸€æ¬¡çŠ¶æ€
-  309   1          if (time_tick >= 2500) 
-  310   1          {
-  311   2              time_tick = 0;       // æ¸…é›¶è®¡æ—¶å™¨
-  312   2              current_stage++;     // è¿›å…¥ä¸‹ä¸€ä¸ªæµ‹è¯•é˜¶æ®µ
-  313   2          }
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 6   
+  274   1          else if (loop_state == LOOP_TURN_IN)
+  275   1          {
+  276   2              // ¡¾Ç¿ÖÆÈë»·¡¿ÖÆÔì¾Ş´ó¼ÙÆ«²î£¬Ë²¼äÀ­Âú PID£¡
+  277   2              if (loop_type == LOOP_RIGHT)
+  278   2              {
+  279   3                  // ½ø×ó»·£º¼«¶ÈÏ÷Èõ×ó²à£¬·Å´óÓÒ²à¡£ÖÆÔì¡°ÑÏÖØÆ«ÓÒ¡±µÄ¼ÙÏó£¬Ç¿ÆÈ³µÃÍÏò×ó´òËÀ£¡
+  280   3                  eleSub = (0.2f * adc[0] + 0.5f * adc[1]) - (1.8f * adc[3] + 1.5f * adc[4]);
+  281   3              }
+  282   2              else if (loop_type == LOOP_LEFT)
+  283   2              {
+  284   3                  // ½øÓÒ»·£º¼«¶È·Å´ó×ó²à£¬Ï÷ÈõÓÒ²à¡£ÖÆÔì¡°ÑÏÖØÆ«×ó¡±µÄ¼ÙÏó£¬Ç¿ÆÈ³µÃÍÏòÓÒ´òËÀ£¡
+  285   3                  eleSub = (1.8f * adc[0] + 1.5f * adc[1]) - (0.2f * adc[3] + 0.5f * adc[4]);
+  286   3              }
+  287   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+  288   2          }
+  289   1          else if (loop_state == LOOP_IN_LOOP)
+  290   1          {
+  291   2              // ¡¾»·ÄÚÑ­Ïß¡¿Î¢µ÷È¨ÖØ£¬·ÀÖ¹±»ÀëĞÄÁ¦Ë¦³ö
+  292   2      //        if (loop_type == LOOP_RIGHT)
+  293   2      //        {
+  294   2      //            // ×ó»·ÄÚ£¬ÊÊ¶È·Å´óÓÒ²à£¬ÈÃ³µÓĞ³ÖĞøÏò×ó¿¿Â££¨ÌùÄÚ²à£©µÄÇ÷ÊÆ
+  295   2      //            eleSub = (0.8f * adc[0] + 0.8f * adc[1]) - (1.2f * adc[3] + 1.2f * adc[4]);
+  296   2      //        }
+  297   2      //        else 
+  298   2      //        {
+  299   2      //            // ÓÒ»·ÄÚ£¬ÊÊ¶È·Å´ó×ó²à£¬ÈÃ³µÓĞ³ÖĞøÏòÓÒ¿¿Â£µÄÇ÷ÊÆ
+  300   2      //            eleSub = (1.2f * adc[0] + 1.2f * adc[1]) - (0.8f * adc[3] + 0.8f * adc[4]);
+  301   2      //        }
+  302   2                      eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
+  303   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+  304   2          }
+  305   1          else if (loop_state == LOOP_EXITING)
+  306   1          {
+  307   2              // ¡¾Ç¿ÖÆ³ö»·¡¿·´ÏòÀ­³¶£¬°Ñ³µÍ·Ç¿ÖÆ×§³öÔ²»·
+  308   2              if (loop_type == LOOP_RIGHT)
+  309   2              {
+  310   3                  // ×ó»·³ö»·£º·Å´ó×ó²àÈ¨ÖØ£¬ËÍ¸ø PID ÕıÆ«²î£¬Ç¿ÆÈ³µÍ·ÏòÓÒ×ª£¨À­Ö±³ö»·£©
+  311   3                  eleSub = (1.5f * adc[0] + 1.5f * adc[1]) - (0.5f * adc[3] + 0.5f * adc[4]);
+  312   3              }
+  313   2              else 
+  314   2              {
+  315   3                  // ÓÒ»·³ö»·£º·Å´óÓÒ²àÈ¨ÖØ£¬Ç¿ÆÈ³µÍ·Ïò×ó×ª
+  316   3                  eleSub = (0.5f * adc[0] + 0.5f * adc[1]) - (1.5f * adc[3] + 1.5f * adc[4]);
+  317   3              }
+  318   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 6   
 
-  314   1      
-  315   1          // 4. æ‰§è¡ŒçŠ¶æ€æœºåºåˆ—
-  316   1          switch (current_stage)
-  317   1          {
-  318   2              case 0: target_yaw_rate = 4000;  break;  // é˜¶æ®µ0ï¼šæ­£è½¬ 3000
-  319   2              case 1: target_yaw_rate = -4000; break;  // é˜¶æ®µ1ï¼šåè½¬ 3000
-  320   2              case 2: target_yaw_rate = 7000;  break;  // é˜¶æ®µ2ï¼šæ­£è½¬ 4000
-  321   2             case 3: target_yaw_rate = -7000; break;  // é˜¶æ®µ3ï¼šåè½¬ 4000
-  322   2      //        case 4: target_yaw_rate = 8500;  break;  // é˜¶æ®µ4ï¼šæ­£è½¬ 5000
-  323   2      //        case 5: target_yaw_rate = 5500; break;  // é˜¶æ®µ5ï¼šåè½¬ 5000
-  324   2      //        case 6: target_yaw_rate = 6000;  break;  // é˜¶æ®µ6ï¼šæ­£è½¬ 6000
-  325   2      //        case 7: target_yaw_rate = -6000; break;  // é˜¶æ®µ7ï¼šåè½¬ 6000
-  326   2      //      case 8: target_yaw_rate = 9000;break;
-  327   2      //      case 9: target_yaw_rate = -9000;break;
-  328   2      //      case 10:target_yaw_rate = 10000;break;
-  329   2      //      case 11:target_yaw_rate = -10000;break;
-  330   2              default:
-  331   2                  // æµ‹è¯•ç»“æŸï¼šå½’é›¶å¹¶å¼ºè¡Œè§¦å‘åœè½¦ä¿æŠ¤
-  332   2                  target_yaw_rate = 0;
-  333   2                  stop_flag = 1; 
-  334   2                  break;
-  335   2          }
-  336   1      }
-  337          
-  338          void Roundabout_Detect_Task(void)
-  339          {
-  340   1          int* adc = GetInductance(); // 0:å·¦å¤–, 1:å·¦å†…, 2:ä¸­, 3:å³å†…, 4:å³å¤–
-  341   1          int16 pitch = imu_data.gy;
-  342   1          static uint16 state_timer = 0;
-  343   1          static uint16 timeout_counter = 0; // ğŸŒŸ æ–°å¢ï¼šè¶…æ—¶ä¿æŠ¤è®¡æ•°å™¨
-  344   1          
-  345   1          switch(loop_state)
-  346   1          {
-  347   2              case LOOP_NORMAL:
-  348   2                
-  349   2              if (global_distance < ROUNDABOUT_ZONE_MIN || global_distance > ROUNDABOUT_ZONE_MAX)
-  350   2                  {
-  351   3                      // ²»ÔÚ±½»·ÇøÓò£¬Ç¿ÖÆ¹éÁãËùÓĞÏà¹Ø¼ÆÊ±Æ÷£¬²¢Ö±½ÓÌø³ö£¬´¿×ÔÖ÷Ñ­¼££¡
-  352   3                      state_timer = 0;
-  353   3                      break; 
-  354   3                  }
-  355   2          // ğŸŒŸ è¯†åˆ«å·¦ç¯
-  356   2              if (set_distance_calculation == 1 && car_distance < LOOP_COOLDOWN_DIST)
-  357   2                  {
-  358   3                      // è¿˜åœ¨å†·å´æœŸå†…ï¼Œä»€ä¹ˆéƒ½ä¸åš
-  359   3                      state_timer = 0;
-  360   3                      break; 
-  361   3                  }
-  362   2              else if (set_distance_calculation == 1 && car_distance >= LOOP_COOLDOWN_DIST)
-  363   2                  {
-  364   3                      // è·‘å¤Ÿäº†å†·å´è·ç¦»ï¼Œå…³é—­è·ç¦»ç§¯åˆ†ï¼Œæ¢å¤æ­£å¸¸å¯»æ‰¾çŠ¶æ€
-  365   3                      set_distance_calculation = 0; 
-  366   3                  }
-  367   2              if(adc[2] > 90 && ((adc[0] > 80 )|| adc[3] > 80) && abs(pitch) < PITCH_THRESHOLD)     //(adc[0] + adc[1
-             -]) - (adc[3] + adc[4]) > 30   (adc[0] + adc[1]) - (adc[3] + adc[4]) > 15  abs(pitch) < PITCH_THRESHOLD
-  368   2              {
-  369   3                  state_timer++;
-  370   3                  if(state_timer >= 2) // 20ms é˜²æŠ–
-  371   3                  {
-  372   4                      loop_state = LOOP_APPROACH;
-  373   4                      loop_type = LOOP_NONE;
-  374   4                      Clear_Car_Distance(); // è·ç¦»æ¸…é›¶ï¼Œå¼€å§‹ç›²å¼€è®¡æ­¥
-  375   4                      set_distance_calculation = 1;  //å¼€å¯ä½ç½®è®¡ç®—
-  376   4                      state_timer = 0;
-  377   4                      timeout_counter = 0; // æ¸…é›¶è¶…æ—¶è®¡æ•°
-  378   4                  }
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 7   
+  319   2          }
+  320   1          // =========================================================================
+  321   1      
+  322   1          // ¶ªÏß±£»¤Âß¼­ (±£³ÖÔ­Ñù²»¶¯)
+  323   1          if(eleAdd < 20.0)
+  324   1          {
+  325   2              off_track_timer++;
+  326   2              if(off_track_timer >= 250) stop_flag = 1;
+  327   2          }
+  328   1          else
+  329   1          {
+  330   2              off_track_timer = 0;
+  331   2          }
+  332   1      
+  333   1          // ¹éÒ»»¯Æ«²îÖµ¼ÆËã
+  334   1          eleValue = (float)eleSub / (float)eleAdd * 100.0f;
+  335   1      
+  336   1          // ÏŞ·ù´¦Àí£º½«Æ«²îÖµÏŞÖÆÔÚ -100 µ½ 100 Ö®¼ä
+  337   1          if(eleValue > 100.0f) eleValue = 100.0f;
+  338   1          else if(eleValue < -100.0f) eleValue = -100.0f;
+  339   1      
+  340   1          // ×ª»»ÎªÕûĞÍ·µ»Ø¸ø¿ØÖÆ²ã
+  341   1          return (int)(eleValue);
+  342   1      }
+  343          
+  344          
+  345          /**
+  346           * @brief ¶¯Ì¬½ÇËÙ¶È½×Ô¾²âÊÔĞòÁĞ (×´Ì¬»ú)
+  347           * @note ÒÀÀµ Timer1 µÄ 2ms ÖÜÆÚ¡£500´Î tick = 1Ãë¡£
+  348           */
+  349          void Dynamic_Yaw_Test_Task(void)
+  350          {
+  351   1          static uint16 time_tick = 0;   // Ê±¼ä¼ÆÊıÆ÷
+  352   1          static uint8 current_stage = 0; // µ±Ç°Ëù´¦µÄ²âÊÔ½×¶Î
+  353   1      
+  354   1          // 1. Èç¹û³µ×Ó´¦ÓÚ¼±Í£/Î´·¢³µ×´Ì¬£¬ÖØÖÃ²âÊÔ½ø¶È
+  355   1          if (stop_flag == 1) 
+  356   1          {
+  357   2              time_tick = 0;
+  358   2              current_stage = 0;
+  359   2              target_yaw_rate = 0;
+  360   2              return;
+  361   2          }
+  362   1      
+  363   1          // 2. ³µ×ÓÆô¶¯ºó£¬¿ªÊ¼¼ÆÊ± (2ms ½øÒ»´Î)
+  364   1          time_tick++;
+  365   1      
+  366   1          // 3. Éè¶¨Ã¿¸ö½×¶Î³ÖĞøµÄÊ±¼ä£ºÀıÈç 1.5 Ãë (750 ticks) ÇĞ»»Ò»´Î×´Ì¬
+  367   1          if (time_tick >= 2500) 
+  368   1          {
+  369   2              time_tick = 0;       // ÇåÁã¼ÆÊ±Æ÷
+  370   2              current_stage++;     // ½øÈëÏÂÒ»¸ö²âÊÔ½×¶Î
+  371   2          }
+  372   1      
+  373   1          // 4. Ö´ĞĞ×´Ì¬»úĞòÁĞ
+  374   1          switch (current_stage)
+  375   1          {
+  376   2              case 0: target_yaw_rate = 4000;  break;  // ½×¶Î0£ºÕı×ª 4000
+  377   2              case 1: target_yaw_rate = -4000; break;  // ½×¶Î1£º·´×ª 4000
+  378   2              case 2: target_yaw_rate = 7000;  break;  // ½×¶Î2£ºÕı×ª 7000
+  379   2             case 3: target_yaw_rate = -7000; break;  // ½×¶Î3£º·´×ª 7000
+  380   2      //        case 4: target_yaw_rate = 8500;  break;  // ½×¶Î4£ºÕı×ª 8500
+  381   2      //        case 5: target_yaw_rate = 5500; break;  // ½×¶Î5£º·´×ª 5500
+  382   2      //        case 6: target_yaw_rate = 6000;  break;  // ½×¶Î6£ºÕı×ª 6000
+  383   2      //        case 7: target_yaw_rate = -6000; break;  // ½×¶Î7£º·´×ª 6000
+  384   2      //          case 8: target_yaw_rate = 9000;break;
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 7   
 
-  379   3              }
-  380   2          // ğŸŒŸ è¯†åˆ«å³ç¯ (å¿…é¡»åŠ  else ifï¼)
-  381   2      //        else if(adc[2] > 90 && adc[3] > 70  && (adc[4] + adc[3]) - (adc[0] + adc[1]) > 10)    //(adc[4] + adc
-             -[3]) - (adc[0] + adc[1]) > 25   (adc[4] + adc[3]) - (adc[0] + adc[1]) > 15
-  382   2      //        {
-  383   2      //            state_timer++;
-  384   2      //            if(state_timer >= 1) // 20ms é˜²æŠ–
-  385   2      //            {
-  386   2      //                loop_state = LOOP_APPROACH;
-  387   2      //                loop_type = LOOP_RIGHT;
-  388   2      //                Clear_Car_Distance(); // è·ç¦»æ¸…é›¶ï¼Œå¼€å§‹ç›²å¼€è®¡æ­¥
-  389   2      //                set_distance_calculation = 1;  //å¼€å¯è·ç¦»ç§¯åˆ†
-  390   2      //                state_timer = 0;
-  391   2      //                timeout_counter = 0; // æ¸…é›¶è¶…æ—¶è®¡æ•°
-  392   2      //            }
-  393   2      //        }
-  394   2          // ğŸŒŸ å¦‚æœéƒ½ä¸æ»¡è¶³ï¼Œæ‰æ¸…é›¶é˜²æŠ–è®¡æ—¶å™¨
-  395   2              else 
-  396   2              { 
-  397   3                  state_timer = 0;
-  398   3              }
-  399   2              break;
-  400   2      
-  401   2              case LOOP_APPROACH:
-  402   2                  // ç­‰å¾…è½¦å¤´é€¼è¿‘å…¥ç¯ç‚¹ï¼ˆé é‡Œç¨‹ç§¯åˆ†åˆ¤æ–­ï¼‰
-  403   2                  timeout_counter++;
-  404   2                  if(car_distance >= LOOP_ENTRY_DIST && adc[2] > 70 &&(adc[0] > 60 || adc[3] > 60)) 
-  405   2                  {
-  406   3                      
-  407   3                      if ((adc[0] + adc[1]) >= (adc[3] + adc[4])) 
-  408   3                      {
-  409   4                          loop_type = LOOP_LEFT;  // å·¦è¾¹èƒ½é‡å¤§ï¼Œç¡®è®¤æ˜¯å·¦ç¯
-  410   4                      }
-  411   3                      else if((adc[0] + adc[1])< (adc[3] + adc[4]))
-  412   3                      {
-  413   4                          loop_type = LOOP_RIGHT; // å³è¾¹èƒ½é‡å¤§ï¼Œç¡®è®¤æ˜¯å³ç¯
-  414   4                      }
-  415   3                      
-  416   3                      loop_state = LOOP_TURN_IN;
-  417   3                      Clear_Car_Distance();
-  418   3                      Clear_Car_Angle(); // ğŸŒŸ è§’åº¦æ¸…é›¶ï¼Œå‡†å¤‡å…¥ç¯æµ‹è§’åº¦ï¼
-  419   3                      set_angle_calculation = 1;
-  420   3                      set_distance_calculation = 1;
-  421   3                      timeout_counter = 0; // ğŸŒŸ çŠ¶æ€åˆ‡æ¢ï¼Œæ¸…é›¶è¶…æ—¶è®¡æ•°
-  422   3                  }
-  423   2      //            else if (timeout_counter > 500)
-  424   2      //            {
-  425   2      //                loop_state = LOOP_NORMAL;
-  426   2      //                loop_type = LOOP_NONE;
-  427   2      //                set_distance_calculation = 0;
-  428   2      //                set_angle_calculation = 0;
-  429   2      //            }
-  430   2                  break;
-  431   2      
-  432   2              case LOOP_TURN_IN:
-  433   2                  // å…¥ç¯ä¸€å®šæ—¶é—´ï¼Œæˆ–è€…ä¾§è¾¹ç”µæ„Ÿå›è½ï¼Œè®¤ä¸ºå·²è¿›ç¯
-  434   2                  timeout_counter++;
-  435   2                  if(car_angle > LOOP_IN_ANGLE && adc[2] < 60 && car_distance > LOOP_IN_DIST)
-  436   2                  {
-  437   3                      loop_state = LOOP_IN_LOOP;
-  438   3                    
-  439   3                    // ğŸŒŸ æå…¶é‡è¦ï¼šä¸ºä¸‹ä¸€ä¸ªé˜¶æ®µ (IN_LOOP) å‡†å¤‡å¹²å‡€çš„æˆ˜åœºï¼
-  440   3                      Clear_Car_Angle();    // æ¸…é›¶ï¼Œå› ä¸º IN_LOOP éœ€è¦é‡æ–°ä» 0 ç®—åˆ° 310 åº¦æ¥åˆ¤æ–
-             -­å‡ºå£
-  441   3                      Clear_Car_Distance(); // å¦‚æœä½  IN_LOOP é‡Œä¸ç”¨è·ç¦»ï¼Œæ¸…ä¸æ¸…æ— æ‰€è°“ï¼Œä¿é™©è
-             -µ·è§æ¸…æ‰
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 8   
+  385   2      //          case 9: target_yaw_rate = -9000;break;
+  386   2      //          case 10:target_yaw_rate = 10000;break;
+  387   2      //          case 11:target_yaw_rate = -10000;break;
+  388   2              default:
+  389   2                  // ²âÊÔ½áÊø£º¹éÁã²¢Ç¿ĞĞ´¥·¢Í£³µ±£»¤
+  390   2                  target_yaw_rate = 0;
+  391   2                  stop_flag = 1; 
+  392   2                  break;
+  393   2          }
+  394   1      }
+  395          
+  396          void Roundabout_Detect_Task(void)
+  397          {
+  398   1          int* adc = GetInductance(); // 0:×óÍâ, 1:×óÄÚ, 2:ÖĞ, 3:ÓÒÄÚ, 4:ÓÒÍâ
+  399   1              int16 pitch = imu_data.gy;
+  400   1          static uint16 state_timer = 0;
+  401   1              static uint16 timeout_counter = 0; // ?? ĞÂÔö£º³¬Ê±±£»¤¼ÆÊıÆ÷
+  402   1              
+  403   1          switch(loop_state)
+  404   1          {
+  405   2              case LOOP_NORMAL:
+  406   2                          
+  407   2                      if ((global_distance > ROUNDABOUT_ZONE_MAX  || global_distance < ROUNDABOUT_ZONE_MIN)&& c
+             -urrent_lap < 3)
+  408   2                  {
+  409   3                      // ²»ÔÚ±½»·ÇøÓò£¬Ç¿ÖÆ¹éÁãËùÓĞÏà¹Ø¼ÆÊ±Æ÷£¬²¢Ö±½ÓÌø³ö£¬´¿×ÔÖ÷Ñ­¼££¡
+  410   3                      state_timer = 0;
+  411   3                      break; 
+  412   3                  }
+  413   2          // ?? Ê¶±ğ×ó»·
+  414   2                      if (set_distance_calculation == 1 && car_distance < LOOP_COOLDOWN_DIST)
+  415   2                  {
+  416   3                      // »¹ÔÚÀäÈ´ÆÚÄÚ£¬Ê²Ã´¶¼²»×ö
+  417   3                      state_timer = 0;
+  418   3                      break; 
+  419   3                  }
+  420   2              else if (set_distance_calculation == 1 && car_distance >= LOOP_COOLDOWN_DIST)
+  421   2                  {
+  422   3                      // ÅÜ¹»ÁËÀäÈ´¾àÀë£¬¹Ø±Õ¾àÀë»ı·Ö£¬»Ö¸´Õı³£Ñ°ÕÒ×´Ì¬
+  423   3                      set_distance_calculation = 0; 
+  424   3                  }
+  425   2                      if(adc[2] > 90 && ((adc[0] > 80 )|| adc[3] > 80))         //(adc[0] + adc[1]) - (adc[3] +
+             - adc[4]) > 30   (adc[0] + adc[1]) - (adc[3] + adc[4]) > 15  abs(pitch) < PITCH_THRESHOLD
+  426   2                      {
+  427   3                              state_timer++;
+  428   3                              if(state_timer >= 2) // 20ms ·À¶¶
+  429   3                              {
+  430   4                                      loop_state = LOOP_APPROACH;
+  431   4                                      loop_type = LOOP_NONE;
+  432   4                                      Clear_Car_Distance(); // ¾àÀëÇåÁã£¬¿ªÊ¼Ã¤¿ª¼Æ²½
+  433   4                                      set_distance_calculation = 1;  //¿ªÆôÎ»ÖÃ¼ÆËã
+  434   4                                      state_timer = 0;
+  435   4                                      timeout_counter = 0; // ÇåÁã³¬Ê±¼ÆÊı
+  436   4                              }
+  437   3                      }
+  438   2          // ?? Ê¶±ğÓÒ»· (±ØĞë¼Ó else if)
+  439   2      //              else if(adc[2] > 90 && adc[3] > 70  && (adc[4] + adc[3]) - (adc[0] + adc[1]) > 10)      /
+             -/(adc[4] + adc[3]) - (adc[0] + adc[1]) > 25   (adc[4] + adc[3]) - (adc[0] + adc[1]) > 15
+  440   2      //              {
+  441   2      //                      state_timer++;
+  442   2      //                      if(state_timer >= 1) // 20ms ·À¶¶
+  443   2      //                      {
+  444   2      //                              loop_state = LOOP_APPROACH;
+  445   2      //                              loop_type = LOOP_RIGHT;
+  446   2      //                              Clear_Car_Distance(); // ¾àÀëÇåÁã£¬¿ªÊ¼Ã¤¿ª¼Æ²½
+  447   2      //                              set_distance_calculation = 1;  //¿ªÆô¾àÀë»ı·Ö
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 8   
 
-  442   3                      
-  443   3                      // IN_LOOP åªéœ€è¦æµ‹è§’åº¦ï¼Œä¸éœ€è¦æµ‹è·ç¦»äº†
-  444   3                      set_distance_calculation = 0; 
-  445   3                      set_angle_calculation = 1;
-  446   3                      timeout_counter = 0; // ğŸŒŸ çŠ¶æ€åˆ‡æ¢ï¼Œæ¸…é›¶è¶…æ—¶è®¡æ•°
-  447   3                  }
-  448   2      //            else if (timeout_counter > 300)
-  449   2      //            {
-  450   2      //                loop_state = LOOP_NORMAL;
-  451   2      //                loop_type = LOOP_NONE;
-  452   2      //                set_distance_calculation = 0;
-  453   2      //                set_angle_calculation = 0;
-  454   2      //            }
-  455   2                  break;
-  456   2      
-  457   2              case LOOP_IN_LOOP:
-  458   2                timeout_counter++; // ğŸŒŸ å¼€å§‹è®¡æ—¶
-  459   2                  // åœ¨ç¯å†…ï¼Œç»å¯¹ä¸èƒ½çœ‹ç”µæ„Ÿï¼Œåªçœ‹é™€èºä»ªè§’åº¦ç§¯åˆ†ï¼
-  460   2                  // è½¬å¤Ÿäº† 300 åº¦ï¼Œè®¤ä¸ºåˆ°äº†å‡ºå£
-  461   2                  if(abs((int)car_angle) > LOOP_EXIT_ANGLE)
-  462   2                  {
-  463   3                      loop_state = LOOP_EXITING;
-  464   3                      // ğŸŒŸ æå…¶å…³é”®ï¼šå°†è§’åº¦æ¸…é›¶ï¼è®© EXITING é˜¶æ®µé‡æ–°ä» 0 å¼€å§‹æµ‹é‚£ 30Â°ï¼
-  465   3                      Clear_Car_Angle(); 
-  466   3                      set_angle_calculation = 1; // ä¿æŒè§’åº¦ç§¯åˆ†å¼€å¯
-  467   3                      timeout_counter = 0; // ğŸŒŸ çŠ¶æ€åˆ‡æ¢ï¼Œæ¸…é›¶è¶…æ—¶è®¡æ•°
-  468   3                  }
-  469   2      //            else if (timeout_counter > 700)
-  470   2      //            {
-  471   2      //                loop_state = LOOP_NORMAL;
-  472   2      //                loop_type = LOOP_NONE;
-  473   2      //                set_distance_calculation = 0;
-  474   2      //                set_angle_calculation = 0;
-  475   2      //            }
-  476   2                  break;
-  477   2      
-  478   2              case LOOP_EXITING:
-  479   2                  timeout_counter++; // ğŸŒŸ å¼€å§‹è®¡æ—¶
-  480   2                  // è½¦èº«å›æ­£ï¼Œç”µæ„Ÿæ¢å¤æ­£å¸¸æ°´å¹³
-  481   2                  if(abs((int)car_angle) > LOOP_EXIT_EXTRA_ANGLE)
-  482   2                  {
-  483   3                      // ğŸŒŸ 2. è§’åº¦è½¬å¤Ÿäº†ï¼Œå†çœ‹è½¦èº«æœ‰æ²¡æœ‰å›æ­£ (ç”µæ„Ÿæ¢å¤å¹³ç›´)
-  484   3                      if(adc[2] < 80 && adc[0] < 60 && adc[3] < 60)
-  485   3                      {
-  486   4                          state_timer++;
-  487   4                          if(state_timer >= 1) // 20ms é˜²æŠ–
-  488   4                          {
-  489   5                              // âœ… å‡ºç¯å¤§è·å…¨èƒœï¼
-  490   5                              loop_state = LOOP_NORMAL;
-  491   5                              loop_type = LOOP_NONE;
-  492   5                              state_timer = 0;
-  493   5                              timeout_counter = 0; // ğŸŒŸ å¼€å§‹è®¡æ—¶
-  494   5                              // ğŸŒŸ å¼€å¯å‡ºç¯â€œå†·å´æœŸâ€ï¼šå…³é—­è§’åº¦ï¼Œå¼€å¯è·ç¦»ï¼Œé‡ç½®æ¸…é›¶
-  495   5                              set_angle_calculation = 0; // å½»åº•å…³é—­è§’åº¦ç§¯åˆ†ï¼Œé˜²æº¢å‡º
-  496   5                              Clear_Car_Angle();
-  497   5                              Clear_Car_Distance();
-  498   5                              set_distance_calculation = 1; // å¼€å¯è·ç¦»ï¼Œä¸º NORMAL é‡Œçš„å†·å´æœŸæµ‹è·ï
-             -¼
-  499   5                          }
-  500   4                      }
-  501   3                      else { state_timer = 0; }
-  502   3                  }
-  503   2                  
-  504   2      //            if (timeout_counter > 300)
-  505   2      //            {
-  506   2      //                loop_state = LOOP_NORMAL;
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 9   
+  448   2      //                              state_timer = 0;
+  449   2      //                              timeout_counter = 0; // ÇåÁã³¬Ê±¼ÆÊı
+  450   2      //                      }
+  451   2      //              }
+  452   2          // ?? Èç¹û¶¼²»Âú×ã£¬²ÅÇåÁã·À¶¶¼ÆÊ±Æ÷
+  453   2                      else 
+  454   2                      { 
+  455   3                              state_timer = 0;
+  456   3                      }
+  457   2                      break;
+  458   2      
+  459   2              case LOOP_APPROACH:
+  460   2                  // µÈ´ı³µÍ·±Æ½üÈë»·µã£¨¿¿Àï³Ì»ı·ÖÅĞ¶Ï£©
+  461   2                  timeout_counter++;
+  462   2                  if(car_distance >= LOOP_ENTRY_DIST && adc[2] > 70 &&(adc[0] > 60 || adc[3] > 60)) 
+  463   2                  {
+  464   3                                      
+  465   3                      if ((adc[0] + adc[1]) >= (adc[3] + adc[4])) 
+  466   3                      {
+  467   4                          loop_type = LOOP_LEFT;  // ×ó±ßÄÜÁ¿´ó£¬È·ÈÏÊÇ×ó»·
+  468   4                      }
+  469   3                      else if((adc[0] + adc[1])< (adc[3] + adc[4]))
+  470   3                      {
+  471   4                          loop_type = LOOP_RIGHT; // ÓÒ±ßÄÜÁ¿´ó£¬È·ÈÏÊÇÓÒ»·
+  472   4                      }
+  473   3                                      
+  474   3                      loop_state = LOOP_TURN_IN;
+  475   3                      Clear_Car_Distance();
+  476   3                      Clear_Car_Angle(); // ?? ½Ç¶ÈÇåÁã£¬×¼±¸Èë»·²â½Ç¶È£¡
+  477   3                      set_angle_calculation = 1;
+  478   3                      set_distance_calculation = 1;
+  479   3                      timeout_counter = 0; // ?? ×´Ì¬ÇĞ»»£¬ÇåÁã³¬Ê±¼ÆÊı
+  480   3                  }
+  481   2      //                      else if (timeout_counter > 500)
+  482   2      //            {
+  483   2      //                loop_state = LOOP_NORMAL;
+  484   2      //                loop_type = LOOP_NONE;
+  485   2      //                set_distance_calculation = 0;
+  486   2      //                set_angle_calculation = 0;
+  487   2      //            }
+  488   2                  break;
+  489   2      
+  490   2              case LOOP_TURN_IN:
+  491   2                  // Èë»·Ò»¶¨Ê±¼ä£¬»òÕß²à±ßµç¸Ğ»ØÂä£¬ÈÏÎªÒÑ½ø»·
+  492   2                   timeout_counter++;
+  493   2                   if(car_angle > LOOP_IN_ANGLE && adc[2] < 60 && car_distance > LOOP_IN_DIST)
+  494   2                   {
+  495   3                   loop_state = LOOP_IN_LOOP;
+  496   3                                  
+  497   3                   // ?? ¼«ÆäÖØÒª£ºÎªÏÂÒ»¸ö½×¶Î (IN_LOOP) ×¼±¸¸É¾»µÄÕ½³¡£¡
+  498   3                   Clear_Car_Angle();    // ÇåÁã£¬ÒòÎª IN_LOOP ĞèÒªÖØĞÂ´Ó 0 Ëãµ½ 310 ¶ÈÀ´ÅĞ¶Ï³ö¿Ú
+  499   3                   Clear_Car_Distance(); // Èç¹ûÄãÔÚ IN_LOOP Àï²»ÓÃ¾àÀë£¬Çå²»ÇåÎŞËùÎ½£¬±£ÏÕÆğ¼ûÇåµô
+  500   3                      
+  501   3                   // IN_LOOP Ö»ĞèÒª²â½Ç¶È£¬²»ĞèÒª²â¾àÀëÁË
+  502   3                   set_distance_calculation = 0; 
+  503   3                   set_angle_calculation = 1;
+  504   3                   timeout_counter = 0; //  ×´Ì¬ÇĞ»»£¬ÇåÁã³¬Ê±¼ÆÊı
+  505   3                              }
+  506   2      //                      else if (timeout_counter > 300)
+  507   2      //            {
+  508   2      //                loop_state = LOOP_NORMAL;
+  509   2      //                loop_type = LOOP_NONE;
+  510   2      //                set_distance_calculation = 0;
+  511   2      //                set_angle_calculation = 0;
+  512   2      //            }
+  513   2                  break;
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 9   
 
-  507   2      //                loop_type = LOOP_NONE;
-  508   2      //                set_distance_calculation = 0;
-  509   2      //                set_angle_calculation = 0;
-  510   2      //                state_timer = 0;
-  511   2      //            }
-  512   2                  break;
-  513   2          }
-  514   1      }
-  515          
-  516          /**
-  517           * @brief åº•ç›˜é—­ç¯æ§åˆ¶
-  518           * è·å–åå·®å¹¶è¾“å…¥æ–¹å‘PIDï¼Œè®¡ç®—å·®é€Ÿè¾“å‡º
-  519           */
-  520          void Chassis_Control(void)
-  521          {
-  522   1          const PID_TypeDef *direction_pid; //å¤–ç¯ï¼šèµ›é“åå·®PID  
-  523   1          const PID_TypeDef *yaw_rate_pid;  // å†…ç¯ï¼šè§’é€Ÿåº¦PID (è¾“å‡ºæœ€ç»ˆå·®é€Ÿ)
-  524   1          static uint8 outer_loop_timer = 0;
-  525   1          float k = 0;
-  526   1          //è·å–æ–¹å‘ç¯PIDæ§åˆ¶å™¨å¥æŸ„å’Œåèˆªè§’é€Ÿåº¦ç¯PIDå¥æŸ„
-  527   1          direction_pid = PID_GetController(PID_DIRECTION);
-  528   1          yaw_rate_pid = PID_GetController(PID_YAW_RATE); // æ–°å¢ï¼è·å–ç¬¬4ç»„PID
-  529   1        
-  530   1          IMU_Update();
-  531   1        
-  532   1          //ç”µæ± ä¿æŠ¤
-  533   1          Battery_Protection_Task();
-  534   1          /*è§’é€Ÿåº¦ç¯æµ‹è¯•*/
-  535   1      //    Dynamic_Yaw_Test_Task();
-  536   1        
-  537   1          outer_loop_timer++;
-  538   1          if(outer_loop_timer >= 3) 
-  539   1          {
-  540   2              outer_loop_timer = 0;
-  541   2              
-  542   2              chassis.current_deviation = Calculate_Deviation();
-  543   2              // å¤–ç¯ç®—å‡ºåŠ›çŸ©ï¼Œæ›´æ–° direction_output
-  544   2              target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0)
+  514   2      
+  515   2              case LOOP_IN_LOOP:
+  516   2                          timeout_counter++; // ?? ¿ªÊ¼¼ÆÊ±
+  517   2                  // ÔÚ»·ÄÚ£¬¾ø¶Ô²»ÄÜ¿´µç¸Ğ£¬Ö»¿´ÍÓÂİÒÇ½Ç¶È»ı·Ö£¡
+  518   2                  // ×ª¹»ÁË 300 ¶È£¬ÈÏÎªµ½ÁË³ö¿Ú
+  519   2                  if(abs((int)car_angle) > LOOP_EXIT_ANGLE)
+  520   2                  {
+  521   3                      loop_state = LOOP_EXITING;
+  522   3                                      // ?? ¼«Æä¹Ø¼ü£º½«½Ç¶ÈÇåÁã£¡ÈÃ EXITING ½×¶ÎÖØĞÂ´Ó 0 ¿ªÊ¼²âÄÇ 30¡ã£¡
+  523   3                      Clear_Car_Angle(); 
+  524   3                      set_angle_calculation = 1; // ±£³Ö½Ç¶È»ı·Ö¿ªÆô
+  525   3                      timeout_counter = 0; // ?? ×´Ì¬ÇĞ»»£¬ÇåÁã³¬Ê±¼ÆÊı
+  526   3                  }
+  527   2      //                      else if (timeout_counter > 700)
+  528   2      //            {
+  529   2      //                loop_state = LOOP_NORMAL;
+  530   2      //                loop_type = LOOP_NONE;
+  531   2      //                set_distance_calculation = 0;
+  532   2      //                set_angle_calculation = 0;
+  533   2      //            }
+  534   2                  break;
+  535   2      
+  536   2              case LOOP_EXITING:
+  537   2                              timeout_counter++; // ?? ¿ªÊ¼¼ÆÊ±
+  538   2                  // ³µÉí»ØÕı£¬µç¸Ğ»Ö¸´Õı³£Ë®Æ½
+  539   2                  if(abs((int)car_angle) > LOOP_EXIT_EXTRA_ANGLE)
+  540   2                  {
+  541   3                      // ?? 2. ½Ç¶È×ª¹»ÁË£¬ÔÙ¿´³µÉíÓĞÃ»ÓĞ»ØÕı (µç¸Ğ»Ö¸´Æ½Ö±)
+  542   3                      if(adc[2] < 80 && adc[0] < 60 && adc[3] < 60)
+  543   3                      {
+  544   4                          state_timer++;
+  545   4                          if(state_timer >= 1) // 20ms ·À¶¶
+  546   4                          {
+  547   5                              // ?? ³ö»·´ó»ñÈ«Ê¤£¡
+  548   5                              loop_state = LOOP_NORMAL;
+  549   5                              loop_type = LOOP_NONE;
+  550   5                              state_timer = 0;
+  551   5                              timeout_counter = 0; // ?? ¿ªÊ¼¼ÆÊ±
+  552   5                              // ?? ¿ªÆô³ö»·¡°ÀäÈ´ÆÚ¡±£º¹Ø±Õ½Ç¶È£¬¿ªÆô¾àÀë£¬ÖØÖÃÇåÁã
+  553   5                              set_angle_calculation = 0; // ³¹µ×¹Ø±Õ½Ç¶È»ı·Ö£¬·ÀÒç³ö
+  554   5                              Clear_Car_Angle();
+  555   5                              Clear_Car_Distance();
+  556   5                              set_distance_calculation = 1; // ¿ªÆô¾àÀë£¬¸ø NORMAL ÀïµÄÀäÈ´ÆÚ²â¾à£¡
+  557   5                          }
+  558   4                      }
+  559   3                      else { state_timer = 0; }
+  560   3                  }
+  561   2                              
+  562   2      //                      if (timeout_counter > 300)
+  563   2      //            {
+  564   2      //                loop_state = LOOP_NORMAL;
+  565   2      //                loop_type = LOOP_NONE;
+  566   2      //                set_distance_calculation = 0;
+  567   2      //                set_angle_calculation = 0;
+  568   2      //                state_timer = 0;
+  569   2      //            }
+  570   2                  break;
+  571   2          }
+  572   1      }
+  573          
+  574          /**
+  575           * @brief µ×ÅÌ±Õ»·¿ØÖÆ
+  576           * »ñÈ¡Æ«²î²¢ÊäÈë·½ÏòPID£¬¼ÆËã²îËÙÊä³ö
+  577           */
+  578          void Chassis_Control(void)
+  579          {
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 10  
+
+  580   1              const PID_TypeDef *direction_pid; //Íâ»·£ºÈüµÀÆ«²îPID  
+  581   1              const PID_TypeDef *yaw_rate_pid;  // ÄÚ»·£º½ÇËÙ¶ÈPID (Êä³ö×îÖÕ²îËÙ)
+  582   1              static uint8 outer_loop_timer = 0;
+  583   1              float k = 0;
+  584   1      
+  585   1              direction_pid = PID_GetController(PID_DIRECTION);
+  586   1              yaw_rate_pid = PID_GetController(PID_YAW_RATE); // ĞÂÔö£º»ñÈ¡µÚ4×éPID
+  587   1          
+  588   1              IMU_Update();
+  589   1          
+  590   1      
+  591   1              Battery_Protection_Task();
+  592   1        
+  593   1      //        Speed_Plan_Task();
+  594   1              
+  595   1              Lap_Control_Task(); // ?? Ã¿ 2ms Ö´ĞĞÒ»´ÎÈ¦ÊıÅĞ¶¨Óë°²È«Í£³µÅĞ¶Ï
+  596   1      //      Dynamic_Yaw_Test_Task();
+  597   1        
+  598   1              outer_loop_timer++;
+  599   1          if(outer_loop_timer >= 3) 
+  600   1          {
+  601   2              outer_loop_timer = 0;
+  602   2              
+  603   2              chassis.current_deviation = Calculate_Deviation();
+  604   2            
+  605   2              // µ±Æ«²î¾ø¶ÔÖµĞ¡ÓÚ 12 Ê± (³µ×ÓĞĞÊ»ÔÚÖ±µÀÖĞÑëÇø)£¬½µµÍ P£¬ÈÃ³µÍ·±ä¡°Èí¡±£¬·ÀÖ¹¸ßÆµ»­Áú
+  606   2              if (abs(chassis.current_deviation) <= 15) 
+  607   2              {
+  608   3                  PID_SetKp(PID_DIRECTION, 300.0f); // ½µµÍ P
+  609   3              }
+  610   2              // µ±Æ«²î¾ø¶ÔÖµ´óÓÚ 18 Ê± (³µ×Ó½øÍä»òÕßÆ«ÀëÈüµÀ)£¬»Ö¸´Ô­ÓĞ¸ß P£¬ÈÃ³µÍ·±ä¡°Ó²¡±£¬Ñ¸ËÙÀ­»Ø
+  611   2              else PID_SetKp(PID_DIRECTION, 400.0f); // »Ö¸´Õı³£ P
+  612   2             
+  613   2      
+  614   2              // Íâ»·Ëã³öÅ¤¾Ø£¬¸üĞÂ direction_output
+  615   2              target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0)
              -;
-  545   2          }
-  546   1          //è¯»å–å½“å‰çš„åèˆªè§’é€Ÿåº¦
-  547   1          actual_yaw_rate = imu_data.gz;
-  548   1          if(set_angle_calculation)
-  549   1          {
-  550   2            if (abs(actual_yaw_rate) > 20) 
-  551   2              {
-  552   3                  car_angle += abs((double)actual_yaw_rate) * 0.002f;
-  553   3              }
-  554   2          }
-  555   1          direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -target_yaw_rate);
-  556   1      //      direction_output = 0;
-  557   1          
-  558   1      
-  559   1          k = direction_output * 0.01;
-  560   1          if(k >= 0)
-  561   1          {
-  562   2            k = k > 0.65 ? 0.65 : k;
-  563   2          }
-  564   1          else
-  565   1          {
-  566   2            k = k < -0.65 ? -0.65 : k;
-  567   2          }
-  568   1          if(k >= 0)
-  569   1          {
-  570   2            chassis.left_speed  = chassis.target_speed * (1 - k);
-  571   2            chassis.right_speed = chassis.target_speed * (1 + k * 0.2);
-C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 10  
+  616   2          }
+  617   1          //¶ÁÈ¡µ±Ç°µÄÆ«º½½ÇËÙ¶È
+  618   1              actual_yaw_rate = imu_data.gz;
+  619   1              if(set_angle_calculation)
+  620   1              {
+  621   2                  if (abs(actual_yaw_rate) > 20) 
+  622   2              {
+  623   3                  car_angle += abs((double)actual_yaw_rate) * 0.002f;
+  624   3              }
+  625   2              }
+  626   1              direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -target_yaw_
+             -rate);
+  627   1      //          direction_output = 0;
+  628   1              
+  629   1      
+  630   1              k = direction_output * 0.01;
+  631   1              if(k >= 0)
+  632   1              {
+  633   2                  k = k > 0.7 ? 0.7 : k;
+  634   2              }
+  635   1              else
+  636   1              {
+  637   2                  k = k < -0.7 ? -0.7 : k;
+  638   2              }
+  639   1              if(k >= 0)
+  640   1              {
+  641   2                  chassis.left_speed  = chassis.target_speed * (1 - 1.0 * k);  //kÏµÊıÎª1.0   ËÙ¶È300 - 200 Ê± 
+             - 1.0
+  642   2                  chassis.right_speed = chassis.target_speed * (1 + k * 0.4);// kÏµÊıÎª0.2     ËÙ¶È300 - 200 Ê±  
+C251 COMPILER V5.60.0,  chassis                                                            17/07/26  10:15:47  PAGE 11  
 
-  572   2          }
-  573   1          else
-  574   1          {
-  575   2            k *= -1;
-  576   2            chassis.left_speed  = chassis.target_speed * (1 + k * 0.2);
-  577   2            chassis.right_speed = chassis.target_speed * (1 - k);
-  578   2          }
-  579   1      //    chassis.left_speed  = chassis.target_speed - direction_output;
-  580   1      //    chassis.right_speed = chassis.target_speed + direction_output;
-  581   1          //æ‰§è¡Œç”µæœºæ§åˆ¶
-  582   1          Motor_Control(chassis.left_speed, chassis.right_speed);
-  583   1      }
+             -0.4
+  643   2              }
+  644   1              else
+  645   1              {
+  646   2                  k *= -1;
+  647   2                  chassis.left_speed  = chassis.target_speed * (1 + k * 0.4); //kÏµÊıÎª0.2
+  648   2                  chassis.right_speed = chassis.target_speed * (1 - k * 1.0);  //kÏµÊıÎª1.0
+  649   2              }
+  650   1      //      chassis.left_speed  = chassis.target_speed - direction_output;
+  651   1      //    chassis.right_speed = chassis.target_speed + direction_output;
+  652   1      
+  653   1              Motor_Control(chassis.left_speed, chassis.right_speed);
+  654   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =      2391     ------
+  code size            =      2636     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =        54         28
+  edata size           =        63         28
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
@@ -643,7 +712,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        76     ------
+  hconst size          =        93     ------
 End of Module Information.
 
 
